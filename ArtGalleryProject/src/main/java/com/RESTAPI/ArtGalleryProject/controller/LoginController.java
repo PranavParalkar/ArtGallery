@@ -10,6 +10,7 @@ import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
 import com.RESTAPI.ArtGalleryProject.service.LoginCredentialsRoles;
 
 @RestController
+@RequestMapping("/auth")
 public class LoginController {
 	
 	@Autowired
