@@ -17,8 +17,23 @@ public class LoginCredService implements LoginCredentialsRoles {
 		loginrepo.save(logincred);
 		return logincred;
 	}
-
+	
 	@Override
+	public String validateLogin(LoginCredentials logincred) {
+		if(loginrepo.existsById(logincred.getUsername()) && 
+				loginrepo.findById(logincred.getUsername()).orElse(null).getType().equals(logincred.getType())) {
+			String password = loginrepo.findById(logincred.getUsername()).orElse(null).getPassword();
+			if(password.equals(logincred.getPassword())) {
+				return "Login Successful";
+			} else {
+				return "Invalid Password";
+			}
+		} else {
+			return "Invalid Username";
+		}
+	}
+
+	/*@Override
 	public String updateAccountLoginCredentials(LoginCredentials logincred, String newPassword) {
 		if (loginrepo.existsById(logincred.getUsername())) {
 			LoginCredentials toCheck = loginrepo.findById(logincred.getUsername()).orElse(null);
@@ -31,7 +46,7 @@ public class LoginCredService implements LoginCredentialsRoles {
 		} else {
 			return "User Not Found!";
 		}
-	}
+	}*/
 	
 	public boolean existsById(String username) {
 		if(loginrepo.existsById(username)) {
@@ -41,18 +56,5 @@ public class LoginCredService implements LoginCredentialsRoles {
 		}
 	}
 
-	@Override
-	public String validateLogin(LoginCredentials logincred) {
-		if(loginrepo.existsById(logincred.getUsername())) {
-			String password = loginrepo.findById(logincred.getUsername()).orElse(null).getPassword();
-			if(password.equals(logincred.getPassword())) {
-				return "Login Successful";
-			} else {
-				return "Invalid Password";
-			}
-		} else {
-			return "Invalid Username";
-		}
-	}
 
 }
