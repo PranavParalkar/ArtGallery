@@ -6,9 +6,12 @@ import java.util.List;
 @Entity
 public class Seller {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "seller_id") // 👈 ensures Hibernate uses correct column name for FK references
     private Long sellerId;
+
 
     private String name;
     private String email;
