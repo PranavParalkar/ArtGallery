@@ -17,7 +17,7 @@ public class Painting {
     private boolean isSold = false;
 
     @ManyToOne
-    @JoinColumn(name = "seller_id")
+    @JoinColumn(name = "seller_id", nullable = false)
     private Seller seller;
 
     public Painting() {
