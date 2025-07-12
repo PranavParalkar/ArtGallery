@@ -7,5 +7,4 @@ import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
 
 @Repository
 public interface LoginCredentialsRepo extends JpaRepository<LoginCredentials, String>{
-
 }

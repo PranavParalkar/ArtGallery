@@ -5,109 +5,104 @@ import java.util.List;
 
 @Entity
 public class Seller {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "seller_id") // 👈 ensures Hibernate uses correct column name for FK references
+    @Column(name = "seller_id") // ensures Hibernate uses correct column name for FK references
     private Long sellerId;
-
 
     private String name;
     private String email;
     private String phoneNumber;
 
-    @Column(unique = true)
-    private String sellerUsername;
+	private String sellerUsername;
+	private String sellerPassword;
+	
+	private double walletBalance = 0.0;
 
-    private String password;
+	@OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Painting> paintings;
 
-    private double walletBalance = 0.0;
+	public Seller() {
+	}
 
-    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Painting> paintings;
+	public Seller(String name, String email, String phoneNumber, String sellerUsername, String password) {
+		this.name = name;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.sellerUsername = sellerUsername;
+		this.sellerPassword = password;
+		this.walletBalance = 0.0;
+	}
 
-    public Seller() {
-    }
+	public Long getSellerId() {
+		return sellerId;
+	}
 
-    public Seller(String name, String email, String phoneNumber, String sellerUsername, String password) {
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.sellerUsername = sellerUsername;
-        this.password = password;
-        this.walletBalance = 0.0;
-    }
+	public void setSellerId(Long sellerId) {
+		this.sellerId = sellerId;
+	}
 
-    public Long getSellerId() {
-        return sellerId;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setSellerId(Long sellerId) {
-        this.sellerId = sellerId;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
+	public String getSellerUsername() {
+		return sellerUsername;
+	}
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+	public void setSellerUsername(String sellerUsername) {
+		this.sellerUsername = sellerUsername;
+	}
 
-    public String getSellerUsername() {
-        return sellerUsername;
-    }
+	public String getSellerPassword() {
+		return sellerPassword;
+	}
 
-    public void setSellerUsername(String sellerUsername) {
-        this.sellerUsername = sellerUsername;
-    }
+	public void setSellerPassword(String password) {
+		this.sellerPassword = password;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public double getWalletBalance() {
+		return walletBalance;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setWalletBalance(double walletBalance) {
+		this.walletBalance = walletBalance;
+	}
 
-    public double getWalletBalance() {
-        return walletBalance;
-    }
+	public List<Painting> getPaintings() {
+		return paintings;
+	}
 
-    public void setWalletBalance(double walletBalance) {
-        this.walletBalance = walletBalance;
-    }
-
-    public List<Painting> getPaintings() {
-        return paintings;
-    }
-
-    public void setPaintings(List<Painting> paintings) {
-        this.paintings = paintings;
-    }
+	public void setPaintings(List<Painting> paintings) {
+		this.paintings = paintings;
+	}
 
 	@Override
 	public String toString() {
 		return "Seller [sellerId=" + sellerId + ", name=" + name + ", email=" + email + ", phoneNumber=" + phoneNumber
-				+ ", sellerUsername=" + sellerUsername + ", password=" + password + ", walletBalance=" + walletBalance
-				+ ", paintings=" + paintings + "]";
+				+ ", sellerUsername=" + sellerUsername + ", sellerPassword=" + sellerPassword + ", walletBalance="
+				+ walletBalance + ", paintings=" + paintings + "]";
 	}
 
 }

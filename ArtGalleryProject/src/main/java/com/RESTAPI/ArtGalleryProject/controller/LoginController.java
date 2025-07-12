@@ -22,7 +22,7 @@ public class LoginController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Account already exists!");
 		}
 		
-		loginService.registerAccountLoginCredentials(logincred);
+		loginService.register(logincred);
 		return ResponseEntity.ok("Registration successful");
 	}
 	

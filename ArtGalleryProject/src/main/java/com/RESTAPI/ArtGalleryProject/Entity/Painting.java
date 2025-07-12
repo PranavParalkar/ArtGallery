@@ -1,7 +1,6 @@
 package com.RESTAPI.ArtGalleryProject.Entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 public class Painting {
@@ -9,12 +8,12 @@ public class Painting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paintingId;
+    
     private String name;
     private String description;
     private String trademarkNumber;
-    private LocalDateTime biddingEndTime;
     private double currentHighestBid;
-    private boolean isSold = false;
+    private boolean isSold;
 
     @ManyToOne
     @JoinColumn(name = "seller_id", nullable = false)
@@ -22,15 +21,16 @@ public class Painting {
 
     public Painting() {
 		super();
-		// TODO Auto-generated constructor stub
+        this.currentHighestBid = 0;
+        this.isSold = false;
 	}
 
-	public Painting(String name, String description, double startingBid, String trademarkNumber, LocalDateTime biddingEndTime, Seller seller) {
+	public Painting(String name, String description, String trademarkNumber,  Seller seller) {
         this.name = name;
         this.description = description;
         this.trademarkNumber = trademarkNumber;
         this.seller = seller;
-        this.currentHighestBid = startingBid;
+        this.currentHighestBid = 0;
         this.isSold = false;
     }
 
@@ -66,14 +66,6 @@ public class Painting {
 		this.trademarkNumber = trademarkNumber;
 	}
 
-	public LocalDateTime getBiddingEndTime() {
-		return biddingEndTime;
-	}
-
-	public void setBiddingEndTime(LocalDateTime biddingEndTime) {
-		this.biddingEndTime = biddingEndTime;
-	}
-
 	public double getCurrentHighestBid() {
 		return currentHighestBid;
 	}
@@ -101,7 +93,7 @@ public class Painting {
 	@Override
 	public String toString() {
 		return "Painting [paintingId=" + paintingId + ", name=" + name + ", description=" + description
-				+ ", trademarkNumber=" + trademarkNumber + ", biddingEndTime=" + biddingEndTime + ", currentHighestBid="
+				+ ", trademarkNumber=" + trademarkNumber + ", currentHighestBid="
 				+ currentHighestBid + ", isSold=" + isSold + ", seller=" + seller + "]";
 	}
 	
