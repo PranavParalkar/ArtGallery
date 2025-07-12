@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
@@ -12,6 +13,7 @@ import com.RESTAPI.ArtGalleryProject.repository.LoginCredRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
 
+@Service
 public class LoginService implements LoginRoles {
 
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
@@ -43,9 +45,22 @@ public class LoginService implements LoginRoles {
 	}
 
 	@Override
-	public String validateLogin(User user) {
-		
-		return null;
+	public String validateLogin(LoginCredentials logincred) {
+		if(loginrepo.existsById(logincred.getEmail())) {
+			String password = loginrepo.findById(logincred.getEmail()).orElse(null).getPassword();
+			if(encoder.matches(logincred.getPassword(), password)) {	
+				return "Login Successful";
+			} else {
+				return "Invalid Password";
+			}
+		} else {
+			return "Invalid Email";
+		}
+	}
+
+	@Override
+	public boolean existsById(String Email) {
+		return loginrepo.existsById(Email);
 	}
 
 }

@@ -15,6 +15,7 @@ import lombok.ToString;
 @ToString
 @Entity
 public class LoginCredentials {
+	
 	@Id
 	private String email;
 	private String password;
