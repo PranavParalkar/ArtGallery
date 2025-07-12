@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.RESTAPI.ArtGalleryProject.Entity.Buyer;
 
 @Repository
-public interface BuyerRepo extends JpaRepository<Buyer, String>{
-
+public interface BuyerRepo extends JpaRepository<Buyer, Long>{
 }
