@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 
 @Repository
-public interface PaintingRepo extends JpaRepository<Painting, Long>{
+public interface PaintingRepo extends JpaRepository<Painting, Long> {
+
 }
