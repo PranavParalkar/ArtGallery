@@ -21,16 +21,21 @@ public class LoginController {
 
 	// Registration Process
 	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@RequestBody LoginCredentials logincred) {
-
-		if (!logincred.getEmail().matches(emailPattern)) {
+	public ResponseEntity<?> registerUser(@RequestBody LoginCredentials logincred, @RequestParam String confirmPassword) {
+		String email = logincred.getEmail();
+		String password = logincred.getPassword();
+		if (!email.matches(emailPattern)) {
 			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
 		}
 
-		if (!logincred.getPassword().matches(passwordPattern)) {
+		if (!password.matches(passwordPattern)) {
 			return new ResponseEntity<>(
 					"Password should contain atleast 8 characters, 1 capital letter, 1 small letter, 1 digit, and 1 special character",
 					HttpStatus.BAD_REQUEST);
+		}
+		
+		if(!password.equals(confirmPassword)) {
+			return new ResponseEntity<>("Passwords don't match", HttpStatus.BAD_REQUEST);
 		}
 
 		String response = loginservice.register(logincred);
@@ -48,7 +53,7 @@ public class LoginController {
 
 	// Login Process
 	@PostMapping("/login")
-	public ResponseEntity<?> validateLogin(@RequestBody LoginCredentials logincred) {
+	public ResponseEntity<?> validateLogin(@RequestBody LoginCredentials logincred) {		
 		if (!logincred.getEmail().matches(emailPattern)) {
 			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
 		}
