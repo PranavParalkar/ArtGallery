@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
 
 @Repository
-public interface LoginCredentialsRepo extends JpaRepository<LoginCredentials, String>{
-
+public interface LoginCredRepo extends JpaRepository<LoginCredentials, String> {
 }

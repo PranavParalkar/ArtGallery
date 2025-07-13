@@ -1,108 +1,69 @@
 package com.RESTAPI.ArtGalleryProject.Entity;
 
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.util.List;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
 @Entity
 public class Painting {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long paintingId;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long paintingId;
-    private String name;
-    private String description;
-    private String trademarkNumber;
-    private LocalDateTime biddingEndTime;
-    private double currentHighestBid;
-    private boolean isSold = false;
+	@Embedded
+	private Dimensions dimensions;
 
-    @ManyToOne
-    @JoinColumn(name = "seller_id", nullable = false)
-    private Seller seller;
+	@Column(length = 2048, nullable = false)
+	private String imageUrl;
 
-    public Painting() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	private String title;
+	private String description;
+	private int startingPrice;
+	private int finalPrice;
+	private boolean isSold;
 
-	public Painting(String name, String description, double startingBid, String trademarkNumber, LocalDateTime biddingEndTime, Seller seller) {
-        this.name = name;
-        this.description = description;
-        this.trademarkNumber = trademarkNumber;
-        this.seller = seller;
-        this.currentHighestBid = startingBid;
-        this.isSold = false;
-    }
+	// --Relation tables
 
-	public Long getPaintingId() {
-		return paintingId;
-	}
+	// user sold painting
+	@ManyToOne
+	@JoinColumn(name = "seller_id", nullable = false)
+	private User seller;
 
-	public void setPaintingId(Long paintingId) {
-		this.paintingId = paintingId;
-	}
+	// user bought painting
+	@ManyToOne
+	@JoinColumn(name = "buyer_id")
+	private User buyer;
 
-	public String getName() {
-		return name;
-	}
+	// bid on painting
+	@OneToMany(mappedBy = "painting")
+	private List<Bid> bids;
+}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getTrademarkNumber() {
-		return trademarkNumber;
-	}
-
-	public void setTrademarkNumber(String trademarkNumber) {
-		this.trademarkNumber = trademarkNumber;
-	}
-
-	public LocalDateTime getBiddingEndTime() {
-		return biddingEndTime;
-	}
-
-	public void setBiddingEndTime(LocalDateTime biddingEndTime) {
-		this.biddingEndTime = biddingEndTime;
-	}
-
-	public double getCurrentHighestBid() {
-		return currentHighestBid;
-	}
-
-	public void setCurrentHighestBid(double currentHighestBid) {
-		this.currentHighestBid = currentHighestBid;
-	}
-
-	public boolean isSold() {
-		return isSold;
-	}
-
-	public void setSold(boolean isSold) {
-		this.isSold = isSold;
-	}
-
-	public Seller getSeller() {
-		return seller;
-	}
-
-	public void setSeller(Seller seller) {
-		this.seller = seller;
-	}
-
-	@Override
-	public String toString() {
-		return "Painting [paintingId=" + paintingId + ", name=" + name + ", description=" + description
-				+ ", trademarkNumber=" + trademarkNumber + ", biddingEndTime=" + biddingEndTime + ", currentHighestBid="
-				+ currentHighestBid + ", isSold=" + isSold + ", seller=" + seller + "]";
-	}
-	
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Embeddable
+class Dimensions {
+	private int length;
+	private int breadth;
 }

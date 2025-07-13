@@ -1,11 +1,11 @@
 package com.RESTAPI.ArtGalleryProject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import org.springframework.stereotype.Repository;
 
-import com.RESTAPI.ArtGalleryProject.Entity.Buyer;
+import com.RESTAPI.ArtGalleryProject.Entity.Bid;
 
 @Repository
-public interface BuyerRepo extends JpaRepository<Buyer, String>{
-
+public interface BidRepo extends JpaRepository<Bid, Long> {
 }
