@@ -19,6 +19,6 @@ public class LoginCredentials {
 	@Id
 	private String email;
 	private String password;
-	private int securityQuesId;
+	private String securityQuestion;
 	private String securityAnswer;
 }
