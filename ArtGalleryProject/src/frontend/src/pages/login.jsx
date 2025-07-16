@@ -52,12 +52,10 @@ const Login = () => {
         }
       : {
           email: formData.email,
-          username: formData.username,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
           securityQuestion: formData.securityQuestion,
           securityAnswer: formData.securityAnswer,
-          phoneNumber: formData.phoneNumber,
         };
 
     try {
@@ -108,17 +106,6 @@ const Login = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
-            <input
-              type="text"
-              name="username"
-              placeholder="Username"
-              required
-              onChange={handleChange}
-              value={formData.username}
-              className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
-            />
-          )}
 
           <input
             type="email"
@@ -167,15 +154,6 @@ const Login = () => {
                 required
                 onChange={handleChange}
                 value={formData.securityAnswer}
-                className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
-              />
-              <input
-                type="text"
-                name="phoneNumber"
-                placeholder="Phone Number"
-                required
-                onChange={handleChange}
-                value={formData.phoneNumber}
                 className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
               />
             </>

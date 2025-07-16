@@ -64,6 +64,9 @@ public class LoginService implements LoginRoles {
 		}
 	}
 
+	
+//	 <-----------FORGOT PASSWORD FUNCTIONS------------>
+	
 	@Override
 	public String getSecurityQuestion(String Email) {
 		Optional<LoginCredentials> logincred = loginrepo.findById(Email);

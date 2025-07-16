@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
+import com.RESTAPI.ArtGalleryProject.dto.SignupRequest;
 import com.RESTAPI.ArtGalleryProject.service.loginANDsignup.LoginRoles;
 
 @RestController
@@ -21,9 +22,10 @@ public class LoginController {
 
 	// Registration Process
 	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@RequestBody LoginCredentials logincred, @RequestParam String confirmPassword) {
-		String email = logincred.getEmail();
-		String password = logincred.getPassword();
+	public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupcred) {
+		String email = signupcred.getEmail();
+		String password = signupcred.getPassword();
+		String confirmPassword = signupcred.getConfirmPassword();
 		if (!email.matches(emailPattern)) {
 			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
 		}
@@ -35,9 +37,15 @@ public class LoginController {
 		}
 		
 		if(!password.equals(confirmPassword)) {
-			return new ResponseEntity<>("Passwords don't match", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Passwords do not match", HttpStatus.BAD_REQUEST);
 		}
-
+		
+		LoginCredentials logincred = new LoginCredentials();
+		logincred.setEmail(email);
+		logincred.setPassword(password);
+		logincred.setSecurityQuestion(signupcred.getSecurityQuestion());
+		logincred.setSecurityAnswer(signupcred.getSecurityAnswer());
+		
 		String response = loginservice.register(logincred);
 		switch (response) {
 		case "Account already exists":
