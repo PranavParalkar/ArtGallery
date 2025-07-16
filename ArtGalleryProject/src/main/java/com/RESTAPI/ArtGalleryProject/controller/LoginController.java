@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
-import com.RESTAPI.ArtGalleryProject.service.LoginRoles;
+import com.RESTAPI.ArtGalleryProject.service.loginANDsignup.LoginRoles;
 
 @RestController
 @RequestMapping("/auth/")

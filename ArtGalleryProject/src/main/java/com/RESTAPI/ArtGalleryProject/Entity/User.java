@@ -3,6 +3,8 @@ package com.RESTAPI.ArtGalleryProject.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,8 +33,11 @@ public class User {
 	@JoinColumn(name = "user_email", referencedColumnName = "email")
 	private LoginCredentials userEmail;
 
+	@Embedded
+	private Address address;
 	private String name;
 	private String phoneNumber;
+
 	private boolean authorizedSeller;
 	private LocalDate createdAt;
 
@@ -53,4 +58,18 @@ public class User {
 	// bidding of user (many to many)
 	@OneToMany(mappedBy = "buyer")
 	private List<Bid> bids;
+}
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Embeddable
+class Address {
+	private String building;
+	private String street;
+	private String city;
+	private String region;
+	private String country;
+	private int pinCode;
 }

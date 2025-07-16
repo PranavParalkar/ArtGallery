@@ -1,4 +1,4 @@
-package com.RESTAPI.ArtGalleryProject.service;
+package com.RESTAPI.ArtGalleryProject.service.loginANDsignup;
 
 import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
 
