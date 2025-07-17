@@ -1,4 +1,4 @@
-package com.RESTAPI.ArtGalleryProject.controller;
+package com.RESTAPI.ArtGalleryProject.controller.LoginANDsignup;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

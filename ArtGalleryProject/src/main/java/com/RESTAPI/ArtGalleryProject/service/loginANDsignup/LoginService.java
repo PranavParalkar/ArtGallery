@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.RESTAPI.ArtGalleryProject.Embeddable.Address;
 import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.Entity.Wallet;
+import com.RESTAPI.ArtGalleryProject.dto.UserDetailRequest;
 import com.RESTAPI.ArtGalleryProject.repository.LoginCredRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
@@ -31,16 +33,16 @@ public class LoginService implements LoginRoles {
 		if (loginrepo.existsById(logincred.getEmail())) {
 			return "Account already exists";
 		}
-
-		logincred.setPassword(encoder.encode(logincred.getPassword()));
-		logincred.setSecurityAnswer(encoder.encode(logincred.getSecurityAnswer()));
-		loginrepo.save(logincred);
-
+		
 		User user = new User();
 		user.setAuthorizedSeller(false);
 		user.setCreatedAt(LocalDate.now());
-		user.setUserEmail(logincred);
 		userrepo.save(user);
+
+		logincred.setPassword(encoder.encode(logincred.getPassword()));
+		logincred.setSecurityAnswer(encoder.encode(logincred.getSecurityAnswer()));
+		logincred.setUser(user);
+		loginrepo.save(logincred);
 
 		Wallet wallet = new Wallet();
 		wallet.setBalance(0);
@@ -48,6 +50,23 @@ public class LoginService implements LoginRoles {
 		walletrepo.save(wallet);
 
 		return "Registration Successful";
+	}
+	
+	@Override
+	public String acceptDetails(UserDetailRequest request) {
+		Optional<LoginCredentials> optionalCred = loginrepo.findById(request.getEmail());
+	    if (optionalCred.isEmpty()) {
+	        return "User not Found";
+	    }
+
+	    LoginCredentials logincred = optionalCred.get();
+		User user = logincred.getUser();
+		user.setAddress(request.getAddress());
+		user.setName(request.getName());
+		user.setPhoneNumber(request.getPhoneNumber());
+		userrepo.save(user);
+		
+		return "User info saved";
 	}
 
 	@Override
