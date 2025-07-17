@@ -3,6 +3,9 @@ package com.RESTAPI.ArtGalleryProject.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.RESTAPI.ArtGalleryProject.Embeddable.Address;
+
+import ch.qos.logback.classic.spi.STEUtil;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -28,10 +31,6 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long userId;
-
-	@OneToOne
-	@JoinColumn(name = "user_email", referencedColumnName = "email")
-	private LoginCredentials userEmail;
 
 	@Embedded
 	private Address address;
@@ -60,16 +59,3 @@ public class User {
 	private List<Bid> bids;
 }
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@Embeddable
-class Address {
-	private String building;
-	private String street;
-	private String city;
-	private String region;
-	private String country;
-	private int pinCode;
-}
