@@ -1,4 +1,4 @@
-package com.RESTAPI.ArtGalleryProject.controller;
+package com.RESTAPI.ArtGalleryProject.controller.LoginANDsignup;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.RESTAPI.ArtGalleryProject.service.LoginRoles;
+import com.RESTAPI.ArtGalleryProject.service.loginANDsignup.LoginRoles;
 
 @RestController
 @RequestMapping("/forgot-password")

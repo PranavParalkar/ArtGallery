@@ -66,4 +66,10 @@ public class Painting {
 class Dimensions {
 	private int length;
 	private int breadth;
+	
+	@Override
+	public String toString() {
+		return length + " x " + breadth;
+	}
+	
 }

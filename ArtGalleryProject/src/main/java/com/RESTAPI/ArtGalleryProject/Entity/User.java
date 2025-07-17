@@ -3,6 +3,11 @@ package com.RESTAPI.ArtGalleryProject.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.RESTAPI.ArtGalleryProject.Embeddable.Address;
+
+import ch.qos.logback.classic.spi.STEUtil;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,12 +32,11 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long userId;
 
-	@OneToOne
-	@JoinColumn(name = "user_email", referencedColumnName = "email")
-	private LoginCredentials userEmail;
-
+	@Embedded
+	private Address address;
 	private String name;
 	private String phoneNumber;
+
 	private boolean authorizedSeller;
 	private LocalDate createdAt;
 
@@ -54,3 +58,4 @@ public class User {
 	@OneToMany(mappedBy = "buyer")
 	private List<Bid> bids;
 }
+
