@@ -16,7 +16,7 @@ import com.RESTAPI.ArtGalleryProject.service.loginANDsignup.LoginRoles;
 public class ForgotPasswordController {
 	
 	@Autowired
-	private LoginRoles loginservice;
+	private LoginRoles service;
 	
 	private String emailPattern = "^[a-zA-Z0-9.-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9.-]+$";
 	private String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$";
@@ -27,7 +27,7 @@ public class ForgotPasswordController {
 			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
 		}
 		
-		String response = loginservice.getSecurityQuestion(email);
+		String response = service.getSecurityQuestion(email);
 		switch (response) {
 		case "Invalid Email":
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -39,7 +39,7 @@ public class ForgotPasswordController {
 	
 	@GetMapping(params = "step=verify-answer")
 	public ResponseEntity<?> checkSecurityAnswer(@RequestParam String email, @RequestParam String answer) {
-		String response = loginservice.checkSecurityAnswer(email, answer);
+		String response = service.checkSecurityAnswer(email, answer);
 		switch (response) {
 		case "Email not found":
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -65,7 +65,7 @@ public class ForgotPasswordController {
 					"Password should contain atleast 8 characters, 1 capital letter, 1 small letter, 1 digit, and 1 special character",
 					HttpStatus.BAD_REQUEST);
 		}
-		String response = loginservice.passwordReset(email, newPassword, confirmPassword);
+		String response = service.passwordReset(email, newPassword, confirmPassword);
 		switch (response) {
 		case "Email not found":
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);

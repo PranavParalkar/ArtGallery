@@ -16,7 +16,7 @@ import com.RESTAPI.ArtGalleryProject.service.loginANDsignup.LoginRoles;
 public class LoginController {
 
 	@Autowired
-	private LoginRoles loginservice;
+	private LoginRoles service;
 
 	private String emailPattern = "^[a-zA-Z0-9.-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9.-]+$";
 	private String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$";
@@ -50,7 +50,7 @@ public class LoginController {
 		logincred.setSecurityQuestion(signupcred.getSecurityQuestion());
 		logincred.setSecurityAnswer(signupcred.getSecurityAnswer());
 		
-		String response = loginservice.register(logincred);
+		String response = service.register(logincred);
 		switch (response) {
 		case "Account already exists":
 			return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -74,7 +74,7 @@ public class LoginController {
 			return new ResponseEntity<>("Invalid pincode", HttpStatus.BAD_REQUEST);
 		} 
 		
-		String response = loginservice.acceptDetails(request);
+		String response = service.acceptDetails(request);
 		switch (response) {
 		case "User not Found":
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -94,7 +94,7 @@ public class LoginController {
 			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
 		}
 
-		String response = loginservice.validateLogin(logincred);
+		String response = service.validateLogin(logincred);
 
 		switch (response) {
 		case "Invalid Email":
