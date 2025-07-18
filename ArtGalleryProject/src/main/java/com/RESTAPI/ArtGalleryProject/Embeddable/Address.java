@@ -13,6 +13,7 @@ import lombok.Setter;
 @Embeddable
 public class Address {
 	private String building;
+	private String landmark;
 	private String street;
 	private String city;
 	private String region;
