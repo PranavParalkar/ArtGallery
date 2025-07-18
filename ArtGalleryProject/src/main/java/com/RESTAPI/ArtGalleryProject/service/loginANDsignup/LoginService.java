@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.LoginRequest;
+import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.SignupRequest;
+import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.UserDetailRequest;
 import com.RESTAPI.ArtGalleryProject.Embeddable.Address;
 import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.Entity.Wallet;
-import com.RESTAPI.ArtGalleryProject.dto.UserDetailRequest;
 import com.RESTAPI.ArtGalleryProject.repository.LoginCredRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
@@ -29,51 +31,54 @@ public class LoginService implements LoginRoles {
 	private WalletRepo walletrepo;
 
 	@Override
-	public String register(LoginCredentials logincred) {
-		if (loginrepo.existsById(logincred.getEmail())) {
+	public String register(SignupRequest request) {
+		if (loginrepo.existsById(request.email())) {
 			return "Account already exists";
 		}
-		
+
 		User user = new User();
 		user.setAuthorizedSeller(false);
 		user.setCreatedAt(LocalDate.now());
 		userrepo.save(user);
 
-		logincred.setPassword(encoder.encode(logincred.getPassword()));
-		logincred.setSecurityAnswer(encoder.encode(logincred.getSecurityAnswer()));
+		LoginCredentials logincred = new LoginCredentials();
+		logincred.setPassword(encoder.encode(request.password()));
+		logincred.setSecurityAnswer(encoder.encode(request.securityAnswer()));
 		logincred.setUser(user);
+		logincred.setEmail(request.email());
+		logincred.setSecurityQuestion(request.securityQuestion());
 		loginrepo.save(logincred);
 
 		Wallet wallet = new Wallet();
-		wallet.setBalance(0);
+		wallet.setBalance(0.0);
 		wallet.setUser(user);
 		walletrepo.save(wallet);
 
 		return "Registration Successful";
 	}
-	
+
 	@Override
 	public String acceptDetails(UserDetailRequest request) {
-		Optional<LoginCredentials> optionalCred = loginrepo.findById(request.getEmail());
-	    if (optionalCred.isEmpty()) {
-	        return "User not Found";
-	    }
+		Optional<LoginCredentials> optionalCred = loginrepo.findById(request.email());
+		if (optionalCred.isEmpty()) {
+			return "User not Found";
+		}
 
-	    LoginCredentials logincred = optionalCred.get();
+		LoginCredentials logincred = optionalCred.get();
 		User user = logincred.getUser();
-		user.setAddress(request.getAddress());
-		user.setName(request.getName());
-		user.setPhoneNumber(request.getPhoneNumber());
+		user.setAddress(request.address());
+		user.setName(request.name());
+		user.setPhoneNumber(request.phoneNumber());
 		userrepo.save(user);
-		
+
 		return "User info saved";
 	}
 
 	@Override
-	public String validateLogin(LoginCredentials logincred) {
-		if (loginrepo.existsById(logincred.getEmail())) {
-			String password = loginrepo.findById(logincred.getEmail()).orElse(null).getPassword();
-			if (encoder.matches(logincred.getPassword(), password)) {
+	public String validateLogin(LoginRequest request) {
+		if (loginrepo.existsById(request.email())) {
+			String password = loginrepo.findById(request.email()).orElse(null).getPassword();
+			if (encoder.matches(request.password(), password)) {
 				return "Login Successful";
 			} else {
 				return "Invalid Password";
@@ -83,9 +88,8 @@ public class LoginService implements LoginRoles {
 		}
 	}
 
-	
 //	 <-----------FORGOT PASSWORD FUNCTIONS------------>
-	
+
 	@Override
 	public String getSecurityQuestion(String Email) {
 		Optional<LoginCredentials> logincred = loginrepo.findById(Email);

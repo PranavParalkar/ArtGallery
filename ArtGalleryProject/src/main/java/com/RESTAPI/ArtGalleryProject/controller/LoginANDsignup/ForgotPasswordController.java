@@ -33,7 +33,7 @@ public class ForgotPasswordController {
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 			
 		default:
-			return new ResponseEntity<>(response, HttpStatus.OK);
+			return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 		}
 	}
 	
@@ -46,7 +46,7 @@ public class ForgotPasswordController {
 		case "Incorrect Answer":
 			return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 		case "Verification Success":
-			return new ResponseEntity<>(response, HttpStatus.OK);
+			return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 		default:
 			return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
