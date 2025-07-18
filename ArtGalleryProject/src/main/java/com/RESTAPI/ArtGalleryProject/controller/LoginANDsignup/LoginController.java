@@ -4,11 +4,13 @@ package com.RESTAPI.ArtGalleryProject.controller.LoginANDsignup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
-import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
-import com.RESTAPI.ArtGalleryProject.dto.SignupRequest;
-import com.RESTAPI.ArtGalleryProject.dto.UserDetailRequest;
+
+import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.LoginRequest;
+import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.SignupRequest;
+import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.UserDetailRequest;
 import com.RESTAPI.ArtGalleryProject.service.loginANDsignup.LoginRoles;
 
 @RestController
@@ -26,10 +28,10 @@ public class LoginController {
 
 	// Registration Process
 	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupcred) {
-		String email = signupcred.getEmail();
-		String password = signupcred.getPassword();
-		String confirmPassword = signupcred.getConfirmPassword();
+	public ResponseEntity<?> registerUser(@Validated @RequestBody SignupRequest request) {
+		String email = request.email();
+		String password = request.password();
+		String confirmPassword = request.confirmPassword();
 		if (!email.matches(emailPattern)) {
 			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
 		}
@@ -44,19 +46,13 @@ public class LoginController {
 			return new ResponseEntity<>("Passwords do not match", HttpStatus.BAD_REQUEST);
 		}
 		
-		LoginCredentials logincred = new LoginCredentials();
-		logincred.setEmail(email);
-		logincred.setPassword(password);
-		logincred.setSecurityQuestion(signupcred.getSecurityQuestion());
-		logincred.setSecurityAnswer(signupcred.getSecurityAnswer());
-		
-		String response = service.register(logincred);
+		String response = service.register(request);
 		switch (response) {
 		case "Account already exists":
 			return new ResponseEntity<>(response, HttpStatus.CONFLICT);
 			
 		case "Registration Successful":
-			return new ResponseEntity<>(response, HttpStatus.OK);
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
 			
 		default:
 			return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -65,12 +61,12 @@ public class LoginController {
 
 	// Saving User Info Process
 	@PostMapping("/user-info")
-	public ResponseEntity<?> saveUserLogin(@RequestBody UserDetailRequest request) {
-		if (!request.getPhoneNumber().matches(phonePattern)) {
+	public ResponseEntity<?> saveUserLogin(@Validated @RequestBody UserDetailRequest request) {
+		if (!request.phoneNumber().matches(phonePattern)) {
 			return new ResponseEntity<>("Invalid phone number", HttpStatus.BAD_REQUEST);
 		}
 		
-		if (!request.getAddress().getPincode().matches(pinCodePattern)) {
+		if (!request.address().getPincode().matches(pinCodePattern)) {
 			return new ResponseEntity<>("Invalid pincode", HttpStatus.BAD_REQUEST);
 		} 
 		
@@ -89,12 +85,12 @@ public class LoginController {
 	
 	// Login Process
 	@PostMapping("/login")
-	public ResponseEntity<?> validateLogin(@RequestBody LoginCredentials logincred) {		
-		if (!logincred.getEmail().matches(emailPattern)) {
+	public ResponseEntity<?> validateLogin(@Validated @RequestBody LoginRequest request) {		
+		if (!request.email().matches(emailPattern)) {
 			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
 		}
 
-		String response = service.validateLogin(logincred);
+		String response = service.validateLogin(request);
 
 		switch (response) {
 		case "Invalid Email":
@@ -104,7 +100,7 @@ public class LoginController {
 			return new ResponseEntity<>(response, HttpStatus.CONFLICT);
 
 		case "Login Successful":
-			return new ResponseEntity<>(response, HttpStatus.OK);
+			return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 
 		default:
 			return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
