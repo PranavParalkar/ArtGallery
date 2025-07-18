@@ -3,6 +3,8 @@ package com.RESTAPI.ArtGalleryProject;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.RESTAPI.ArtGalleryProject.Entity.Painting;
+
 @SpringBootApplication
 public class ArtGalleryProjectApplication {
 

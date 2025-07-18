@@ -2,8 +2,9 @@ package com.RESTAPI.ArtGalleryProject.Entity;
 
 import java.util.List;
 
+import com.RESTAPI.ArtGalleryProject.Embeddable.Dimensions;
+
 import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -58,18 +59,3 @@ public class Painting {
 	private List<Bid> bids;
 }
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Embeddable
-class Dimensions {
-	private int length;
-	private int breadth;
-	
-	@Override
-	public String toString() {
-		return length + " x " + breadth;
-	}
-	
-}
