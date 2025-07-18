@@ -3,7 +3,7 @@ package com.RESTAPI.ArtGalleryProject.controller.DashBoard;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
-import com.RESTAPI.ArtGalleryProject.service.DashBoard.DashboardRoles;
+import com.RESTAPI.ArtGalleryProject.service.DashBoard.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class DashboardController {
 
 	@Autowired
-	private DashboardRoles service;
+	private DashboardService service;
 
 	@GetMapping("/dash")
 	public ResponseEntity<?> getPainting(@RequestParam(defaultValue = "0") int pageNo) {

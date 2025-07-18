@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.RESTAPI.ArtGalleryProject.service.loginANDsignup.LoginRoles;
+import com.RESTAPI.ArtGalleryProject.service.loginANDsignup.LoginService;
 
 @RestController
 @RequestMapping("/forgot-password")
 public class ForgotPasswordController {
 	
 	@Autowired
-	private LoginRoles service;
+	private LoginService service;
 	
 	private String emailPattern = "^[a-zA-Z0-9.-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9.-]+$";
 	private String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$";

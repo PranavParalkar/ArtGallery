@@ -21,6 +21,6 @@ public class Address {
 	private String pincode;
 	@Override
 	public String toString() {
-		return building + ", " + street + ", " + city + ", " + region + ", " + country + ". Pincode - " + pincode;
+		return building + ", "+ landmark + ", " + street + ", " + city + ", " + region + ", " + country + ". Pincode - " + pincode;
 	}
 }
