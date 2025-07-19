@@ -21,10 +21,6 @@ public class Address {
 	private String pincode;
 	@Override
 	public String toString() {
-<<<<<<< Updated upstream
-		return building + ", "+ landmark + ", " + street + ", " + city + ", " + region + ", " + country + ". Pincode - " + pincode;
-=======
 		return building + ", " + landmark + ", " + street + ", " + city + ", " + region + ", " + country + ". Pincode - " + pincode;
->>>>>>> Stashed changes
 	}
 }
