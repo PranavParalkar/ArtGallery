@@ -125,7 +125,7 @@ const MainTab = () => {
   }, []);
 
   const SlideCard = ({ data }) => (
-    <div className="flex w-full h-[890px]">
+    <div className="flex w-full font-serif h-[890px]">
       {/* Left Content */}
       <div className="w-1/2 pt-10 px-10 flex flex-col justify-center bg-[#f8f5f0]">
         <div className="text-xs uppercase text-gray-600 mb-2">
@@ -169,27 +169,33 @@ const MainTab = () => {
 
   return (
     <>
-      <div className="relative h-[890px] w-full overflow-hidden bg-[#f8f5f0]">
-        <div className="absolute inset-0">
-          <AnimatePresence initial={false} mode="wait">
-            {carouselData.map((item, i) =>
-              i === index ? (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: 100 }} // ↓ start from bottom
-                  animate={{ opacity: 1, x: 0 }} // → animate to center
-                  exit={{ opacity: 0, x: 100 }} // ↑ exit to top
-                  transition={{ duration: 0.7, ease: "easeInOut" }}
-                  className="absolute top-0 left-0 w-full h-full z-20"
-                >
-                  <SlideCard data={item} />
-                </motion.div>
-              ) : null
-            )}
-          </AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="relative h-[890px] w-full overflow-hidden font-serif bg-[#f8f5f0]">
+          <div className="absolute inset-0">
+            <AnimatePresence initial={false} mode="wait">
+              {carouselData.map((item, i) =>
+                i === index ? (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: 100 }} // ↓ start from bottom
+                    animate={{ opacity: 1, x: 0 }} // → animate to center
+                    exit={{ opacity: 0, x: 100 }} // ↑ exit to top
+                    transition={{ duration: 0.7, ease: "easeInOut" }}
+                    className="absolute top-0 left-0 w-full h-full z-20"
+                  >
+                    <SlideCard data={item} />
+                  </motion.div>
+                ) : null
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-      </div>
-      <div className="py-16 px-10 bg-[#f8f5f0]">
+      </motion.div>
+      <div className="py-16 px-10 font-serif bg-[#f8f5f0]">
         <div className="flex items-center justify-between mb-10">
           <h2 className="text-4xl font-serif">Upcoming auctions</h2>
           <div className="space-x-4">
@@ -226,7 +232,7 @@ const MainTab = () => {
                 alt={auction.title}
                 className="w-32 h-32 object-cover rounded-l-2xl"
               />
-              <div>
+              <div className="mt-4">
                 <p className="text-xs text-gray-500 uppercase">
                   {auction.date} | {auction.type}
                 </p>
@@ -241,7 +247,7 @@ const MainTab = () => {
           ))}
         </div>
       </div>
-      <div className="px-10 py-16 bg-[#f8f5f0]">
+      <div className="px-10 py-16 font-serif bg-[#f8f5f0]">
         <h2 className="text-4xl font-serif mb-10">Auction News & Highlights</h2>
         <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-8">
           {newsItems.map((item, i) => (
@@ -268,7 +274,6 @@ const MainTab = () => {
           ))}
         </div>
       </div>
-
     </>
   );
 };

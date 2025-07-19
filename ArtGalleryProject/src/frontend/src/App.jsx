@@ -6,13 +6,19 @@ import "./App.css";
 import MainTab from "./pages/dashboard";
 import Login from "./pages/login";
 import Onboarding from "./pages/onboarding";
+import Auction from "./pages/auction";
+import Sell from "./pages/sell";
+import Departments from "./pages/departments";
+import Discover from "./pages/discover";
+import Shop from "./pages/shop";
+import PaintingManager from "./pages/PaintingManager";
 
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
     children: [
       {
-        path: "/dash",
+        path: "/",
         element: <MainTab />,
       },
       {
@@ -22,6 +28,30 @@ const router = createBrowserRouter([
       {
         path: "/onboarding",
         element: <Onboarding />,
+      },
+      {
+        path: "/auctions",
+        element: <Auction />,
+      },
+      {
+        path: "/sell",
+        element: <Sell />,
+      },
+      {
+        path: "/departments",
+        element: <Departments />,
+      },
+      {
+        path: "/discover",
+        element: <Discover />,
+      },
+      {
+        path: "/shop",
+        element: <Shop />,
+      },
+      {
+        path: "/paintings",
+        element: <PaintingManager />,
       },
     ],
   },
