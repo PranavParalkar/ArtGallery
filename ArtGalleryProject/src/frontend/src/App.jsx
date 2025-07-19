@@ -11,7 +11,6 @@ import Sell from "./pages/sell";
 import Departments from "./pages/departments";
 import Discover from "./pages/discover";
 import Shop from "./pages/shop";
-import PaintingManager from "./pages/PaintingManager";
 
 const router = createBrowserRouter([
   {
@@ -48,10 +47,6 @@ const router = createBrowserRouter([
       {
         path: "/shop",
         element: <Shop />,
-      },
-      {
-        path: "/paintings",
-        element: <PaintingManager />,
       },
     ],
   },

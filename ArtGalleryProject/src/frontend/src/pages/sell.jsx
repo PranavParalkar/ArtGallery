@@ -5,11 +5,13 @@ import axios from "axios";
 const Sell = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    certificate: null,
-    painting: null,
-    address: "",
+    file: null,
+    title: "",
+    description: "",
+    length: "",
+    breadth: "",
+    startingPrice: "",
+    userId: "",
   });
 
   const handleChange = (e) => {
@@ -20,10 +22,26 @@ const Sell = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setStep(3); // Proceed to final step
-    // Here you can also add API call to submit the form
+    const data = new FormData();
+    data.append("file", formData.file);
+    data.append("title", formData.title);
+    data.append("description", formData.description);
+    data.append("length", formData.length);
+    data.append("breadth", formData.breadth);
+    data.append("startingPrice", formData.startingPrice);
+    data.append("userId", formData.userId);
+
+    try {
+      await axios.post("http://localhost:8085/upload-painting", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("Painting uploaded successfully");
+      setStep(3);
+    } catch (err) {
+      alert("Failed to upload painting");
+    }
   };
 
   return (
@@ -39,8 +57,7 @@ const Sell = () => {
         </h1>
 
         {step === 1 && (
-         
-                <div>
+          <div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-[#5a3c28]">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -118,65 +135,91 @@ const Sell = () => {
         {step === 2 && (
           <form onSubmit={handleSubmit} className="space-y-6 text-[#5a3c28]">
             <div>
-              <label className="block font-medium mb-1">Full Name:</label>
-              <input
-                type="text"
-                name="name"
-                required
-                onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">Email:</label>
-              <input
-                type="email"
-                name="email"
-                required
-                onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">
-                Certificate (Optional):
-              </label>
+              <label className="block font-medium mb-1">Painting Image: &lt; 5Mb </label>
               <input
                 type="file"
-                name="certificate"
-                accept=".pdf,.jpg,.png"
-                onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">
-                Upload Your Best Painting:
-              </label>
-              <input
-                type="file"
-                name="painting"
+                name="file"
                 required
                 accept="image/*"
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded-md"
               />
             </div>
-
             <div>
-              <label className="block font-medium mb-1">Address:</label>
-              <textarea
-                name="address"
+              <label className="block font-medium mb-1">Title:</label>
+              <input
+                type="text"
+                name="title"
                 required
                 onChange={handleChange}
+                value={formData.title}
+                className="w-full border border-gray-300 p-2 rounded-md"
+              />
+            </div>
+            <div>
+              <label className="block font-medium mb-1">Description:</label>
+              <textarea
+                name="description"
+                required
+                onChange={handleChange}
+                value={formData.description}
                 rows="3"
                 className="w-full border border-gray-300 p-2 rounded-md"
               />
             </div>
-
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block font-medium mb-1">Length (cm):</label>
+                <input
+                  type="number"
+                  name="length"
+                  required
+                  min="0"
+                  step="any"
+                  onChange={handleChange}
+                  value={formData.length}
+                  className="w-full border border-gray-300 p-2 rounded-md"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block font-medium mb-1">Breadth (cm):</label>
+                <input
+                  type="number"
+                  name="breadth"
+                  required
+                  min="0"
+                  step="any"
+                  onChange={handleChange}
+                  value={formData.breadth}
+                  className="w-full border border-gray-300 p-2 rounded-md"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block font-medium mb-1">Starting Price (₹):</label>
+              <input
+                type="number"
+                name="startingPrice"
+                required
+                min="0"
+                step="any"
+                onChange={handleChange}
+                value={formData.startingPrice}
+                className="w-full border border-gray-300 p-2 rounded-md"
+              />
+            </div>
+            <div>
+              <label className="block font-medium mb-1">User ID:</label>
+              <input
+                type="number"
+                name="userId"
+                required
+                min="0"
+                onChange={handleChange}
+                value={formData.userId}
+                className="w-full border border-gray-300 p-2 rounded-md"
+              />
+            </div>
             <button
               type="submit"
               className="bg-[#5a3c28] text-white px-6 py-2 rounded-lg hover:bg-[#3d281a]"

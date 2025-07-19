@@ -43,7 +43,7 @@ public class UploadServiceImpl implements UploadService {
 		name = randomUID.concat(name.substring(name.lastIndexOf(".")));
 
 		// file path
-		String filepath = path + File.separator + name;
+		String filepath = path + "/" + name;
 
 		// make a folder if doesn't exist
 		File f = new File(path);
@@ -61,7 +61,8 @@ public class UploadServiceImpl implements UploadService {
 		painting.setBreadth(request.getBreadth());
 		painting.setStartingPrice(request.getStartingPrice());
 		painting.setSeller(userrepo.findById(request.getUserId()).orElse(null));
-		painting.setImageUrl(filepath);
+		// Store the URL path instead of file path
+		painting.setImageUrl("/image/" + name);
 		paintingrepo.save(painting);
 		logger.info("uploadPainting finished.");
 		return "painting saved successfully";

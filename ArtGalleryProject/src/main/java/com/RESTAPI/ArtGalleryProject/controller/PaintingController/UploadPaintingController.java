@@ -1,7 +1,6 @@
 package com.RESTAPI.ArtGalleryProject.controller.PaintingController;
 
 import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,6 @@ public class UploadPaintingController {
 
 	@Value("${image.path}")
 	private String path;
-
 	@PostMapping(value = "/upload-painting", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> upload(@ModelAttribute UploadPaintingRequest request) {
 		logger.info("upload started.");

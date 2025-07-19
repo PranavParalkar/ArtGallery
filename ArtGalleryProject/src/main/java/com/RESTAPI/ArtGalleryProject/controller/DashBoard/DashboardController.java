@@ -21,7 +21,7 @@ public class DashboardController {
 	@Autowired
 	private DashboardService service;
 
-	@GetMapping("/dash")
+	@GetMapping("/auctions")
 	public ResponseEntity<?> getPainting(@RequestParam(defaultValue = "0") int pageNo) {
 		logger.info("getPainting started.");
 		final int pageSize = 12;
@@ -33,7 +33,7 @@ public class DashboardController {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
-	@GetMapping("/dash/{id}")
+	@GetMapping("/auctions/{id}")
 	public ResponseEntity<?> getPaintingById(@PathVariable(name = "id") int paintingId) {
 		logger.info("getPaintingById started.");
 		PaintingResponse painting = service.getPaintingById(paintingId);

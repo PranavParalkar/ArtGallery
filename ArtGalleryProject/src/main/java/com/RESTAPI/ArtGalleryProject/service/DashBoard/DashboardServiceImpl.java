@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
-import com.RESTAPI.ArtGalleryProject.config.CorsConfig;
 import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
 
 @Service

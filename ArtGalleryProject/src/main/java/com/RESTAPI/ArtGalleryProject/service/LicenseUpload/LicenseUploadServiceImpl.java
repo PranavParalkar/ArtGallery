@@ -2,7 +2,6 @@ package com.RESTAPI.ArtGalleryProject.service.LicenseUpload;
 
 import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.Enum.LicenseStatus;
-import com.RESTAPI.ArtGalleryProject.config.CorsConfig;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 
 import org.slf4j.Logger;
