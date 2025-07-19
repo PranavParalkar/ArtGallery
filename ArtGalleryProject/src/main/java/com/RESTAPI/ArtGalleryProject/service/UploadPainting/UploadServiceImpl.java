@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.UploadPaintingRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
-import com.RESTAPI.ArtGalleryProject.config.CorsConfig;
 import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 
