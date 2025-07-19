@@ -43,10 +43,13 @@ public class LoginServiceImpl implements LoginService {
 			return "Account already exists";
 		}
 
+		var wallet = new Wallet();
+		wallet.setBalance(0.0);
+
 		var user = new User();
 		user.setAuthorizedSeller(false);
 		user.setCreatedAt(LocalDate.now());
-		userrepo.save(user);
+		user.setWallet(wallet);
 
 		var logincred = new LoginCredentials();
 		logincred.setPassword(encoder.encode(request.password()));
@@ -54,12 +57,10 @@ public class LoginServiceImpl implements LoginService {
 		logincred.setUser(user);
 		logincred.setEmail(request.email());
 		logincred.setSecurityQuestion(request.securityQuestion());
-		loginrepo.save(logincred);
 
-		var wallet = new Wallet();
-		wallet.setBalance(0.0);
-		wallet.setUser(user);
 		walletrepo.save(wallet);
+		userrepo.save(user);
+		loginrepo.save(logincred);
 		logger.info("register finished.");
 		return "Registration Successful";
 	}

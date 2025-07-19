@@ -6,8 +6,7 @@ import java.util.List;
 import com.RESTAPI.ArtGalleryProject.Embeddable.Address;
 import com.RESTAPI.ArtGalleryProject.Enum.LicenseStatus;
 
-import ch.qos.logback.classic.spi.STEUtil;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -52,7 +51,8 @@ public class User {
 	// relational
 
 	// Wallet
-	@OneToOne(mappedBy = "user")
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "wallet_id")
 	private Wallet wallet;
 
 	// paintings uploaded as seller
@@ -66,16 +66,5 @@ public class User {
 	// bidding of user (many to many)
 	@OneToMany(mappedBy = "buyer")
 	private List<Bid> bids;
-	
-	// Setter for licenseStatus
-	public void setLicenseStatus(LicenseStatus licenseStatus) {
-	    this.licenseStatus = licenseStatus;
-	}
-
-	// Setter for authorizedSeller
-	public void setAuthorizedSeller(boolean authorizedSeller) {
-	    this.authorizedSeller = authorizedSeller;
-	}
-
 }
 

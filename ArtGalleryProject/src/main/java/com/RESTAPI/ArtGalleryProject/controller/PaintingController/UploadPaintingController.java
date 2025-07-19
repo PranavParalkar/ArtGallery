@@ -1,4 +1,4 @@
-package com.RESTAPI.ArtGalleryProject.controller.UploadPaintingController;
+package com.RESTAPI.ArtGalleryProject.controller.PaintingController;
 
 import java.io.IOException;
 
