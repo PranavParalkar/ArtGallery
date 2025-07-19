@@ -4,11 +4,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.RESTAPI.ArtGalleryProject.Embeddable.Address;
+import com.RESTAPI.ArtGalleryProject.Enum.LicenseStatus;
 
 import ch.qos.logback.classic.spi.STEUtil;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,6 +43,12 @@ public class User {
 	private boolean authorizedSeller;
 	private LocalDate createdAt;
 
+	  // ✅ New fields for license authentication
+    private String licenseFilePath;
+
+    @Enumerated(EnumType.STRING)
+    private LicenseStatus licenseStatus = LicenseStatus.PENDING;
+
 	// relational
 
 	// Wallet
@@ -57,5 +66,16 @@ public class User {
 	// bidding of user (many to many)
 	@OneToMany(mappedBy = "buyer")
 	private List<Bid> bids;
+	
+	// Setter for licenseStatus
+	public void setLicenseStatus(LicenseStatus licenseStatus) {
+	    this.licenseStatus = licenseStatus;
+	}
+
+	// Setter for authorizedSeller
+	public void setAuthorizedSeller(boolean authorizedSeller) {
+	    this.authorizedSeller = authorizedSeller;
+	}
+
 }
 
