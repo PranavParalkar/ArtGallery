@@ -2,13 +2,21 @@ package com.RESTAPI.ArtGalleryProject.DTO.UploadPainting;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.RESTAPI.ArtGalleryProject.Embeddable.Dimensions;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record UploadPaintingRequest(
-	MultipartFile file,
-	Dimensions dimensions,
-	String title,
-	String description,
-	int startingPrice,
-	long userId
-) {}
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UploadPaintingRequest {
+	private MultipartFile file;
+	private String title;
+	private String description;
+	private double length;
+	private double breadth;
+	private double startingPrice;
+	private long userId;
+}

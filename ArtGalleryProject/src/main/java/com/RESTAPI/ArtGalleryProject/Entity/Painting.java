@@ -2,10 +2,7 @@ package com.RESTAPI.ArtGalleryProject.Entity;
 
 import java.util.List;
 
-import com.RESTAPI.ArtGalleryProject.Embeddable.Dimensions;
-
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,16 +27,15 @@ public class Painting {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long paintingId;
 
-	@Embedded
-	private Dimensions dimensions;
-
 	@Column(length = 2048, nullable = false)
 	private String imageUrl;
 
 	private String title;
 	private String description;
-	private int startingPrice;
-	private int finalPrice;
+	private double length;
+	private double breadth;
+	private double startingPrice;
+	private double finalPrice;
 	private boolean isSold;
 
 	// --Relation tables
@@ -58,4 +54,3 @@ public class Painting {
 	@OneToMany(mappedBy = "painting")
 	private List<Bid> bids;
 }
-
