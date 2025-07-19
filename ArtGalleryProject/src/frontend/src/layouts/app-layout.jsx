@@ -8,7 +8,7 @@ const AppLayout = () => {
         <div className="">
           <Header />
         </div>
-        <div className="absolute">
+        <div className="pt-16">
           <Outlet />
         </div>
       </main>

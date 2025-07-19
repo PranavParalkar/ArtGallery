@@ -61,7 +61,7 @@ const Login = () => {
     try {
       const res = await axios.post(url, payload);
       alert(res.data.message || res.data || "Success");
-      navigate("/dash"); // ✅ 3
+      navigate("/"); // ✅ 3
     } catch (err) {
       alert(
         err.response?.data?.message ||

@@ -54,4 +54,3 @@ public class Painting {
 	@OneToMany(mappedBy = "painting")
 	private List<Bid> bids;
 }
-

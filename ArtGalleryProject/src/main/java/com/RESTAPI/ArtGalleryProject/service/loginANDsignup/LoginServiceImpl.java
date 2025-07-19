@@ -3,6 +3,8 @@ package com.RESTAPI.ArtGalleryProject.service.loginANDsignup;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import com.RESTAPI.ArtGalleryProject.Embeddable.Address;
 import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.Entity.Wallet;
+import com.RESTAPI.ArtGalleryProject.config.CorsConfig;
 import com.RESTAPI.ArtGalleryProject.repository.LoginCredRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
@@ -21,6 +24,8 @@ import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
 @Service
 public class LoginServiceImpl implements LoginService {
 
+	private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
+	
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
 	@Autowired
@@ -32,14 +37,19 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	public String register(SignupRequest request) {
+		logger.info("register started.");
 		if (loginrepo.existsById(request.email())) {
+			logger.info("register finished.");
 			return "Account already exists";
 		}
+
+		var wallet = new Wallet();
+		wallet.setBalance(0.0);
 
 		var user = new User();
 		user.setAuthorizedSeller(false);
 		user.setCreatedAt(LocalDate.now());
-		userrepo.save(user);
+		user.setWallet(wallet);
 
 		var logincred = new LoginCredentials();
 		logincred.setPassword(encoder.encode(request.password()));
@@ -47,20 +57,20 @@ public class LoginServiceImpl implements LoginService {
 		logincred.setUser(user);
 		logincred.setEmail(request.email());
 		logincred.setSecurityQuestion(request.securityQuestion());
-		loginrepo.save(logincred);
 
-		var wallet = new Wallet();
-		wallet.setBalance(0.0);
-		wallet.setUser(user);
 		walletrepo.save(wallet);
-
+		userrepo.save(user);
+		loginrepo.save(logincred);
+		logger.info("register finished.");
 		return "Registration Successful";
 	}
 
 	@Override
 	public String acceptDetails(UserDetailRequest request) {
+		logger.info("acceptDetails started.");
 		Optional<LoginCredentials> optionalCred = loginrepo.findById(request.email());
 		if (optionalCred.isEmpty()) {
+			logger.info("acceptDetails finished.");
 			return "User not Found";
 		}
 
@@ -70,20 +80,24 @@ public class LoginServiceImpl implements LoginService {
 		user.setName(request.name());
 		user.setPhoneNumber(request.phoneNumber());
 		userrepo.save(user);
-
+		logger.info("acceptDetails finished.");
 		return "User info saved";
 	}
 
 	@Override
 	public String validateLogin(LoginRequest request) {
+		logger.info("validateLogin started.");
 		if (loginrepo.existsById(request.email())) {
 			String password = loginrepo.findById(request.email()).orElse(null).getPassword();
 			if (encoder.matches(request.password(), password)) {
+				logger.info("validateLogin finished.");
 				return "Login Successful";
 			} else {
+				logger.info("validateLogin finished.");
 				return "Invalid Password";
 			}
 		} else {
+			logger.info("validateLogin finished.");
 			return "Invalid Email";
 		}
 	}
@@ -92,23 +106,30 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	public String getSecurityQuestion(String Email) {
+		logger.info("getSecurityQuestion started.");
 		Optional<LoginCredentials> logincred = loginrepo.findById(Email);
 		if (logincred.isEmpty()) {
+			logger.info("getSecurityQuestion finished.");
 			return "Invalid Email";
 		} else {
+			logger.info("getSecurityQuestion finished.");
 			return logincred.get().getSecurityQuestion();
 		}
 	}
 
 	@Override
 	public String checkSecurityAnswer(String Email, String Answer) {
+		logger.info("checkSecurityAnswer started.");
 		Optional<LoginCredentials> logincred = loginrepo.findById(Email);
 		if (logincred.isEmpty()) {
+			logger.info("checkSecurityAnswer finished.");
 			return "Email not found";
 		}
 		if (encoder.matches(Answer, logincred.get().getSecurityAnswer())) {
+			logger.info("checkSecurityAnswer finished.");
 			return "Verification Success";
 		} else {
+			logger.info("checkSecurityAnswer finished.");
 			return "Incorrect Answer";
 		}
 
@@ -116,18 +137,23 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	public String passwordReset(String Email, String newPassword, String confirmPassword) {
+		logger.info("passwordReset started.");
 		Optional<LoginCredentials> logincred = loginrepo.findById(Email);
 		if (logincred.isEmpty()) {
+			logger.info("passwordReset finished.");
 			return "Email not found";
 		}
 		if (!newPassword.equals(confirmPassword)) {
+			logger.info("passwordReset finished.");
 			return "Passwords don't match";
 		}
 		if (encoder.matches(newPassword, logincred.get().getPassword())) {
+			logger.info("passwordReset finished.");
 			return "New password and current password are same";
 		}
 		logincred.get().setPassword(encoder.encode(newPassword));
 		loginrepo.save(logincred.get());
+		logger.info("passwordReset finished.");
 		return "Password changed successfully";
 	}
 
