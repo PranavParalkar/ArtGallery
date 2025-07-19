@@ -2,13 +2,15 @@ package com.RESTAPI.ArtGalleryProject.DTO.UploadPainting;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.RESTAPI.ArtGalleryProject.Embeddable.Dimensions;
+import jakarta.validation.constraints.NotBlank;
 
 public record UploadPaintingRequest(
-	MultipartFile file,
-	Dimensions dimensions,
-	String title,
-	String description,
-	int startingPrice,
-	long userId
+		@NotBlank
+		MultipartFile file,
+		String title,
+		String description,
+		double length,
+		double breadth,
+		int startingPrice,
+		long userId
 ) {}

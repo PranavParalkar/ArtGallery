@@ -4,11 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.CheckAnswerRequest;
+import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.ForgotPasswordRequest;
+import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.GetQuestionRequest;
 import com.RESTAPI.ArtGalleryProject.service.loginANDsignup.LoginService;
 
 @RestController
@@ -21,13 +26,13 @@ public class ForgotPasswordController {
 	private String emailPattern = "^[a-zA-Z0-9.-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9.-]+$";
 	private String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$";
 	
-	@GetMapping(params = "step=check-email")
-	public ResponseEntity<?> getSecurityQuestion(@RequestParam String email) {
-		if (!email.matches(emailPattern)) {
+	@PostMapping(params = "step=check-email")
+	public ResponseEntity<?> getSecurityQuestion(@RequestBody GetQuestionRequest request) {
+		if (!request.email().matches(emailPattern)) {
 			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
 		}
 		
-		String response = service.getSecurityQuestion(email);
+		String response = service.getSecurityQuestion(request.email());
 		switch (response) {
 		case "Invalid Email":
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -37,9 +42,9 @@ public class ForgotPasswordController {
 		}
 	}
 	
-	@GetMapping(params = "step=verify-answer")
-	public ResponseEntity<?> checkSecurityAnswer(@RequestParam String email, @RequestParam String answer) {
-		String response = service.checkSecurityAnswer(email, answer);
+	@PostMapping(params = "step=verify-answer")
+	public ResponseEntity<?> checkSecurityAnswer(@RequestBody CheckAnswerRequest request) {
+		String response = service.checkSecurityAnswer(request.email(), request.answer());
 		switch (response) {
 		case "Email not found":
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -53,19 +58,17 @@ public class ForgotPasswordController {
 	}
 	
 	@PutMapping(params = "step=password-reset")
-	public ResponseEntity<?> passwordReset(@RequestParam String email, 
-										   @RequestParam String newPassword,
-										   @RequestParam String confirmPassword) {
-		if (!email.matches(emailPattern)) {
+	public ResponseEntity<?> passwordReset(@RequestBody ForgotPasswordRequest request) {
+		if (!request.email().matches(emailPattern)) {
 			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
 		}
 
-		if (!newPassword.matches(passwordPattern)) {
+		if (!request.newPassword().matches(passwordPattern)) {
 			return new ResponseEntity<>(
 					"Password should contain atleast 8 characters, 1 capital letter, 1 small letter, 1 digit, and 1 special character",
 					HttpStatus.BAD_REQUEST);
 		}
-		String response = service.passwordReset(email, newPassword, confirmPassword);
+		String response = service.passwordReset(request.email(), request.newPassword(), request.confirmPassword());
 		switch (response) {
 		case "Email not found":
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
