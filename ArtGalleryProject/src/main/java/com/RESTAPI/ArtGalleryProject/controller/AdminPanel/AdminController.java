@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.RESTAPI.ArtGalleryProject.Entity.User;
-import com.RESTAPI.ArtGalleryProject.config.CorsConfig;
 import com.RESTAPI.ArtGalleryProject.service.AdminService.AdminService;
 import com.RESTAPI.ArtGalleryProject.service.LicenseUpload.LicenseUploadService;
 
