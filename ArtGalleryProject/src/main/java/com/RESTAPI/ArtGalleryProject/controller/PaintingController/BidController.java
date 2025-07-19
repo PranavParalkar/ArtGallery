@@ -34,7 +34,7 @@ public class BidController {
         }
     }
 
-    @GetMapping("/top10/{paintingId}")
+    @GetMapping("/bid/{paintingId}")
     public ResponseEntity<List<TopBidDTO>> getTop10Bids(@PathVariable Long paintingId) {
         logger.info("Fetching top 10 bids for painting ID: {}", paintingId);
         List<TopBidDTO> topBids = service.getTop10BidsWithRank(paintingId);

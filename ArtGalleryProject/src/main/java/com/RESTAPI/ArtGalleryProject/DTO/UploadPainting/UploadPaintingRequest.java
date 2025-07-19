@@ -2,15 +2,21 @@ package com.RESTAPI.ArtGalleryProject.DTO.UploadPainting;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record UploadPaintingRequest(
-		@NotBlank
-		MultipartFile file,
-		String title,
-		String description,
-		double length,
-		double breadth,
-		int startingPrice,
-		long userId
-) {}
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UploadPaintingRequest {
+	private MultipartFile file;
+	private String title;
+	private String description;
+	private double length;
+	private double breadth;
+	private double startingPrice;
+	private long userId;
+}

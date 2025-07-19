@@ -30,9 +30,9 @@ public class UploadServiceImpl implements UploadService {
 	@Override
 	public String uploadPainting(String path, UploadPaintingRequest request) throws IOException {
 		logger.info("uploadPainting started.");
-		MultipartFile file = request.file();
+		MultipartFile file = request.getFile();
 
-		if (file.getSize() > 2 * 1024 * 1024) {
+		if (file.getSize() > 5 * 1024 * 1024) {
 			logger.info("uploadPainting finished.");
 			return "File too large. Max size is 5MB.";
 		}
@@ -55,12 +55,12 @@ public class UploadServiceImpl implements UploadService {
 		Files.copy(file.getInputStream(), Paths.get(filepath));
 
 		var painting = new Painting();
-		painting.setTitle(request.title());
-		painting.setDescription(request.description());
-		painting.setLength(request.length());
-		painting.setBreadth(request.breadth());
-		painting.setStartingPrice(request.startingPrice());
-		painting.setSeller(userrepo.findById(request.userId()).orElse(null));
+		painting.setTitle(request.getTitle());
+		painting.setDescription(request.getDescription());
+		painting.setLength(request.getLength());
+		painting.setBreadth(request.getBreadth());
+		painting.setStartingPrice(request.getStartingPrice());
+		painting.setSeller(userrepo.findById(request.getUserId()).orElse(null));
 		painting.setImageUrl(filepath);
 		paintingrepo.save(painting);
 		logger.info("uploadPainting finished.");

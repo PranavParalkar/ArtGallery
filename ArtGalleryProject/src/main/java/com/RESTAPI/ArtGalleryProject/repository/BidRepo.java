@@ -14,8 +14,6 @@ import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 public interface BidRepo extends JpaRepository<Bid, Long> {
 	Optional<Bid> findTopByPaintingOrderByBidAmountDescTimeStampAsc(Painting painting);
 
-    List<Bid> findByPaintingOrderByBidAmountDescTimeStampAsc(Painting painting);
-    
-    List<Bid> findTop10ByPaintingIdOrderByBidAmountDesc(Long paintingId);
+    List<Bid> findTop10ByPaintingOrderByBidAmountDesc(Painting painting);
 
 }

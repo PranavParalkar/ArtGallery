@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,16 +27,16 @@ public class UploadPaintingController {
 	@Value("${image.path}")
 	private String path;
 
-	@PostMapping("/upload-painting")
-	public ResponseEntity<?> uploadPainting(@ModelAttribute UploadPaintingRequest request) {
-		logger.info("uploadPainting started.");
+	@PostMapping(value = "/upload-painting", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> upload(@ModelAttribute UploadPaintingRequest request) {
+		logger.info("upload started.");
 		try {
-			logger.info("uploadPainting finished.");
+			logger.info("upload finished.");
 			return new ResponseEntity<>(service.uploadPainting(path, request), HttpStatus.ACCEPTED);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		logger.info("uploadPainting finished.");
+		logger.info("upload finished.");
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
