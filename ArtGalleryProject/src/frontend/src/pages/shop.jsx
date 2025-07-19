@@ -78,7 +78,7 @@ const shopItems = [
 
 const Shop = () => {
   return (
-    <div className="bg-[#fffaf5] w-[1900px] px-6 py-12 font-serif">
+    <div className="bg-[#fffaf5] w-[100%] px-6 py-12 font-serif">
       <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -88,7 +88,7 @@ const Shop = () => {
         Art Store
       </motion.h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-[1500px] mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-[1300px] mx-auto">
         {shopItems.map((item, i) => (
           <motion.div
             key={item.id}

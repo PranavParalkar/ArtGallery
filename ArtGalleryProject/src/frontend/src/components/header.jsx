@@ -35,6 +35,30 @@ const Header = () => {
 
         {/* Right side: Search and Login/Profile */}
         <div className="flex items-center gap-4">
+          <div className="relative group">
+            {/* Wallet Icon Button */}
+            <button className="w-9 h-9 shadow-2xl shadow-black  flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition duration-200">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5 text-gray-700"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m4-5h-4a1 1 0 00-1 1v2a1 1 0 001 1h4v-4z"
+                />
+              </svg>
+            </button>
+
+            {/* Hover Box with Balance */}
+            <div className="absolute left-1/2 w-32 transform -translate-x-1/2 mt-2 hidden group-hover:block bg-white text-gray-800 text-sm border border-gray-300 rounded-lg shadow-md px-4 py-2 z-50">
+              💰Balance: ₹0.0
+            </div>
+          </div>
           <div className="relative">
             <input
               type="text"
