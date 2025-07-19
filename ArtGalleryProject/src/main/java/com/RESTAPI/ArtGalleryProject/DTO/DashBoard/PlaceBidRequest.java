@@ -1,5 +1,6 @@
 package com.RESTAPI.ArtGalleryProject.DTO.DashBoard;
 
+<<<<<<< HEAD
 public record PlaceBidRequest(
 <<<<<<< Updated upstream
 		long userid,
@@ -8,3 +9,6 @@ public record PlaceBidRequest(
 >>>>>>> Stashed changes
 		double bidAmount
 ) {}
+=======
+public record PlaceBidRequest(long userid, double bidAmount) {}
+>>>>>>> Ishwari

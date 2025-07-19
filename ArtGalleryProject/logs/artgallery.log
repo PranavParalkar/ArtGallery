@@ -2930,8 +2930,11 @@ This generated password is for development use only. Your security configuration
 2025-07-19 17:00:22 [http-nio-8085-exec-4] INFO  c.R.A.s.DashBoard.BidServiceImpl:42 - placeBid started.
 2025-07-19 17:00:22 [http-nio-8085-exec-4] INFO  c.R.A.s.DashBoard.BidServiceImpl:85 - placeBid finished.
 2025-07-19 17:00:22 [http-nio-8085-exec-4] INFO  c.R.A.c.P.UploadPaintingController:31 - placeBidcont finished.
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Ishwari
 2025-07-19 19:25:31 [background-preinit] INFO  o.h.validator.internal.util.Version:21 - HV000001: Hibernate Validator 8.0.2.Final
 2025-07-19 19:25:31 [main] INFO  c.R.A.ArtGalleryProjectApplication:53 - Starting ArtGalleryProjectApplication using Java 17.0.12 with PID 31620 (C:\Users\ishwa\OneDrive\Desktop\Super30Project\ArtGalleryProject\target\classes started by ishwa in C:\Users\ishwa\OneDrive\Desktop\Super30Project\ArtGalleryProject)
 2025-07-19 19:25:31 [main] DEBUG c.R.A.ArtGalleryProjectApplication:54 - Running with Spring Boot v3.5.3, Spring v6.2.8
@@ -4105,6 +4108,7 @@ Caused by: org.springframework.data.mapping.PropertyReferenceException: No prope
 	at org.springframework.data.repository.query.parser.PartTree.<init>(PartTree.java:103)
 	at org.springframework.data.jpa.repository.query.PartTreeJpaQuery.<init>(PartTreeJpaQuery.java:101)
 	... 61 common frames omitted
+<<<<<<< HEAD
 2025-07-19 21:50:36 [background-preinit] INFO  o.h.validator.internal.util.Version:21 - HV000001: Hibernate Validator 8.0.2.Final
 2025-07-19 21:50:36 [main] INFO  c.R.A.ArtGalleryProjectApplication:53 - Starting ArtGalleryProjectApplication using Java 17.0.13 with PID 19884 (C:\Users\varad\OneDrive\Desktop\projects\Super30SpringProject\ArtGalleryProject\target\classes started by varad in C:\Users\varad\OneDrive\Desktop\projects\Super30SpringProject\ArtGalleryProject)
 2025-07-19 21:50:36 [main] DEBUG c.R.A.ArtGalleryProjectApplication:54 - Running with Spring Boot v3.5.3, Spring v6.2.8
@@ -7549,3 +7553,5 @@ Caused by: org.springframework.data.mapping.PropertyReferenceException: No prope
 	at org.springframework.data.jpa.repository.query.PartTreeJpaQuery.<init>(PartTreeJpaQuery.java:101)
 	... 61 common frames omitted
 >>>>>>> Stashed changes
+=======
+>>>>>>> Ishwari
