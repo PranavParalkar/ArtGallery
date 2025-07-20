@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.Enum.LicenseStatus;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
-com.RESTAPI.ArtGalleryProject.Entity;
 import lombok.RequiredArgsConstructor;
 
 @Service
