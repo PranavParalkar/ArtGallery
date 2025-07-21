@@ -1,10 +1,14 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import WalletModal from "./WalletModal";
 
 const Header = () => {
+  const [isWalletOpen, setIsWalletOpen] = useState(false);
+  
   const navLinks = {
     auctions: "/auctions",
     sell: "/sell",
-    departments: "/departments",
+    // departments: "/departments",
     discover: "/discover",
     shop: "/shop",
   };
@@ -37,7 +41,10 @@ const Header = () => {
         <div className="flex items-center gap-4">
           <div className="relative group">
             {/* Wallet Icon Button */}
-            <button className="w-9 h-9 shadow-2xl shadow-black  flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition duration-200">
+            <button 
+              onClick={() => setIsWalletOpen(true)}
+              className="w-9 h-9 shadow-2xl shadow-black flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition duration-200"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-5 h-5 text-gray-700"
@@ -104,6 +111,12 @@ const Header = () => {
           </Link>
         </div>
       </div>
+      
+      {/* Wallet Modal */}
+      <WalletModal 
+        isOpen={isWalletOpen} 
+        onClose={() => setIsWalletOpen(false)} 
+      />
     </header>
   );
 };

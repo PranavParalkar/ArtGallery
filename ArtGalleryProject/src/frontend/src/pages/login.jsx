@@ -219,7 +219,14 @@ const Login = () => {
   };
 
   return (
-    <div className="h-screen w-screen-[100%] bg-gradient-to-tr from-[#f9f9f8] via-[#f9f4ed] to-[#f5ebde] flex items-center justify-center px-4">
+    <div className="h-[790px] w-screen bg-gradient-to-tr from-[#f9f9f8] via-[#f9f4ed] to-[#f5ebde] flex items-center justify-center px-4">
+      <div>
+        <img
+          src="https://paperplanedesign.in/cdn/shop/files/collage-wallpaper-featuring-famous-van-gogh-paintings-251088.jpg?v=1715591219&width=1080"
+          alt=""
+          className="absolute left-0 top-0 w-full h-full object-cover opacity-80"
+        />
+      </div>
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

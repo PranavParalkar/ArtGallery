@@ -8,7 +8,7 @@ import Login from "./pages/login";
 import Onboarding from "./pages/onboarding";
 import Auction from "./pages/auction";
 import Sell from "./pages/sell";
-import Departments from "./pages/departments";
+// import Departments from "./pages/departments";
 import Discover from "./pages/discover";
 import Shop from "./pages/shop";
 
@@ -35,10 +35,6 @@ const router = createBrowserRouter([
       {
         path: "/sell",
         element: <Sell />,
-      },
-      {
-        path: "/departments",
-        element: <Departments />,
       },
       {
         path: "/discover",
