@@ -76,7 +76,7 @@ const Auction = () => {
                   href={`/auction/${painting.paintingId}`}
                   className="mt-4 block text-center py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold transition"
                 >
-                  View Details
+                  Place Bid
                 </a>
               </div>
             </motion.div>

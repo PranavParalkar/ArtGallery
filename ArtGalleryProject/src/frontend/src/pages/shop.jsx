@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const shopItems = [
   {
@@ -77,6 +78,15 @@ const shopItems = [
 ];
 
 const Shop = () => {
+  const navigate = useNavigate();
+
+  const handleBuyNow = (item) => {
+    // Navigate to the server endpoint that serves the orders.html page
+    // We can pass the item price as a query parameter to pre-fill the amount field
+    const price = item.price.replace(/[^\d]/g, ''); // Extract numeric value from price
+    window.location.href = `http://localhost:8085/orders?amount=${price}&item=${encodeURIComponent(item.title)}`;
+  };
+
   return (
     <div className="bg-[#fffaf5] w-[100%] px-6 py-12 font-serif">
       <motion.h1
@@ -116,7 +126,10 @@ const Shop = () => {
                 <span className="text-md font-semibold text-[#a17b5d]">
                   {item.price}
                 </span>
-                <button className="px-4 py-2 rounded-full text-sm font-semibold text-white bg-[#a17b5d] hover:bg-[#8c6448] transition">
+                <button 
+                  onClick={() => handleBuyNow(item)}
+                  className="px-4 py-2 rounded-full text-sm font-semibold text-white bg-[#a17b5d] hover:bg-[#8c6448] transition hover:cursor-pointer"
+                >
                   Buy Now
                 </button>
               </div>

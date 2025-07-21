@@ -13258,3 +13258,611 @@ java.sql.SQLIntegrityConstraintViolationException: Column 'seller_id' cannot be 
 2025-07-20 09:16:49 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
 2025-07-20 09:16:49 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
 2025-07-20 09:16:49 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 09:41:33 [background-preinit] INFO  o.h.validator.internal.util.Version:21 - HV000001: Hibernate Validator 8.0.2.Final
+2025-07-20 09:41:33 [main] INFO  c.R.A.ArtGalleryProjectApplication:53 - Starting ArtGalleryProjectApplication using Java 17.0.13 with PID 31568 (C:\Users\varad\OneDrive\Desktop\projects\Super30SpringProject\ArtGalleryProject\target\classes started by varad in C:\Users\varad\OneDrive\Desktop\projects\Super30SpringProject\ArtGalleryProject)
+2025-07-20 09:41:33 [main] DEBUG c.R.A.ArtGalleryProjectApplication:54 - Running with Spring Boot v3.5.3, Spring v6.2.8
+2025-07-20 09:41:33 [main] INFO  c.R.A.ArtGalleryProjectApplication:652 - No active profile set, falling back to 1 default profile: "default"
+2025-07-20 09:41:34 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate:145 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-20 09:41:34 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate:213 - Finished Spring Data repository scanning in 199 ms. Found 6 JPA repository interfaces.
+2025-07-20 09:41:36 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer:111 - Tomcat initialized with port 8085 (http)
+2025-07-20 09:41:36 [main] INFO  o.a.coyote.http11.Http11NioProtocol:168 - Initializing ProtocolHandler ["http-nio-8085"]
+2025-07-20 09:41:36 [main] INFO  o.a.catalina.core.StandardService:168 - Starting service [Tomcat]
+2025-07-20 09:41:36 [main] INFO  o.a.catalina.core.StandardEngine:168 - Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-07-20 09:41:36 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/]:168 - Initializing Spring embedded WebApplicationContext
+2025-07-20 09:41:36 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext:301 - Root WebApplicationContext: initialization completed in 2957 ms
+2025-07-20 09:41:36 [main] INFO  o.h.jpa.internal.util.LogHelper:31 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-20 09:41:36 [main] INFO  org.hibernate.Version:44 - HHH000412: Hibernate ORM core version 6.6.18.Final
+2025-07-20 09:41:36 [main] INFO  o.h.c.i.RegionFactoryInitiator:50 - HHH000026: Second-level cache disabled
+2025-07-20 09:41:37 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo:87 - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-20 09:41:37 [main] INFO  com.zaxxer.hikari.HikariDataSource:109 - HikariPool-1 - Starting...
+2025-07-20 09:41:37 [main] INFO  com.zaxxer.hikari.pool.HikariPool:575 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@39afe59f
+2025-07-20 09:41:37 [main] INFO  com.zaxxer.hikari.HikariDataSource:122 - HikariPool-1 - Start completed.
+2025-07-20 09:41:37 [main] INFO  o.hibernate.orm.connections.pooling:163 - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.40
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-07-20 09:41:39 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator:59 - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-20 09:41:39 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean:447 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-20 09:41:40 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration:258 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-20 09:41:40 [main] INFO  c.R.A.config.CorsConfig:15 - addCorsMappings started
+2025-07-20 09:41:40 [main] INFO  c.R.A.config.CorsConfig:21 - addCorsMappings ended
+2025-07-20 09:41:40 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration:90 - 
+
+Using generated security password: a9a8504c-5f98-4fd3-aef8-a79161e32157
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-07-20 09:41:40 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer:110 - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-07-20 09:41:40 [main] INFO  c.R.A.config.SecurityConfig:22 - securityFilterChain started.
+2025-07-20 09:41:40 [main] INFO  c.R.A.config.SecurityConfig:30 - securityFilterChain finished.
+2025-07-20 09:41:41 [main] INFO  o.a.coyote.http11.Http11NioProtocol:168 - Starting ProtocolHandler ["http-nio-8085"]
+2025-07-20 09:41:41 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer:243 - Tomcat started on port 8085 (http) with context path '/'
+2025-07-20 09:41:41 [main] INFO  c.R.A.ArtGalleryProjectApplication:59 - Started ArtGalleryProjectApplication in 8.838 seconds (process running for 9.439)
+2025-07-20 09:41:44 [http-nio-8085-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/]:168 - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-07-20 09:41:44 [http-nio-8085-exec-1] INFO  o.s.web.servlet.DispatcherServlet:532 - Initializing Servlet 'dispatcherServlet'
+2025-07-20 09:41:44 [http-nio-8085-exec-1] INFO  o.s.web.servlet.DispatcherServlet:554 - Completed initialization in 1 ms
+2025-07-20 09:41:44 [http-nio-8085-exec-1] INFO  c.R.A.c.P.UploadPaintingController:30 - upload started.
+2025-07-20 09:41:44 [http-nio-8085-exec-1] INFO  c.R.A.c.P.UploadPaintingController:32 - upload finished.
+2025-07-20 09:41:44 [http-nio-8085-exec-1] INFO  c.R.A.s.U.UploadServiceImpl:32 - uploadPainting started.
+2025-07-20 09:41:44 [http-nio-8085-exec-1] INFO  c.R.A.s.U.UploadServiceImpl:67 - uploadPainting finished.
+2025-07-20 09:41:52 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 09:41:52 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 09:41:52 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 09:41:52 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 09:41:52 [http-nio-8085-exec-3] WARN  o.s.d.w.c.SpringDataJacksonConfiguration$PageModule$WarningLoggingModifier:156 - Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+
+2025-07-20 09:41:52 [http-nio-8085-exec-6] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 09:41:52 [http-nio-8085-exec-6] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 09:41:52 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 09:41:52 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 09:41:52 [http-nio-8085-exec-6] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 09:41:52 [http-nio-8085-exec-6] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 09:41:52 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 09:41:52 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 09:41:52 [http-nio-8085-exec-1] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 09:41:52 [http-nio-8085-exec-1] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 09:41:52 [http-nio-8085-exec-1] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 09:41:52 [http-nio-8085-exec-1] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 09:43:44 [http-nio-8085-exec-1] INFO  c.R.A.c.P.BidController:39 - Fetching top 10 bids for painting ID: 1
+2025-07-20 09:43:44 [http-nio-8085-exec-1] INFO  c.R.A.s.DashBoard.BidServiceImpl:99 - getTop10BidsWithRank started.
+2025-07-20 09:43:44 [http-nio-8085-exec-1] INFO  c.R.A.s.DashBoard.BidServiceImpl:108 - getTop10BidsWithRank finished.
+2025-07-20 09:47:59 [http-nio-8085-exec-5] WARN  o.s.w.s.m.s.DefaultHandlerExceptionResolver:254 - Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-07-20 10:02:17 [background-preinit] INFO  o.h.validator.internal.util.Version:21 - HV000001: Hibernate Validator 8.0.2.Final
+2025-07-20 10:02:17 [main] INFO  c.R.A.ArtGalleryProjectApplication:53 - Starting ArtGalleryProjectApplication using Java 17.0.13 with PID 34188 (C:\Users\varad\OneDrive\Desktop\projects\Super30SpringProject\ArtGalleryProject\target\classes started by varad in C:\Users\varad\OneDrive\Desktop\projects\Super30SpringProject\ArtGalleryProject)
+2025-07-20 10:02:17 [main] DEBUG c.R.A.ArtGalleryProjectApplication:54 - Running with Spring Boot v3.5.3, Spring v6.2.8
+2025-07-20 10:02:17 [main] INFO  c.R.A.ArtGalleryProjectApplication:652 - No active profile set, falling back to 1 default profile: "default"
+2025-07-20 10:02:19 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate:145 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-20 10:02:19 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate:213 - Finished Spring Data repository scanning in 172 ms. Found 6 JPA repository interfaces.
+2025-07-20 10:02:20 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer:111 - Tomcat initialized with port 8085 (http)
+2025-07-20 10:02:20 [main] INFO  o.a.coyote.http11.Http11NioProtocol:168 - Initializing ProtocolHandler ["http-nio-8085"]
+2025-07-20 10:02:20 [main] INFO  o.a.catalina.core.StandardService:168 - Starting service [Tomcat]
+2025-07-20 10:02:20 [main] INFO  o.a.catalina.core.StandardEngine:168 - Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-07-20 10:02:20 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/]:168 - Initializing Spring embedded WebApplicationContext
+2025-07-20 10:02:20 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext:301 - Root WebApplicationContext: initialization completed in 3090 ms
+2025-07-20 10:02:21 [main] INFO  o.h.jpa.internal.util.LogHelper:31 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-20 10:02:21 [main] INFO  org.hibernate.Version:44 - HHH000412: Hibernate ORM core version 6.6.18.Final
+2025-07-20 10:02:21 [main] INFO  o.h.c.i.RegionFactoryInitiator:50 - HHH000026: Second-level cache disabled
+2025-07-20 10:02:22 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo:87 - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-20 10:02:22 [main] INFO  com.zaxxer.hikari.HikariDataSource:109 - HikariPool-1 - Starting...
+2025-07-20 10:02:22 [main] INFO  com.zaxxer.hikari.pool.HikariPool:575 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@16f34376
+2025-07-20 10:02:22 [main] INFO  com.zaxxer.hikari.HikariDataSource:122 - HikariPool-1 - Start completed.
+2025-07-20 10:02:22 [main] INFO  o.hibernate.orm.connections.pooling:163 - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.40
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-07-20 10:02:24 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator:59 - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-20 10:02:24 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean:447 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-20 10:02:25 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration:258 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-20 10:02:26 [main] INFO  c.R.A.config.CorsConfig:15 - addCorsMappings started
+2025-07-20 10:02:26 [main] INFO  c.R.A.config.CorsConfig:21 - addCorsMappings ended
+2025-07-20 10:02:26 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration:90 - 
+
+Using generated security password: 51e62819-7e15-4ba2-b152-7d395b1fe9c7
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-07-20 10:02:26 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer:110 - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-07-20 10:02:26 [main] INFO  c.R.A.config.SecurityConfig:22 - securityFilterChain started.
+2025-07-20 10:02:26 [main] INFO  c.R.A.config.SecurityConfig:30 - securityFilterChain finished.
+2025-07-20 10:02:27 [main] INFO  o.a.coyote.http11.Http11NioProtocol:168 - Starting ProtocolHandler ["http-nio-8085"]
+2025-07-20 10:02:27 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer:243 - Tomcat started on port 8085 (http) with context path '/'
+2025-07-20 10:02:27 [main] INFO  c.R.A.ArtGalleryProjectApplication:59 - Started ArtGalleryProjectApplication in 10.677 seconds (process running for 11.216)
+2025-07-20 10:05:29 [http-nio-8085-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/]:168 - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-07-20 10:05:29 [http-nio-8085-exec-1] INFO  o.s.web.servlet.DispatcherServlet:532 - Initializing Servlet 'dispatcherServlet'
+2025-07-20 10:05:29 [http-nio-8085-exec-1] INFO  o.s.web.servlet.DispatcherServlet:554 - Completed initialization in 13 ms
+2025-07-20 10:15:38 [http-nio-8085-exec-6] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:15:38 [http-nio-8085-exec-6] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:15:39 [http-nio-8085-exec-6] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:15:39 [http-nio-8085-exec-6] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:15:39 [http-nio-8085-exec-6] WARN  o.s.d.w.c.SpringDataJacksonConfiguration$PageModule$WarningLoggingModifier:156 - Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+
+2025-07-20 10:15:47 [http-nio-8085-exec-8] INFO  c.R.A.c.D.DashboardController:38 - getPaintingById started.
+2025-07-20 10:15:47 [http-nio-8085-exec-8] INFO  c.R.A.s.D.DashboardServiceImpl:49 - getPaintingById started.
+2025-07-20 10:15:47 [http-nio-8085-exec-8] INFO  c.R.A.s.D.DashboardServiceImpl:55 - getPaintingById finished.
+2025-07-20 10:15:47 [http-nio-8085-exec-8] INFO  c.R.A.c.D.DashboardController:40 - getPaintingById finished.
+2025-07-20 10:17:56 [http-nio-8085-exec-9] INFO  c.R.A.c.AdminPanel.AdminController:39 - getPendingLicenses started.
+2025-07-20 10:17:56 [http-nio-8085-exec-9] INFO  c.R.A.c.AdminPanel.AdminController:40 - getPendingLicenses finished.
+2025-07-20 10:17:56 [http-nio-8085-exec-9] INFO  c.R.A.s.A.AdminServiceImpl:26 - getPendingLicenses started.
+2025-07-20 10:17:56 [http-nio-8085-exec-9] INFO  c.R.A.s.A.AdminServiceImpl:27 - getPendingLicenses finished.
+2025-07-20 10:17:56 [http-nio-8085-exec-9] WARN  o.s.w.s.m.s.DefaultHandlerExceptionResolver:661 - Ignoring exception, response committed already: org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: Document nesting depth (1001) exceeds the maximum allowed (1000, from `StreamWriteConstraints.getMaxNestingDepth()`)
+2025-07-20 10:17:56 [http-nio-8085-exec-9] WARN  o.s.w.s.m.s.DefaultHandlerExceptionResolver:254 - Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: Document nesting depth (1001) exceeds the maximum allowed (1000, from `StreamWriteConstraints.getMaxNestingDepth()`)]
+2025-07-20 10:23:33 [http-nio-8085-exec-4] INFO  o.a.coyote.http11.Http11Processor:170 - Error parsing HTTP request header
+ Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+java.lang.IllegalArgumentException: Invalid character found in the request target [/paymentCallback?response={%20%22name%22:%20%22Varad%22,%20%22email%22:%20%22varad@gmail.com%22} ]. The valid characters are defined in RFC 7230 and RFC 3986
+	at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:478)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:271)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1769)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1189)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:658)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2025-07-20 10:36:16 [background-preinit] INFO  o.h.validator.internal.util.Version:21 - HV000001: Hibernate Validator 8.0.2.Final
+2025-07-20 10:36:16 [main] INFO  c.R.A.ArtGalleryProjectApplication:53 - Starting ArtGalleryProjectApplication using Java 17.0.13 with PID 30460 (C:\Users\varad\OneDrive\Desktop\projects\Super30SpringProject\ArtGalleryProject\target\classes started by varad in C:\Users\varad\OneDrive\Desktop\projects\Super30SpringProject\ArtGalleryProject)
+2025-07-20 10:36:16 [main] DEBUG c.R.A.ArtGalleryProjectApplication:54 - Running with Spring Boot v3.5.3, Spring v6.2.8
+2025-07-20 10:36:16 [main] INFO  c.R.A.ArtGalleryProjectApplication:652 - No active profile set, falling back to 1 default profile: "default"
+2025-07-20 10:36:17 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate:145 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-20 10:36:17 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate:213 - Finished Spring Data repository scanning in 99 ms. Found 6 JPA repository interfaces.
+2025-07-20 10:36:18 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer:111 - Tomcat initialized with port 8085 (http)
+2025-07-20 10:36:18 [main] INFO  o.a.coyote.http11.Http11NioProtocol:168 - Initializing ProtocolHandler ["http-nio-8085"]
+2025-07-20 10:36:18 [main] INFO  o.a.catalina.core.StandardService:168 - Starting service [Tomcat]
+2025-07-20 10:36:18 [main] INFO  o.a.catalina.core.StandardEngine:168 - Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-07-20 10:36:18 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/]:168 - Initializing Spring embedded WebApplicationContext
+2025-07-20 10:36:18 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext:301 - Root WebApplicationContext: initialization completed in 1694 ms
+2025-07-20 10:36:18 [main] INFO  o.h.jpa.internal.util.LogHelper:31 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-20 10:36:18 [main] INFO  org.hibernate.Version:44 - HHH000412: Hibernate ORM core version 6.6.18.Final
+2025-07-20 10:36:19 [main] INFO  o.h.c.i.RegionFactoryInitiator:50 - HHH000026: Second-level cache disabled
+2025-07-20 10:36:19 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo:87 - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-20 10:36:19 [main] INFO  com.zaxxer.hikari.HikariDataSource:109 - HikariPool-1 - Starting...
+2025-07-20 10:36:19 [main] INFO  com.zaxxer.hikari.pool.HikariPool:575 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@a6dffdb
+2025-07-20 10:36:19 [main] INFO  com.zaxxer.hikari.HikariDataSource:122 - HikariPool-1 - Start completed.
+2025-07-20 10:36:19 [main] INFO  o.hibernate.orm.connections.pooling:163 - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.40
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-07-20 10:36:21 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator:59 - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-20 10:36:21 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean:447 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-20 10:36:22 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration:258 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-20 10:36:22 [main] INFO  c.R.A.config.CorsConfig:15 - addCorsMappings started
+2025-07-20 10:36:22 [main] INFO  c.R.A.config.CorsConfig:21 - addCorsMappings ended
+2025-07-20 10:36:22 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration:90 - 
+
+Using generated security password: 44bc782a-6722-4cbe-865d-fa4298ba77c5
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-07-20 10:36:22 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer:110 - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-07-20 10:36:22 [main] INFO  c.R.A.config.SecurityConfig:22 - securityFilterChain started.
+2025-07-20 10:36:22 [main] INFO  c.R.A.config.SecurityConfig:30 - securityFilterChain finished.
+2025-07-20 10:36:22 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer:243 - Tomcat started on port 8085 (http) with context path '/'
+2025-07-20 10:36:22 [main] INFO  c.R.A.ArtGalleryProjectApplication:59 - Started ArtGalleryProjectApplication in 6.418 seconds (process running for 6.792)
+2025-07-20 10:36:22 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown:54 - Commencing graceful shutdown. Waiting for active requests to complete
+2025-07-20 10:36:22 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown:76 - Graceful shutdown complete
+2025-07-20 10:36:22 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean:660 - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-07-20 10:36:22 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource:349 - HikariPool-1 - Shutdown initiated...
+2025-07-20 10:36:22 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource:351 - HikariPool-1 - Shutdown completed.
+2025-07-20 10:36:35 [background-preinit] INFO  o.h.validator.internal.util.Version:21 - HV000001: Hibernate Validator 8.0.2.Final
+2025-07-20 10:36:35 [main] INFO  c.R.A.ArtGalleryProjectApplication:53 - Starting ArtGalleryProjectApplication using Java 17.0.13 with PID 32224 (C:\Users\varad\OneDrive\Desktop\projects\Super30SpringProject\ArtGalleryProject\target\classes started by varad in C:\Users\varad\OneDrive\Desktop\projects\Super30SpringProject\ArtGalleryProject)
+2025-07-20 10:36:35 [main] DEBUG c.R.A.ArtGalleryProjectApplication:54 - Running with Spring Boot v3.5.3, Spring v6.2.8
+2025-07-20 10:36:35 [main] INFO  c.R.A.ArtGalleryProjectApplication:652 - No active profile set, falling back to 1 default profile: "default"
+2025-07-20 10:36:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate:145 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-20 10:36:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate:213 - Finished Spring Data repository scanning in 124 ms. Found 6 JPA repository interfaces.
+2025-07-20 10:36:37 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer:111 - Tomcat initialized with port 8085 (http)
+2025-07-20 10:36:37 [main] INFO  o.a.coyote.http11.Http11NioProtocol:168 - Initializing ProtocolHandler ["http-nio-8085"]
+2025-07-20 10:36:37 [main] INFO  o.a.catalina.core.StandardService:168 - Starting service [Tomcat]
+2025-07-20 10:36:37 [main] INFO  o.a.catalina.core.StandardEngine:168 - Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-07-20 10:36:38 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/]:168 - Initializing Spring embedded WebApplicationContext
+2025-07-20 10:36:38 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext:301 - Root WebApplicationContext: initialization completed in 2478 ms
+2025-07-20 10:36:38 [main] INFO  o.h.jpa.internal.util.LogHelper:31 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-20 10:36:38 [main] INFO  org.hibernate.Version:44 - HHH000412: Hibernate ORM core version 6.6.18.Final
+2025-07-20 10:36:38 [main] INFO  o.h.c.i.RegionFactoryInitiator:50 - HHH000026: Second-level cache disabled
+2025-07-20 10:36:39 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo:87 - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-20 10:36:39 [main] INFO  com.zaxxer.hikari.HikariDataSource:109 - HikariPool-1 - Starting...
+2025-07-20 10:36:39 [main] INFO  com.zaxxer.hikari.pool.HikariPool:575 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6cd66f6a
+2025-07-20 10:36:39 [main] INFO  com.zaxxer.hikari.HikariDataSource:122 - HikariPool-1 - Start completed.
+2025-07-20 10:36:39 [main] INFO  o.hibernate.orm.connections.pooling:163 - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.40
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-07-20 10:36:40 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator:59 - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-20 10:36:40 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean:447 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-20 10:36:41 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration:258 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-20 10:36:41 [main] INFO  c.R.A.config.CorsConfig:15 - addCorsMappings started
+2025-07-20 10:36:41 [main] INFO  c.R.A.config.CorsConfig:21 - addCorsMappings ended
+2025-07-20 10:36:42 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration:90 - 
+
+Using generated security password: c1c96d8d-0000-40f1-8e37-d78e00d4a746
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-07-20 10:36:42 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer:110 - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-07-20 10:36:42 [main] INFO  c.R.A.config.SecurityConfig:22 - securityFilterChain started.
+2025-07-20 10:36:42 [main] INFO  c.R.A.config.SecurityConfig:30 - securityFilterChain finished.
+2025-07-20 10:36:42 [main] INFO  o.a.coyote.http11.Http11NioProtocol:168 - Starting ProtocolHandler ["http-nio-8085"]
+2025-07-20 10:36:42 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer:243 - Tomcat started on port 8085 (http) with context path '/'
+2025-07-20 10:36:42 [main] INFO  c.R.A.ArtGalleryProjectApplication:59 - Started ArtGalleryProjectApplication in 7.982 seconds (process running for 8.386)
+2025-07-20 10:36:46 [http-nio-8085-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/]:168 - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-07-20 10:36:46 [http-nio-8085-exec-1] INFO  o.s.web.servlet.DispatcherServlet:532 - Initializing Servlet 'dispatcherServlet'
+2025-07-20 10:36:46 [http-nio-8085-exec-1] INFO  o.s.web.servlet.DispatcherServlet:554 - Completed initialization in 1 ms
+2025-07-20 10:39:26 [http-nio-8085-exec-9] INFO  c.R.A.c.P.UploadPaintingController:30 - upload started.
+2025-07-20 10:39:26 [http-nio-8085-exec-9] INFO  c.R.A.c.P.UploadPaintingController:32 - upload finished.
+2025-07-20 10:39:26 [http-nio-8085-exec-9] INFO  c.R.A.s.U.UploadServiceImpl:32 - uploadPainting started.
+2025-07-20 10:39:26 [http-nio-8085-exec-9] INFO  c.R.A.s.U.UploadServiceImpl:67 - uploadPainting finished.
+2025-07-20 10:39:30 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:39:30 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:39:30 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:39:30 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:39:30 [http-nio-8085-exec-10] WARN  o.s.d.w.c.SpringDataJacksonConfiguration$PageModule$WarningLoggingModifier:156 - Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+
+2025-07-20 10:39:30 [http-nio-8085-exec-1] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:39:30 [http-nio-8085-exec-1] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:39:30 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:39:30 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:39:30 [http-nio-8085-exec-1] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:39:30 [http-nio-8085-exec-1] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:39:30 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:39:30 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:39:30 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:39:30 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:39:30 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:39:30 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:39:40 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:39:40 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:39:40 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:39:40 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:39:40 [http-nio-8085-exec-5] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:39:40 [http-nio-8085-exec-5] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:39:40 [http-nio-8085-exec-8] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:39:40 [http-nio-8085-exec-8] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:39:40 [http-nio-8085-exec-8] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:39:40 [http-nio-8085-exec-8] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:39:40 [http-nio-8085-exec-5] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:39:40 [http-nio-8085-exec-5] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:39:40 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:39:40 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:39:40 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:39:40 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:40:32 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:40:32 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:40:32 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:40:32 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:40:32 [http-nio-8085-exec-6] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:40:32 [http-nio-8085-exec-6] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:40:32 [http-nio-8085-exec-1] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:40:32 [http-nio-8085-exec-1] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:40:32 [http-nio-8085-exec-6] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:40:32 [http-nio-8085-exec-6] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:40:32 [http-nio-8085-exec-1] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:40:32 [http-nio-8085-exec-1] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:40:32 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:40:32 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:40:32 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:40:32 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:40:40 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:40:40 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:40:40 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:40:40 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:40:40 [http-nio-8085-exec-6] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:40:40 [http-nio-8085-exec-6] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:40:40 [http-nio-8085-exec-8] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:40:40 [http-nio-8085-exec-8] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:40:40 [http-nio-8085-exec-6] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:40:40 [http-nio-8085-exec-6] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:40:40 [http-nio-8085-exec-8] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:40:40 [http-nio-8085-exec-8] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:40:40 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:40:40 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:40:40 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:40:40 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:07 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:07 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:07 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:07 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:07 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:07 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:07 [http-nio-8085-exec-1] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:07 [http-nio-8085-exec-1] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:07 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:07 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:07 [http-nio-8085-exec-1] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:07 [http-nio-8085-exec-1] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:07 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:07 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:07 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:07 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:12 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:12 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:12 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:12 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:12 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:12 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:12 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:12 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:12 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:12 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:12 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:12 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:12 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:12 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:12 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:12 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:19 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:19 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:19 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:19 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:19 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:19 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:19 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:19 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:19 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:19 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:19 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:19 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:19 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:19 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:19 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:19 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:21 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:21 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:21 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:21 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:21 [http-nio-8085-exec-6] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:21 [http-nio-8085-exec-6] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:21 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:21 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:21 [http-nio-8085-exec-6] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:21 [http-nio-8085-exec-6] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:22 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:22 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:22 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:22 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:22 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:22 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:23 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:23 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:23 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:23 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:23 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:23 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:23 [http-nio-8085-exec-9] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:23 [http-nio-8085-exec-9] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:23 [http-nio-8085-exec-9] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:23 [http-nio-8085-exec-9] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:23 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:23 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:23 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:23 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:23 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:23 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:39 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:39 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:39 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:39 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:39 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:39 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:39 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:39 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:39 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:39 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:39 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:39 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:39 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:39 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:40 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:40 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:41 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:41 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:41 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:41 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:41 [http-nio-8085-exec-8] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:41 [http-nio-8085-exec-8] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:41 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:41 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:41 [http-nio-8085-exec-8] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:41 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:41 [http-nio-8085-exec-8] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:41 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:41 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:41 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:41 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:41 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:52 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:52 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:52 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:52 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:52 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:52 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:52 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:52 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:52 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:52 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:52 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:52 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:52 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:52 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:52 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:52 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:55 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:55 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:55 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:55 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:55 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:55 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:55 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:55 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:55 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:55 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:55 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:55 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:41:55 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:41:55 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:41:55 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:41:55 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:43:00 [http-nio-8085-exec-5] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:43:00 [http-nio-8085-exec-5] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:43:00 [http-nio-8085-exec-5] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:43:00 [http-nio-8085-exec-5] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:43:00 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:43:00 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:43:00 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:43:00 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:43:00 [http-nio-8085-exec-4] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:43:00 [http-nio-8085-exec-4] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:43:00 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:43:00 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 10:43:00 [http-nio-8085-exec-8] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 10:43:00 [http-nio-8085-exec-8] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 10:43:00 [http-nio-8085-exec-8] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 10:43:00 [http-nio-8085-exec-8] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:00:12 [http-nio-8085-exec-1] INFO  c.R.A.c.L.LoginController:34 - registerUser started.
+2025-07-20 11:00:12 [http-nio-8085-exec-1] INFO  c.R.A.s.l.LoginServiceImpl:38 - register started.
+2025-07-20 11:00:13 [http-nio-8085-exec-1] INFO  c.R.A.s.l.LoginServiceImpl:62 - register finished.
+2025-07-20 11:00:13 [http-nio-8085-exec-1] INFO  c.R.A.c.L.LoginController:56 - registerUser finished.
+2025-07-20 11:02:29 [http-nio-8085-exec-5] INFO  c.R.A.c.L.LoginController:34 - registerUser started.
+2025-07-20 11:02:29 [http-nio-8085-exec-5] INFO  c.R.A.s.l.LoginServiceImpl:38 - register started.
+2025-07-20 11:02:30 [http-nio-8085-exec-5] INFO  c.R.A.s.l.LoginServiceImpl:62 - register finished.
+2025-07-20 11:02:30 [http-nio-8085-exec-5] INFO  c.R.A.c.L.LoginController:56 - registerUser finished.
+2025-07-20 11:02:44 [http-nio-8085-exec-2] INFO  c.R.A.c.L.LoginController:72 - saveUserLogin started.
+2025-07-20 11:02:44 [http-nio-8085-exec-2] INFO  c.R.A.s.l.LoginServiceImpl:68 - acceptDetails started.
+2025-07-20 11:02:44 [http-nio-8085-exec-2] INFO  c.R.A.s.l.LoginServiceImpl:81 - acceptDetails finished.
+2025-07-20 11:02:44 [http-nio-8085-exec-2] INFO  c.R.A.c.L.LoginController:84 - saveUserLogin finished.
+2025-07-20 11:06:12 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:06:12 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:06:12 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:06:12 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:06:12 [http-nio-8085-exec-9] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:06:12 [http-nio-8085-exec-9] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:06:12 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:06:12 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:06:12 [http-nio-8085-exec-9] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:06:12 [http-nio-8085-exec-9] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:06:12 [http-nio-8085-exec-7] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:06:12 [http-nio-8085-exec-7] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:06:12 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:06:12 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:06:12 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:06:12 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:07:17 [http-nio-8085-exec-6] INFO  c.R.A.c.P.UploadPaintingController:30 - upload started.
+2025-07-20 11:07:17 [http-nio-8085-exec-6] INFO  c.R.A.c.P.UploadPaintingController:32 - upload finished.
+2025-07-20 11:07:17 [http-nio-8085-exec-6] INFO  c.R.A.s.U.UploadServiceImpl:32 - uploadPainting started.
+2025-07-20 11:07:17 [http-nio-8085-exec-6] INFO  c.R.A.s.U.UploadServiceImpl:67 - uploadPainting finished.
+2025-07-20 11:07:22 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:07:22 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:07:22 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:07:22 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:07:22 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:07:22 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:07:22 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:07:22 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:07:22 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:07:22 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:07:22 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:07:22 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:07:22 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:07:22 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:07:22 [http-nio-8085-exec-10] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:07:22 [http-nio-8085-exec-10] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:07:32 [http-nio-8085-exec-9] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:07:32 [http-nio-8085-exec-9] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:07:32 [http-nio-8085-exec-9] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:07:32 [http-nio-8085-exec-9] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:07:32 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:07:32 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:07:32 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:07:32 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:07:32 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:07:32 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:07:32 [http-nio-8085-exec-3] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:07:32 [http-nio-8085-exec-3] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:07:32 [http-nio-8085-exec-9] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:07:32 [http-nio-8085-exec-9] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:07:32 [http-nio-8085-exec-9] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:07:32 [http-nio-8085-exec-9] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:11:48 [http-nio-8085-exec-8] INFO  c.R.A.c.P.BidController:26 - placeBidcont started.
+2025-07-20 11:11:48 [http-nio-8085-exec-8] INFO  c.R.A.s.DashBoard.BidServiceImpl:45 - placeBid started.
+2025-07-20 11:11:48 [http-nio-8085-exec-8] INFO  c.R.A.s.DashBoard.BidServiceImpl:65 - placeBid finished.
+2025-07-20 11:11:48 [http-nio-8085-exec-8] INFO  c.R.A.c.P.BidController:32 - placeBidcont finished with error.
+2025-07-20 11:12:02 [http-nio-8085-exec-5] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:12:02 [http-nio-8085-exec-5] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:12:02 [http-nio-8085-exec-5] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:12:02 [http-nio-8085-exec-5] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:12:02 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:12:02 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:12:02 [http-nio-8085-exec-1] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:12:02 [http-nio-8085-exec-1] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:12:02 [http-nio-8085-exec-1] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:12:02 [http-nio-8085-exec-2] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:12:02 [http-nio-8085-exec-1] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:12:02 [http-nio-8085-exec-2] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:12:02 [http-nio-8085-exec-5] INFO  c.R.A.c.D.DashboardController:26 - getPainting started.
+2025-07-20 11:12:02 [http-nio-8085-exec-5] INFO  c.R.A.s.D.DashboardServiceImpl:25 - getPaintingsByPage started.
+2025-07-20 11:12:02 [http-nio-8085-exec-5] INFO  c.R.A.s.D.DashboardServiceImpl:43 - getPaintingsByPage finished.
+2025-07-20 11:12:02 [http-nio-8085-exec-5] INFO  c.R.A.c.D.DashboardController:29 - getPainting finished.
+2025-07-20 11:12:18 [http-nio-8085-exec-2] INFO  c.R.A.c.P.BidController:26 - placeBidcont started.
+2025-07-20 11:12:18 [http-nio-8085-exec-2] INFO  c.R.A.s.DashBoard.BidServiceImpl:45 - placeBid started.
+2025-07-20 11:12:18 [http-nio-8085-exec-2] INFO  c.R.A.s.DashBoard.BidServiceImpl:71 - placeBid finished.
+2025-07-20 11:12:18 [http-nio-8085-exec-2] INFO  c.R.A.c.P.BidController:32 - placeBidcont finished with error.
+2025-07-20 11:12:42 [http-nio-8085-exec-10] INFO  c.R.A.c.P.BidController:26 - placeBidcont started.
+2025-07-20 11:12:42 [http-nio-8085-exec-10] INFO  c.R.A.s.DashBoard.BidServiceImpl:45 - placeBid started.
+2025-07-20 11:12:42 [http-nio-8085-exec-10] INFO  c.R.A.s.DashBoard.BidServiceImpl:94 - placeBid finished.
+2025-07-20 11:12:42 [http-nio-8085-exec-10] INFO  c.R.A.c.P.BidController:29 - placeBidcont finished.
+2025-07-20 11:12:52 [http-nio-8085-exec-4] INFO  c.R.A.c.P.BidController:39 - Fetching top 10 bids for painting ID: 2
+2025-07-20 11:12:52 [http-nio-8085-exec-4] INFO  c.R.A.s.DashBoard.BidServiceImpl:99 - getTop10BidsWithRank started.
+2025-07-20 11:12:52 [http-nio-8085-exec-4] INFO  c.R.A.s.DashBoard.BidServiceImpl:108 - getTop10BidsWithRank finished.
+2025-07-20 11:13:43 [http-nio-8085-exec-10] INFO  c.R.A.c.P.BidController:26 - placeBidcont started.
+2025-07-20 11:13:43 [http-nio-8085-exec-10] INFO  c.R.A.s.DashBoard.BidServiceImpl:45 - placeBid started.
+2025-07-20 11:13:43 [http-nio-8085-exec-10] INFO  c.R.A.s.DashBoard.BidServiceImpl:59 - placeBid finished.
+2025-07-20 11:13:43 [http-nio-8085-exec-10] INFO  c.R.A.c.P.BidController:32 - placeBidcont finished with error.
+2025-07-20 11:13:49 [http-nio-8085-exec-1] INFO  c.R.A.c.P.BidController:26 - placeBidcont started.
+2025-07-20 11:13:49 [http-nio-8085-exec-1] INFO  c.R.A.s.DashBoard.BidServiceImpl:45 - placeBid started.
+2025-07-20 11:13:49 [http-nio-8085-exec-1] INFO  c.R.A.s.DashBoard.BidServiceImpl:94 - placeBid finished.
+2025-07-20 11:13:49 [http-nio-8085-exec-1] INFO  c.R.A.c.P.BidController:29 - placeBidcont finished.
+2025-07-20 11:13:53 [http-nio-8085-exec-2] INFO  c.R.A.c.P.BidController:39 - Fetching top 10 bids for painting ID: 2
+2025-07-20 11:13:53 [http-nio-8085-exec-2] INFO  c.R.A.s.DashBoard.BidServiceImpl:99 - getTop10BidsWithRank started.
+2025-07-20 11:13:53 [http-nio-8085-exec-2] INFO  c.R.A.s.DashBoard.BidServiceImpl:108 - getTop10BidsWithRank finished.
+2025-07-20 11:15:25 [http-nio-8085-exec-5] INFO  c.R.A.c.L.ForgotPasswordController:33 - getSecurityQuestion started.
+2025-07-20 11:15:25 [http-nio-8085-exec-5] INFO  c.R.A.s.l.LoginServiceImpl:107 - getSecurityQuestion started.
+2025-07-20 11:15:25 [http-nio-8085-exec-5] INFO  c.R.A.s.l.LoginServiceImpl:113 - getSecurityQuestion finished.
+2025-07-20 11:15:25 [http-nio-8085-exec-5] INFO  c.R.A.c.L.ForgotPasswordController:40 - getSecurityQuestion finished.
+2025-07-20 11:15:35 [http-nio-8085-exec-8] INFO  c.R.A.c.L.ForgotPasswordController:52 - checkSecurityAnswer started.
+2025-07-20 11:15:35 [http-nio-8085-exec-8] INFO  c.R.A.s.l.LoginServiceImpl:120 - checkSecurityAnswer started.
+2025-07-20 11:15:35 [http-nio-8085-exec-8] INFO  c.R.A.s.l.LoginServiceImpl:130 - checkSecurityAnswer finished.
+2025-07-20 11:15:35 [http-nio-8085-exec-8] INFO  c.R.A.c.L.ForgotPasswordController:54 - checkSecurityAnswer finished.
+2025-07-20 11:15:37 [http-nio-8085-exec-6] INFO  c.R.A.c.L.ForgotPasswordController:52 - checkSecurityAnswer started.
+2025-07-20 11:15:37 [http-nio-8085-exec-6] INFO  c.R.A.s.l.LoginServiceImpl:120 - checkSecurityAnswer started.
+2025-07-20 11:15:38 [http-nio-8085-exec-6] INFO  c.R.A.s.l.LoginServiceImpl:127 - checkSecurityAnswer finished.
+2025-07-20 11:15:38 [http-nio-8085-exec-6] INFO  c.R.A.c.L.ForgotPasswordController:54 - checkSecurityAnswer finished.
+2025-07-20 11:15:50 [http-nio-8085-exec-4] INFO  c.R.A.c.L.ForgotPasswordController:69 - passwordReset started.
+2025-07-20 11:15:50 [http-nio-8085-exec-4] INFO  c.R.A.s.l.LoginServiceImpl:138 - passwordReset started.
+2025-07-20 11:15:51 [http-nio-8085-exec-4] INFO  c.R.A.s.l.LoginServiceImpl:154 - passwordReset finished.
+2025-07-20 11:15:51 [http-nio-8085-exec-4] INFO  c.R.A.c.L.ForgotPasswordController:82 - passwordReset finished.
+2025-07-20 11:16:06 [http-nio-8085-exec-9] INFO  c.R.A.c.L.LoginController:100 - validateLogin started.
+2025-07-20 11:16:06 [http-nio-8085-exec-9] INFO  c.R.A.s.l.LoginServiceImpl:87 - validateLogin started.
+2025-07-20 11:16:07 [http-nio-8085-exec-9] INFO  c.R.A.s.l.LoginServiceImpl:91 - validateLogin finished.
+2025-07-20 11:16:07 [http-nio-8085-exec-9] INFO  c.R.A.c.L.LoginController:107 - validateLogin finished.
+2025-07-20 11:34:05 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool:820 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=4m25s994ms452µs800ns).
+2025-07-21 09:19:51 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool:820 - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=21h45m46s45ms534µs300ns).
