@@ -1,5 +1,7 @@
 package com.RESTAPI.ArtGalleryProject.service.DashBoard;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
+import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
+import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 
 @Service
 public class DashboardServiceImpl implements DashboardService{
@@ -19,6 +23,8 @@ public class DashboardServiceImpl implements DashboardService{
 	
 	@Autowired
 	private PaintingRepo paintingrepo;
+	@Autowired
+	private UserRepo userrepo;
 
 	@Override
 	public Page<PaintingResponse> getPaintingsByPage(int pageNo, int size) {
@@ -65,6 +71,19 @@ public class DashboardServiceImpl implements DashboardService{
 		        painting.isSold(),
 		        painting.getSeller().getName()
 		);
+	}
+
+	@Override
+	public Object walletBalance(long id) {
+		logger.info("walletBalance started.");
+		Optional<User> userOptional = userrepo.findById(id);
+		if(userOptional.isEmpty()) {
+			logger.info("walletBalance finished.");
+			return "user not found";
+		}
+		User user = userOptional.get();
+		logger.info("walletBalance finished.");
+		return user.getWallet().getBalance();
 	}
 	
 }

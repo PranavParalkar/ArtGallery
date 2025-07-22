@@ -6,7 +6,7 @@ import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.UserDetailRequest;
 
 public interface LoginService {
 	public String register(SignupRequest request);
-	public String validateLogin(LoginRequest request);
+	public Object validateLogin(LoginRequest request);
 	public String getSecurityQuestion(String Email);
 	public String checkSecurityAnswer(String Email, String Answer);
 	public String passwordReset(String Email, String newPassword, String confirmPassword);

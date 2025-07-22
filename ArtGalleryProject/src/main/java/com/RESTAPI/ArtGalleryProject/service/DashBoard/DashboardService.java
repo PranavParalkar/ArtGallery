@@ -7,4 +7,5 @@ import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 public interface DashboardService {
 	public Page<PaintingResponse> getPaintingsByPage(int pageNo, int size);
 	public PaintingResponse getPaintingById(long id);
+	public Object walletBalance(long id);
 }

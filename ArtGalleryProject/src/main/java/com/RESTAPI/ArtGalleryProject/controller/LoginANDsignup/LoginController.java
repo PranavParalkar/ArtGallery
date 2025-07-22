@@ -19,7 +19,7 @@ import com.RESTAPI.ArtGalleryProject.service.loginANDsignup.LoginService;
 public class LoginController {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
-	
+
 	@Autowired
 	private LoginService service;
 
@@ -103,21 +103,18 @@ public class LoginController {
 			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
 		}
 
-		String response = service.validateLogin(request);
-		logger.info("validateLogin finished.");
-		switch (response) {
-		case "Invalid Email":
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		Object response = service.validateLogin(request);
+	    logger.info("validateLogin finished.");
 
-		case "Invalid Password":
-			return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+	    if (response instanceof String) {
+	        return switch ((String) response) {
+	            case "Invalid Email" -> new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+	            case "Invalid Password" -> new ResponseEntity<>(response, HttpStatus.CONFLICT);
+	            default -> new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+	        };
+	    }
 
-		case "Login Successful":
-			return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
-
-		default:
-			return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	    return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 
 	}
 

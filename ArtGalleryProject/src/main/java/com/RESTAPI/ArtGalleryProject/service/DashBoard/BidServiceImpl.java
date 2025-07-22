@@ -99,7 +99,7 @@ public class BidServiceImpl implements BidService {
     	logger.info("getTop10BidsWithRank started.");
     	Painting painting = paintingrepo.findById(paintingId)
                 .orElseThrow(() -> new RuntimeException("Painting not found"));
-        List<Bid> topBids = bidrepo.findTop10ByPaintingOrderByBidAmountDesc(painting);
+        List<Bid> topBids = bidrepo.findTop3ByPaintingOrderByBidAmountDesc(painting);
         List<TopBidDTO> result = new ArrayList<>();
         int rank = 1;
         for (Bid bid : topBids) {

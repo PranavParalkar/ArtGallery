@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 import com.RESTAPI.ArtGalleryProject.service.DashBoard.DashboardService;
 
+import org.hibernate.query.NativeQuery.ReturnableResultNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class DashboardController {
 
 	private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
-	
+
 	@Autowired
 	private DashboardService service;
 
@@ -43,5 +44,20 @@ public class DashboardController {
 		else
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
+
+	// wallet amount
+	/*
+	 * @GetMapping("/wallet") public ResponseEntity<?> getWalletBalance() {
+	 * logger.info("getWalletBalance stated.");
+	 * 
+	 * Object response = service.walletBalance(add user id after getting userid frmo
+	 * authentication); if (response instanceof String) {
+	 * logger.info("getWalletBalance finished."); switch ((String)response) { case
+	 * "user not found": return new ResponseEntity<>(response,
+	 * HttpStatus.NOT_FOUND); default: return new
+	 * ResponseEntity<>("Internal server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+	 * } } logger.info("getWalletBalance finished."); return new
+	 * ResponseEntity<>((double)response, HttpStatus.OK); }
+	 */
 
 }

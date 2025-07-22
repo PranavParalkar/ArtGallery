@@ -35,3 +35,12 @@ build/
 ### VS Code ###
 .vscode/
 /.apt_generated_tests/
+
+# Ignore all log files and logs directory
+*.log
+logs/
+logs/*
+
+# Ignore all files in the image directory
+image/
+image/*

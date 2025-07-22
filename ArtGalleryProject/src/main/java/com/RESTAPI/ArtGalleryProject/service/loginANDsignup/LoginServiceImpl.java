@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.RESTAPI.ArtGalleryProject.DTO.JwtResponse;
 import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.LoginRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.SignupRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.UserDetailRequest;
@@ -18,14 +19,17 @@ import com.RESTAPI.ArtGalleryProject.Entity.Wallet;
 import com.RESTAPI.ArtGalleryProject.repository.LoginCredRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
+import com.RESTAPI.ArtGalleryProject.security.JwtService;
 
 @Service
 public class LoginServiceImpl implements LoginService {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
-	
+
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
+	@Autowired
+	private JwtService jwtService;
 	@Autowired
 	private UserRepo userrepo;
 	@Autowired
@@ -83,21 +87,26 @@ public class LoginServiceImpl implements LoginService {
 	}
 
 	@Override
-	public String validateLogin(LoginRequest request) {
+	public Object validateLogin(LoginRequest request) {
 		logger.info("validateLogin started.");
-		if (loginrepo.existsById(request.email())) {
-			String password = loginrepo.findById(request.email()).orElse(null).getPassword();
-			if (encoder.matches(request.password(), password)) {
-				logger.info("validateLogin finished.");
-				return "Login Successful";
-			} else {
-				logger.info("validateLogin finished.");
-				return "Invalid Password";
-			}
-		} else {
+		Optional<LoginCredentials> loginOpt = loginrepo.findById(request.email());
+		if (loginOpt.isEmpty()) {
 			logger.info("validateLogin finished.");
 			return "Invalid Email";
 		}
+
+		LoginCredentials login = loginOpt.get();
+		if (!encoder.matches(request.password(), login.getPassword())) {
+			logger.info("validateLogin finished.");
+			return "Invalid Password";
+		}
+
+		long userId = login.getUser().getUserId();
+		String token = jwtService.generateToken(request.email(), userId);
+
+		logger.info("validateLogin finished.");
+		return new JwtResponse(token);
+
 	}
 
 //	 <-----------FORGOT PASSWORD FUNCTIONS------------>

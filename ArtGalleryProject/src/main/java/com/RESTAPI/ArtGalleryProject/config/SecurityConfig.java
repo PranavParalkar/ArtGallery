@@ -2,19 +2,29 @@ package com.RESTAPI.ArtGalleryProject.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.RESTAPI.ArtGalleryProject.security.JwtAuthFilter;
+
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+
+	@Autowired
+	private JwtAuthFilter jwtAuthFilter;
 
     // Allow all requests and enable CORS
     @Bean
@@ -24,11 +34,18 @@ public class SecurityConfig {
         	.cors(Customizer.withDefaults()) // enables CORS with default settings
         	.csrf(csrf -> csrf.disable())    // disables CSRF
         	.authorizeHttpRequests(auth -> auth
-            .anyRequest().permitAll()		 // allows all requests
-        	);
+        			.requestMatchers("/auctions/bid/**").authenticated()
+                    .requestMatchers("/auctions/**").permitAll()
+                    .anyRequest().authenticated())
+        	.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     	logger.info("securityFilterChain finished.");
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     // BCrypt password encoder bean

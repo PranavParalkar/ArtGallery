@@ -2,7 +2,6 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // ✅ 1
 import { motion } from "framer-motion";
-import { FaShoppingCart, FaUserTie } from "react-icons/fa";
 
 const Login = () => {
   const navigate = useNavigate(); // ✅ 2
@@ -147,7 +146,7 @@ const Login = () => {
     setForgotError("");
     try {
       const res = await axios.post(
-        "http://localhost:8085/forgot-password?step=check-email",
+        "http://localhost:8085/auth/forgot-password?step=check-email",
         { email: forgotEmail }
       );
       setForgotQuestion(res.data); // Assume backend returns question as string
@@ -167,7 +166,7 @@ const Login = () => {
     setForgotError("");
     try {
       const res = await axios.post(
-        "http://localhost:8085/forgot-password?step=verify-answer",
+        "http://localhost:8085/auth/forgot-password?step=verify-answer",
         { email: forgotEmail, answer: forgotAnswer }
       );
       if (res.data === "Verification Success") {
@@ -190,7 +189,7 @@ const Login = () => {
     setForgotError("");
     try {
       const res = await axios.put(
-        "http://localhost:8085/forgot-password?step=password-reset",
+        "http://localhost:8085/auth/forgot-password?step=password-reset",
         {
           email: forgotEmail,
           newPassword: forgotNewPassword,

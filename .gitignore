@@ -1,2 +1,4 @@
 /.metadata/
 /ArtGallery/
+/ArtGalleryProject/logs
+*.log
