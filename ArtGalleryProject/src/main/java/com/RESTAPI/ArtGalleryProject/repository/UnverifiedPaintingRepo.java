@@ -1,0 +1,9 @@
+package com.RESTAPI.ArtGalleryProject.repository;
+
+import com.RESTAPI.ArtGalleryProject.Entity.UnverifiedPainting;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+public interface UnverifiedPaintingRepo extends JpaRepository<UnverifiedPainting, Long> {
+    List<UnverifiedPainting> findByApprovedFalse();
+}
