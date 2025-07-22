@@ -18,7 +18,7 @@ const Header = () => {
   const isLoggedIn = !!localStorage.getItem("userId"); // Use userId for login check
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white z-50 border-b shadow-md text-sm">
+    <header className="fixed top-0 left-0 w-full bg-transparent z-50 border-b shadow-md text-sm">
       <div className="flex items-center justify-between px-6 py-5">
         {/* Left side: Logo and Menu */}
         <div className="flex items-center gap-8">
