@@ -108,9 +108,8 @@ const MainTab = () => {
           {carouselItems.map((_, i) => (
             <div
               key={i}
-              className={`w-2 h-2 rounded-full transition-all ${
-                i === index ? "bg-black" : "bg-gray-400"
-              }`}
+              className={`w-2 h-2 rounded-full transition-all ${i === index ? "bg-black" : "bg-gray-400"
+                }`}
             ></div>
           ))}
         </div>
@@ -125,6 +124,8 @@ const MainTab = () => {
       </div>
     </div>
   );
+
+  console.log(paintings);
 
   const upcomingAuctions = paintings.filter((p) => !p.isSold);
 

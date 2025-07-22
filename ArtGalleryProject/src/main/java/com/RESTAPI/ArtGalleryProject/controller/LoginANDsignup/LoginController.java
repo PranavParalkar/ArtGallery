@@ -70,6 +70,7 @@ public class LoginController {
 		}
 
 		String email = authHelper.getCurrentEmail();
+		System.out.println(email);
 		String response = service.acceptDetails(request, email);
 		logger.info("saveUserLogin finished.");
 		switch (response) {
@@ -98,7 +99,7 @@ public class LoginController {
 	            default -> new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
 	        };
 	    }
-
+	    System.out.println();
 	    return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 
 	}

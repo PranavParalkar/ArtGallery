@@ -42,7 +42,7 @@ public class User {
     private boolean authorizedSeller;
     private LocalDate createdAt;
 
-    // ✅ New fields for license authentication
+    // New fields for license authentication
     private String licenseFilePath;
 
     @Enumerated(EnumType.STRING)

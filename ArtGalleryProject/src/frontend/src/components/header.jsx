@@ -6,6 +6,7 @@ import ProfileModal from "./ProfileModal";
 const Header = () => {
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const token = localStorage.getItem("token");
   const navLinks = {
     auctions: "/auctions",
     sell: "/sell",
@@ -15,7 +16,7 @@ const Header = () => {
   };
 
   // ✅ Check if user is logged in
-  const isLoggedIn = !!localStorage.getItem("userId"); // Use userId for login check
+  const isLoggedIn = !!token // Use token for login check
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white z-50 border-b shadow-md text-sm">

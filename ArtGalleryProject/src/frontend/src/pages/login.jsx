@@ -68,7 +68,6 @@ const Login = () => {
     setUserDetailsError("");
     try {
       const payload = {
-        email: formData.email,
         name: userDetails.name,
         phoneNumber: userDetails.phoneNumber,
         address: {
@@ -82,8 +81,9 @@ const Login = () => {
         },
       };
       const res = await axios.post(
-        "http://localhost:8085/auth/user-info",
-        payload
+        "http://localhost:8085/auth/user-info", payload ,{
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+      }
       );
       if (res.data === "User info saved") {
         navigate("/"); // or set a state to show the profile modal
@@ -114,45 +114,40 @@ const Login = () => {
 
     const payload = isLogin
       ? {
-          email: formData.email,
-          password: formData.password,
-        }
+        email: formData.email,
+        password: formData.password,
+      }
       : {
-          email: formData.email,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-          securityQuestion: formData.securityQuestion,
-          securityAnswer: formData.securityAnswer,
-        };
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        securityQuestion: formData.securityQuestion,
+        securityAnswer: formData.securityAnswer,
+      };
 
     try {
       const res = await axios.post(url, payload);
-      if (!isLogin) {
-        // If backend returns userId and userName after registration, store them
-        if (res.data && res.data.userId) {
-          localStorage.setItem("userId", res.data.userId);
-        }
-        if (res.data && res.data.userName) {
-          localStorage.setItem("userName", res.data.userName);
-        }
-        setShowUserDetails(true); // Show user details form
+      const data = res.data;
+
+      if (data?.token) {
+        localStorage.setItem("token", data.token);
       } else {
-        // After login
-        if (res.data && res.data.userId) {
-          localStorage.setItem("userId", res.data.userId);
-        }
-        if (res.data && res.data.userName) {
-          localStorage.setItem("userName", res.data.userName);
-        }
-        alert(res.data.message || res.data || "Success");
+        alert("Token missing in response");
+        return;
+      }
+
+      if (!isLogin) {
+        setShowUserDetails(true); // For signup: show form to collect additional details
+      } else {
+        alert(data.message || "Login successful");
         navigate("/");
         window.location.reload();
       }
     } catch (err) {
       alert(
         err.response?.data?.message ||
-          err.response?.data ||
-          "Something went wrong"
+        err.response?.data ||
+        "Something went wrong"
       );
     }
   };
@@ -241,7 +236,7 @@ const Login = () => {
           alt=""
           className="absolute left-0 top-0 w-full h-full object-cover opacity-80"
         />
-              
+
       </div>
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -257,11 +252,10 @@ const Login = () => {
               setShowForgot(false);
               setShowUserDetails(false);
             }}
-            className={`px-6 py-2 rounded-full font-semibold ${
-              isLogin && !showForgot && !showUserDetails
-                ? "bg-purple-500 text-white hover:cursor-pointer"
-                : "bg-white/60 text-gray-800 hover:cursor-pointer"
-            }`}
+            className={`px-6 py-2 rounded-full font-semibold ${isLogin && !showForgot && !showUserDetails
+              ? "bg-purple-500 text-white hover:cursor-pointer"
+              : "bg-white/60 text-gray-800 hover:cursor-pointer"
+              }`}
           >
             Login
           </button>
@@ -271,11 +265,10 @@ const Login = () => {
               setShowForgot(false);
               setShowUserDetails(false);
             }}
-            className={`px-6 py-2 rounded-full font-semibold ${
-              !isLogin && !showForgot && !showUserDetails
-                ? "bg-purple-500 text-white hover:cursor-pointer"
-                : "bg-white/60 text-gray-800 hover:cursor-pointer"
-            }`}
+            className={`px-6 py-2 rounded-full font-semibold ${!isLogin && !showForgot && !showUserDetails
+              ? "bg-purple-500 text-white hover:cursor-pointer"
+              : "bg-white/60 text-gray-800 hover:cursor-pointer"
+              }`}
           >
             Sign Up
           </button>
@@ -285,10 +278,10 @@ const Login = () => {
           {showForgot
             ? "Forgot Password"
             : showUserDetails
-            ? "Complete Your Profile"
-            : isLogin
-            ? "Welcome Back"
-            : "Create Account"}
+              ? "Complete Your Profile"
+              : isLogin
+                ? "Welcome Back"
+                : "Create Account"}
         </h2>
 
         {/* User Details Form After Signup */}
@@ -570,11 +563,10 @@ const Login = () => {
               {/* Submit */}
               <button
                 type="submit"
-                className={`w-full py-3 cursor-pointer rounded-xl bg-gradient-to-r ${
-                  isLogin
-                    ? "from-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-purple-600"
-                    : "from-green-500 to-emerald-500 hover:from-emerald-600 hover:to-green-600"
-                } text-white font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl`}
+                className={`w-full py-3 cursor-pointer rounded-xl bg-gradient-to-r ${isLogin
+                  ? "from-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-purple-600"
+                  : "from-green-500 to-emerald-500 hover:from-emerald-600 hover:to-green-600"
+                  } text-white font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl`}
               >
                 {isLogin ? "Login" : "Sign Up"}
               </button>

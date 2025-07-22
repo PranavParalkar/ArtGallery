@@ -14,7 +14,6 @@ const Sell = () => {
     breadth: "",
     startingPrice: "",
     fixedPrice: "",
-    userId: "",
   });
 
   const handleChange = (e) => {
@@ -33,7 +32,6 @@ const Sell = () => {
     data.append("description", formData.description);
     data.append("length", formData.length);
     data.append("breadth", formData.breadth);
-    data.append("userId", formData.userId);
 
     if (sellingMode === "auction") {
       data.append("startingPrice", formData.startingPrice);
@@ -166,7 +164,7 @@ const Sell = () => {
                     setSellingMode("auction");
                     setStep(3);
                   }}
-                  className="bg-[#5a3c28] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                  className="bg-[#5a3c28] w-[20%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
                 >
                   Sell in Auction
                 </motion.button>
@@ -177,7 +175,7 @@ const Sell = () => {
                     setSellingMode("store");
                     setStep(3);
                   }}
-                  className="bg-[#5a3c28] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                  className="bg-[#5a3c28] w-[20%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
                 >
                   Sell in Store
                 </motion.button>
@@ -282,7 +280,7 @@ const Sell = () => {
               ) : (
                 <div>
                   <label className="block font-medium mb-1">
-                    Fixed Price (₹):
+                    Price (₹):
                   </label>
                   <input
                     type="number"
@@ -296,20 +294,6 @@ const Sell = () => {
                   />
                 </div>
               )}
-
-              <div>
-                <label className="block font-medium mb-1">User ID:</label>
-                <input
-                  type="number"
-                  name="userId"
-                  required
-                  min="0"
-                  onChange={handleChange}
-                  value={formData.userId}
-                  className="w-full border border-gray-300 p-2 rounded-md"
-                />
-              </div>
-
               <button
                 type="submit"
                 className="bg-[#5a3c28] text-white px-6 py-2 rounded-lg hover:bg-[#3d281a]"

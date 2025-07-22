@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class DashboardController {
 
 	private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
-	
+
 	@Autowired
 	private DashboardService service;
 
@@ -27,10 +27,7 @@ public class DashboardController {
 		final int pageSize = 12;
 		Page<PaintingResponse> allPaintings = service.getPaintingsByPage(pageNo, pageSize);
 		logger.info("getPainting finished.");
-		if (!allPaintings.isEmpty())
-			return new ResponseEntity<>(allPaintings, HttpStatus.OK);
-		else
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		return new ResponseEntity<>(allPaintings, HttpStatus.OK);
 	}
 
 	@GetMapping("/auctions/{paintingId}")
