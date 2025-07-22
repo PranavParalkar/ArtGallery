@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.TopBidDTO;
+import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.UserBidDTO;
 import com.RESTAPI.ArtGalleryProject.Entity.Bid;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
@@ -25,8 +26,8 @@ import jakarta.transaction.Transactional;
 @Service
 public class BidServiceImpl implements BidService {
 
-	private static final Logger logger = LoggerFactory.getLogger(BidServiceImpl.class);
-	
+    private static final Logger logger = LoggerFactory.getLogger(BidServiceImpl.class);
+
     @Autowired
     private BidRepo bidrepo;
 
@@ -42,7 +43,7 @@ public class BidServiceImpl implements BidService {
     @Override
     @Transactional
     public void placeBid(Long userId, Long paintingId, double newBidAmount) {
-    	logger.info("placeBid started.");
+        logger.info("placeBid started.");
         User buyer = userrepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -56,19 +57,19 @@ public class BidServiceImpl implements BidService {
         if (currentHighestBidOpt.isPresent()) {
             double currentHighest = currentHighestBidOpt.get().getBidAmount();
             if (newBidAmount <= currentHighest) {
-            	logger.info("placeBid finished.");
+                logger.info("placeBid finished.");
                 throw new RuntimeException("New bid must be strictly higher than current highest bid: " + currentHighest);
             }
         } else {
             double startingPrice = painting.getStartingPrice();
             if (newBidAmount < startingPrice) {
-            	logger.info("placeBid finished.");
+                logger.info("placeBid finished.");
                 throw new RuntimeException("First bid must be at least the starting price: " + startingPrice);
             }
         }
 
         if (buyerWallet.getBalance() < newBidAmount) {
-        	logger.info("placeBid finished.");
+            logger.info("placeBid finished.");
             throw new RuntimeException("Insufficient wallet balance.");
         }
 
@@ -95,9 +96,9 @@ public class BidServiceImpl implements BidService {
     }
 
     @Override
-    public List<TopBidDTO> getTop10BidsWithRank(Long paintingId) {
-    	logger.info("getTop10BidsWithRank started.");
-    	Painting painting = paintingrepo.findById(paintingId)
+    public List<TopBidDTO> getTop3BidsWithRank(Long paintingId) {
+        logger.info("getTop10BidsWithRank started.");
+        Painting painting = paintingrepo.findById(paintingId)
                 .orElseThrow(() -> new RuntimeException("Painting not found"));
         List<Bid> topBids = bidrepo.findTop3ByPaintingOrderByBidAmountDesc(painting);
         List<TopBidDTO> result = new ArrayList<>();
@@ -107,5 +108,14 @@ public class BidServiceImpl implements BidService {
         }
         logger.info("getTop10BidsWithRank finished.");
         return result;
+    }
+
+    // ✅ New method added for UserBid history per painting
+    @Override
+    public List<UserBidDTO> getUserBidsForPainting(Long userId, Long paintingId) {
+        List<Bid> bids = bidrepo.findByBuyerUserIdAndPaintingPaintingId(userId, paintingId);
+        return bids.stream()
+                .map(b -> new UserBidDTO(b.getBidId(), b.getBidAmount(), b.getTimeStamp().toString()))
+                .toList();
     }
 }

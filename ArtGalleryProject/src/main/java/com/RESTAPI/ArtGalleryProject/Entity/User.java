@@ -30,41 +30,43 @@ import lombok.ToString;
 @ToString
 @Entity
 public class User {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long userId;
 
-	@Embedded
-	private Address address;
-	private String name;
-	private String phoneNumber;
+    private String email; // <-- Add this line
 
-	private boolean authorizedSeller;
-	private LocalDate createdAt;
+    @Embedded
+    private Address address;
+    private String name;
+    private String phoneNumber;
 
-	// ✅ New fields for license authentication
+    private boolean authorizedSeller;
+    private LocalDate createdAt;
+
+    // ✅ New fields for license authentication
     private String licenseFilePath;
 
     @Enumerated(EnumType.STRING)
     private LicenseStatus licenseStatus = LicenseStatus.PENDING;
 
-	// relational
+    // relational
 
-	// Wallet
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "wallet_id")
-	private Wallet wallet;
+    // Wallet
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "wallet_id")
+    private Wallet wallet;
 
-	// paintings uploaded as seller
-	@OneToMany(mappedBy = "seller")
-	private List<Painting> paintingsSold;
+    // paintings uploaded as seller
+    @OneToMany(mappedBy = "seller")
+    private List<Painting> paintingsSold;
 
-	// paintings bought as buyer
-	@OneToMany(mappedBy = "buyer")
-	private List<Painting> paintingsBought;
+    // paintings bought as buyer
+    @OneToMany(mappedBy = "buyer")
+    private List<Painting> paintingsBought;
 
-	// bidding of user (many to many)
-	@OneToMany(mappedBy = "buyer")
-	private List<Bid> bids;
+    // bidding of user (many to many)
+    @OneToMany(mappedBy = "buyer")
+    private List<Bid> bids;
 }
 

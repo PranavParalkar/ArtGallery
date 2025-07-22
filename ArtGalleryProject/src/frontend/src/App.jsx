@@ -5,13 +5,11 @@ import AppLayout from "./layouts/app-layout";
 import "./App.css";
 import MainTab from "./pages/dashboard";
 import Login from "./pages/login";
-import Onboarding from "./pages/onboarding";
 import Auction from "./pages/auction";
 import Sell from "./pages/sell";
-// import Departments from "./pages/departments";
 import Discover from "./pages/discover";
 import Shop from "./pages/shop";
-
+import BiddingFrontend from "./pages/biddingFrontend";
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -25,10 +23,6 @@ const router = createBrowserRouter([
         element: <Login />,
       },
       {
-        path: "/onboarding",
-        element: <Onboarding />,
-      },
-      {
         path: "/auctions",
         element: <Auction />,
       },
@@ -36,6 +30,7 @@ const router = createBrowserRouter([
         path: "/sell",
         element: <Sell />,
       },
+
       {
         path: "/discover",
         element: <Discover />,
@@ -43,6 +38,11 @@ const router = createBrowserRouter([
       {
         path: "/shop",
         element: <Shop />,
+      },
+
+      {
+        path: "/biddingFrontend/:paintingId", // Dynamic route with paintingId
+        element: <BiddingFrontend />,
       },
     ],
   },

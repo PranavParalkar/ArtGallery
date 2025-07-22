@@ -1,6 +1,8 @@
 package com.RESTAPI.ArtGalleryProject.service.loginANDsignup;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -49,6 +51,7 @@ public class LoginServiceImpl implements LoginService {
 		wallet.setBalance(0.0);
 
 		var user = new User();
+		user.setEmail(request.email());
 		user.setAuthorizedSeller(false);
 		user.setCreatedAt(LocalDate.now());
 		user.setWallet(wallet);
@@ -63,6 +66,7 @@ public class LoginServiceImpl implements LoginService {
 		walletrepo.save(wallet);
 		userrepo.save(user);
 		loginrepo.save(logincred);
+
 		logger.info("register finished.");
 		return "Registration Successful";
 	}
