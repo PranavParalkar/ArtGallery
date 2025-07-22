@@ -1,6 +1,6 @@
 package com.RESTAPI.ArtGalleryProject.Enum;
 
-public enum LicenseStatus {
+public enum PaintingStatus {
 	PENDING,
     APPROVED,
     REJECTED

@@ -4,13 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.RESTAPI.ArtGalleryProject.Embeddable.Address;
-import com.RESTAPI.ArtGalleryProject.Enum.LicenseStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,8 +31,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long userId;
 
-    private String email; // <-- Add this line
-
     @Embedded
     private Address address;
     private String name;
@@ -43,12 +38,6 @@ public class User {
 
     private boolean authorizedSeller;
     private LocalDate createdAt;
-
-    // ✅ New fields for license authentication
-    private String licenseFilePath;
-
-    @Enumerated(EnumType.STRING)
-    private LicenseStatus licenseStatus = LicenseStatus.PENDING;
 
     // relational
 

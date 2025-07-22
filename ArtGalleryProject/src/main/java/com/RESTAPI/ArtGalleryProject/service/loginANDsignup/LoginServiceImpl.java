@@ -49,7 +49,6 @@ public class LoginServiceImpl implements LoginService {
 		wallet.setBalance(0.0);
 
 		var user = new User();
-		user.setEmail(request.email());
 		user.setAuthorizedSeller(false);
 		user.setCreatedAt(LocalDate.now());
 		user.setWallet(wallet);

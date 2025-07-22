@@ -1,5 +1,7 @@
 package com.RESTAPI.ArtGalleryProject.Entity;
 
+import com.RESTAPI.ArtGalleryProject.Enum.PaintingStatus;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,5 +24,7 @@ public class UnverifiedPainting {
     private double startingPrice;
 
     private Long sellerId;
-    private boolean approved = false;
+    
+    @Enumerated(EnumType.STRING)
+    private PaintingStatus status = PaintingStatus.PENDING;
 }
