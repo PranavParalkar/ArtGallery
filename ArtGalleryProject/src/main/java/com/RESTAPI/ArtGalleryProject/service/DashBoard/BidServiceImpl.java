@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.TopBidDTO;
-import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.UserBidDTO;
 import com.RESTAPI.ArtGalleryProject.Entity.Bid;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
@@ -97,7 +96,7 @@ public class BidServiceImpl implements BidService {
 
     @Override
     public List<TopBidDTO> getTop3BidsWithRank(Long paintingId) {
-        logger.info("getTop10BidsWithRank started.");
+        logger.info("getTop3BidsWithRank started.");
         Painting painting = paintingrepo.findById(paintingId)
                 .orElseThrow(() -> new RuntimeException("Painting not found"));
         List<Bid> topBids = bidrepo.findTop3ByPaintingOrderByBidAmountDesc(painting);
@@ -106,16 +105,8 @@ public class BidServiceImpl implements BidService {
         for (Bid bid : topBids) {
             result.add(new TopBidDTO(rank++, bid.getBuyer().getName(), bid.getBidAmount()));
         }
-        logger.info("getTop10BidsWithRank finished.");
+        logger.info("getTop3BidsWithRank finished.");
         return result;
     }
 
-    // ✅ New method added for UserBid history per painting
-    @Override
-    public List<UserBidDTO> getUserBidsForPainting(Long userId, Long paintingId) {
-        List<Bid> bids = bidrepo.findByBuyerUserIdAndPaintingPaintingId(userId, paintingId);
-        return bids.stream()
-                .map(b -> new UserBidDTO(b.getBidId(), b.getBidAmount(), b.getTimeStamp().toString()))
-                .toList();
-    }
 }

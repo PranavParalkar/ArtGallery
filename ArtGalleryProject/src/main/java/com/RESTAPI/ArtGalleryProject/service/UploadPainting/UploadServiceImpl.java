@@ -28,9 +28,9 @@ public class UploadServiceImpl implements UploadService {
 	private UserRepo userrepo;
 
 	@Override
-	public String uploadPainting(String path, UploadPaintingRequest request) throws IOException {
+	public String uploadPainting(long userId, String path, UploadPaintingRequest request) throws IOException {
 		logger.info("uploadPainting started.");
-		MultipartFile file = request.getFile();
+		MultipartFile file = request.file();
 
 		if (file.getSize() > 5 * 1024 * 1024) {
 			logger.info("uploadPainting finished.");
@@ -55,12 +55,12 @@ public class UploadServiceImpl implements UploadService {
 		Files.copy(file.getInputStream(), Paths.get(filepath));
 
 		var painting = new Painting();
-		painting.setTitle(request.getTitle());
-		painting.setDescription(request.getDescription());
-		painting.setLength(request.getLength());
-		painting.setBreadth(request.getBreadth());
-		painting.setStartingPrice(request.getStartingPrice());
-		painting.setSeller(userrepo.findById(request.getUserId()).orElse(null));
+		painting.setTitle(request.title());
+		painting.setDescription(request.description());
+		painting.setLength(request.length());
+		painting.setBreadth(request.breadth());
+		painting.setStartingPrice(request.startingPrice());
+		painting.setSeller(userrepo.findById(userId).orElse(null));
 		// Store the URL path instead of file path
 		painting.setImageUrl("/image/" + name);
 		paintingrepo.save(painting);

@@ -1,8 +1,6 @@
 package com.RESTAPI.ArtGalleryProject.service.loginANDsignup;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -40,7 +38,7 @@ public class LoginServiceImpl implements LoginService {
 	private WalletRepo walletrepo;
 
 	@Override
-	public String register(SignupRequest request) {
+	public Object register(SignupRequest request) {
 		logger.info("register started.");
 		if (loginrepo.existsById(request.email())) {
 			logger.info("register finished.");
@@ -51,7 +49,6 @@ public class LoginServiceImpl implements LoginService {
 		wallet.setBalance(0.0);
 
 		var user = new User();
-		user.setEmail(request.email());
 		user.setAuthorizedSeller(false);
 		user.setCreatedAt(LocalDate.now());
 		user.setWallet(wallet);
@@ -67,14 +64,16 @@ public class LoginServiceImpl implements LoginService {
 		userrepo.save(user);
 		loginrepo.save(logincred);
 
+		long userId = logincred.getUser().getUserId();
+		String token = jwtService.generateToken(logincred.getEmail(), userId);
 		logger.info("register finished.");
-		return "Registration Successful";
+		return new JwtResponse(token);
 	}
 
 	@Override
-	public String acceptDetails(UserDetailRequest request) {
+	public String acceptDetails(UserDetailRequest request, String email) {
 		logger.info("acceptDetails started.");
-		Optional<LoginCredentials> optionalCred = loginrepo.findById(request.email());
+		Optional<LoginCredentials> optionalCred = loginrepo.findById(email);
 		if (optionalCred.isEmpty()) {
 			logger.info("acceptDetails finished.");
 			return "User not Found";
@@ -147,25 +146,29 @@ public class LoginServiceImpl implements LoginService {
 	}
 
 	@Override
-	public String passwordReset(String Email, String newPassword, String confirmPassword) {
+	public Object passwordReset(String Email, String newPassword, String confirmPassword) {
 		logger.info("passwordReset started.");
-		Optional<LoginCredentials> logincred = loginrepo.findById(Email);
-		if (logincred.isEmpty()) {
+		Optional<LoginCredentials> logincredOpt = loginrepo.findById(Email);
+		if (logincredOpt.isEmpty()) {
 			logger.info("passwordReset finished.");
 			return "Email not found";
 		}
+		LoginCredentials logincred = logincredOpt.get();
 		if (!newPassword.equals(confirmPassword)) {
 			logger.info("passwordReset finished.");
 			return "Passwords don't match";
 		}
-		if (encoder.matches(newPassword, logincred.get().getPassword())) {
+		if (encoder.matches(newPassword, logincred.getPassword())) {
 			logger.info("passwordReset finished.");
 			return "New password and current password are same";
 		}
-		logincred.get().setPassword(encoder.encode(newPassword));
-		loginrepo.save(logincred.get());
+		
+		logincred.setPassword(encoder.encode(newPassword));
+		loginrepo.save(logincred);
+		long userId = logincred.getUser().getUserId();
+		String token = jwtService.generateToken(Email, userId);
 		logger.info("passwordReset finished.");
-		return "Password changed successfully";
+		return new JwtResponse(token);
 	}
 
 }

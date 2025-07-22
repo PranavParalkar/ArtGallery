@@ -35,8 +35,12 @@ public class SecurityConfig {
         	.csrf(csrf -> csrf.disable())    // disables CSRF
         	.authorizeHttpRequests(auth -> auth
         			.requestMatchers("/auctions/bid/**").authenticated()
-                    .requestMatchers("/auctions/**").permitAll()
-                    .anyRequest().authenticated())
+        			.requestMatchers("/user/profile").authenticated()
+        			.requestMatchers("/licenses/**").authenticated()
+        			.requestMatchers("/createOrder").authenticated()
+        			.requestMatchers("/paymentCallback").authenticated()
+        			.requestMatchers("/upload-painting").authenticated()
+                    .anyRequest().permitAll())
         	.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     	logger.info("securityFilterChain finished.");

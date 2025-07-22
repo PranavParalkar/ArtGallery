@@ -2,37 +2,58 @@ package com.RESTAPI.ArtGalleryProject.security;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import io.jsonwebtoken.Claims;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 @Component
-public class JwtAuthFilter extends GenericFilter {
-	private static final long serialVersionUID = -2684403536504146356L;
+public class JwtAuthFilter extends OncePerRequestFilter  {
+	
+	private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
 	
 	@Autowired
     private JwtService jwtService;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-
-        HttpServletRequest httpReq = (HttpServletRequest) request;
-        String authHeader = httpReq.getHeader("Authorization");
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
+    	logger.info("doFilterInternal started.");
+        String authHeader = request.getHeader("Authorization");
+        String token = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            try {
-                String email = jwtService.extractEmail(token);
-                long userId = jwtService.extractUserId(token);
-                request.setAttribute("email", email);
-                request.setAttribute("userId", userId);
-            } catch (Exception e) {
-                // invalid token, proceed without setting
-            }
+            token = authHeader.substring(7);
         }
 
-        chain.doFilter(request, response);
+        if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            Claims claims = jwtService.extractAllClaims(token);
+            String email = claims.get("email", String.class);
+            Long userId = claims.get("userId", Long.class);
+
+            // Create custom authentication token with claims
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    email, null, new ArrayList<>());
+
+            // Store additional details (optional)
+            authentication.setDetails(userId);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
+        filterChain.doFilter(request, response);
+        logger.info("doFilterInternal finished.");
     }
+
 }

@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
-
 public class AdminController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AdminController.class);

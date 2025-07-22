@@ -2,7 +2,7 @@ package com.RESTAPI.ArtGalleryProject.controller.PaintingController;
 
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.PlaceBidRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.TopBidDTO;
-import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.UserBidDTO;
+import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.DashBoard.BidService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,19 +14,22 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 @RestController
-@RequestMapping("/dash")
+@RequestMapping("/auctions")
 public class BidController {
 
 	private static final Logger logger = LoggerFactory.getLogger(BidController.class);
 
 	@Autowired
+	private AuthHelper authHelper;
+	@Autowired
 	private BidService service;
 
-	@PostMapping("/{id}")
-	public ResponseEntity<?> placeBidcont(@PathVariable long id, @RequestBody PlaceBidRequest request) {
+	@PostMapping("/bid/{paintingId}")
+	public ResponseEntity<?> placeBidcont(@PathVariable long paintingId, @RequestBody PlaceBidRequest request) {
 		logger.info("placeBidcont started.");
 		try {
-			service.placeBid(request.userid(), id, request.bidAmount());
+			long userId = authHelper.getCurrentUserId();
+			service.placeBid(userId, paintingId, request.bidAmount());
 			logger.info("placeBidcont finished.");
 			return ResponseEntity.ok("Bid placed successfully");
 		} catch (RuntimeException e) {
@@ -37,17 +40,11 @@ public class BidController {
 
 	@GetMapping("/bid/{paintingId}")
 	public ResponseEntity<List<TopBidDTO>> getTop3Bids(@PathVariable Long paintingId) {
-		logger.info("Fetching top 3 bids for painting ID: {}", paintingId);
+		logger.info("getTop3Bids started.");
 		List<TopBidDTO> topBids = service.getTop3BidsWithRank(paintingId);
+		logger.info("getTop3Bids finished.");
 		return ResponseEntity.ok(topBids);
 
-	}
-
-	@GetMapping("/user-bids/{userId}/{paintingId}")
-	public ResponseEntity<List<UserBidDTO>> getUserBids(@PathVariable Long userId, @PathVariable Long paintingId) {
-		logger.info("Fetching user bids for userId={} and paintingId={}", userId, paintingId);
-		List<UserBidDTO> userBids = service.getUserBidsForPainting(userId, paintingId);
-		return ResponseEntity.ok(userBids);
 	}
 
 }

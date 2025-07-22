@@ -34,8 +34,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long userId;
 
-    private String email; // <-- Add this line
-
     @Embedded
     private Address address;
     private String name;

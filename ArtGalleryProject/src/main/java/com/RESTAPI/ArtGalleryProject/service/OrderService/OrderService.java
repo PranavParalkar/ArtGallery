@@ -33,11 +33,11 @@ public class OrderService {
 		this.razorpayCLient = new RazorpayClient(razorpayId, razorpaySecret);
 	}
 	
-	public Orders createOrder(Orders order) throws RazorpayException {
+	public Orders createOrder(Orders order, String Email) throws RazorpayException {
         JSONObject options = new JSONObject();
         options.put("amount", order.getAmount() * 100); // amount in paise
         options.put("currency", "INR");
-        options.put("receipt", order.getEmail());
+        options.put("receipt", Email);
         Order razorpayOrder = razorpayCLient.orders.create(options);
         if(razorpayOrder != null) {
         order.setRazorpayOrderId(razorpayOrder.get("id"));

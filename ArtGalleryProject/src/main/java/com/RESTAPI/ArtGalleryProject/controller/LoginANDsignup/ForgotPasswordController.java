@@ -78,20 +78,20 @@ public class ForgotPasswordController {
 					"Password should contain atleast 8 characters, 1 capital letter, 1 small letter, 1 digit, and 1 special character",
 					HttpStatus.BAD_REQUEST);
 		}
-		String response = service.passwordReset(request.email(), request.newPassword(), request.confirmPassword());
+		Object response = service.passwordReset(request.email(), request.newPassword(), request.confirmPassword());
 		logger.info("passwordReset finished.");
-		switch (response) {
-		case "Email not found":
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		case "Passwords don't match":
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-		case "New password and current password are same":
-			return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-		case "Password changed successfully":
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		default:
-			return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+		if (response instanceof String) {
+			switch ((String)response) {
+			case "Email not found":
+				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+			case "Passwords don't match":
+				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			case "New password and current password are same":
+				return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+			default:
+				return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		}
-
+		return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 	}
 }

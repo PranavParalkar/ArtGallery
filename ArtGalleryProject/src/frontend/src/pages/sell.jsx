@@ -4,6 +4,8 @@ import axios from "axios";
 
 const Sell = () => {
   const [step, setStep] = useState(1);
+  const [sellingMode, setSellingMode] = useState(""); // "auction" or "store"
+
   const [formData, setFormData] = useState({
     file: null,
     title: "",
@@ -11,6 +13,7 @@ const Sell = () => {
     length: "",
     breadth: "",
     startingPrice: "",
+    fixedPrice: "",
     userId: "",
   });
 
@@ -30,22 +33,32 @@ const Sell = () => {
     data.append("description", formData.description);
     data.append("length", formData.length);
     data.append("breadth", formData.breadth);
-    data.append("startingPrice", formData.startingPrice);
     data.append("userId", formData.userId);
 
+    if (sellingMode === "auction") {
+      data.append("startingPrice", formData.startingPrice);
+    } else {
+      data.append("fixedPrice", formData.fixedPrice);
+    }
+
     try {
-      await axios.post("http://localhost:8085/upload-painting", data, {
+      const url =
+        sellingMode === "auction"
+          ? "http://localhost:8085/upload-painting"
+          : "http://localhost:8085/upload-painting-store";
+
+      await axios.post(url, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("Painting uploaded successfully");
-      setStep(3);
+      setStep(4);
     } catch (err) {
       alert("Failed to upload painting");
     }
   };
 
   return (
-    <div className="w-auto  h-[850px] mt-5  py-12 font-serif">
+    <div className="w-auto h-[850px] mt-5 py-12 font-serif">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -58,6 +71,7 @@ const Sell = () => {
 
         {step === 1 && (
           <div>
+            {/* Intro cards */}
             <div className="grid grid-cols-1 md:grid-cols-2  gap-10 text-[#5a3c28]">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -120,7 +134,6 @@ const Sell = () => {
                 </p>
               </motion.div>
             </div>
-
             <div className="text-center mt-10">
               <button
                 onClick={() => setStep(2)}
@@ -132,118 +145,204 @@ const Sell = () => {
           </div>
         )}
 
+        {/* 🔸Step 2: Choose Selling Mode */}
         {step === 2 && (
-          <form onSubmit={handleSubmit} className="space-y-6 text-[#5a3c28]">
-            <div>
-              <label className="block font-medium mb-1">
-                Painting Image: &lt; 5Mb{" "}
-              </label>
-              <input
-                type="file"
-                name="file"
-                required
-                accept="image/*"
-                onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">Title:</label>
-              <input
-                type="text"
-                name="title"
-                required
-                onChange={handleChange}
-                value={formData.title}
-                className="w-full border border-gray-300 p-2 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">Description:</label>
-              <textarea
-                name="description"
-                required
-                onChange={handleChange}
-                value={formData.description}
-                rows="3"
-                className="w-full border border-gray-300 p-2 rounded-md"
-              />
-            </div>
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <label className="block font-medium mb-1">Length (cm):</label>
-                <input
-                  type="number"
-                  name="length"
-                  required
-                  min="0"
-                  step="any"
-                  onChange={handleChange}
-                  value={formData.length}
-                  className="w-full border border-gray-300 p-2 rounded-md"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block font-medium mb-1">Breadth (cm):</label>
-                <input
-                  type="number"
-                  name="breadth"
-                  required
-                  min="0"
-                  step="any"
-                  onChange={handleChange}
-                  value={formData.breadth}
-                  className="w-full border border-gray-300 p-2 rounded-md"
-                />
+          <motion.div
+            key="step2"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="text-center space-y-6">
+              <h2 className="text-xl font-semibold text-[#5a3c28]">
+                How do you want to sell your painting?
+              </h2>
+              <div className="flex justify-center gap-6 mt-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    setSellingMode("auction");
+                    setStep(3);
+                  }}
+                  className="bg-[#5a3c28] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                >
+                  Sell in Auction
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    setSellingMode("store");
+                    setStep(3);
+                  }}
+                  className="bg-[#5a3c28] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                >
+                  Sell in Store
+                </motion.button>
               </div>
             </div>
-            <div>
-              <label className="block font-medium mb-1">
-                Starting Price (₹):
-              </label>
-              <input
-                type="number"
-                name="startingPrice"
-                required
-                min="0"
-                step="any"
-                onChange={handleChange}
-                value={formData.startingPrice}
-                className="w-full border border-gray-300 p-2 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">User ID:</label>
-              <input
-                type="number"
-                name="userId"
-                required
-                min="0"
-                onChange={handleChange}
-                value={formData.userId}
-                className="w-full border border-gray-300 p-2 rounded-md"
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-[#5a3c28] text-white px-6 py-2 rounded-lg hover:bg-[#3d281a]"
-            >
-              Submit Application
-            </button>
-          </form>
+          </motion.div>
         )}
 
+        {/* 🔸Step 3: Form based on selling mode */}
         {step === 3 && (
-          <div className="text-[#5a3c28] text-center space-y-4">
-            <h2 className="text-2xl font-semibold">
-              Your application is being processed!
-            </h2>
-            <p>
-              Thank you for your interest in becoming a seller. We are reviewing
-              your application and will notify you via email once approved.
-            </p>
-            <p className="italic">Please wait while we verify your details.</p>
-          </div>
+          <motion.div
+            key="step3"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.7 }}
+          >
+            <form onSubmit={handleSubmit} className="space-y-6 text-[#5a3c28]">
+              <div>
+                <label className="block font-medium mb-1">
+                  Painting Image: &lt; 5Mb
+                </label>
+                <input
+                  type="file"
+                  name="file"
+                  required
+                  accept="image/*"
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 p-2 rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Title:</label>
+                <input
+                  type="text"
+                  name="title"
+                  required
+                  onChange={handleChange}
+                  value={formData.title}
+                  className="w-full border border-gray-300 p-2 rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Description:</label>
+                <textarea
+                  name="description"
+                  required
+                  onChange={handleChange}
+                  value={formData.description}
+                  rows="3"
+                  className="w-full border border-gray-300 p-2 rounded-md"
+                />
+              </div>
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="block font-medium mb-1">Length (cm):</label>
+                  <input
+                    type="number"
+                    name="length"
+                    required
+                    min="0"
+                    step="any"
+                    onChange={handleChange}
+                    value={formData.length}
+                    className="w-full border border-gray-300 p-2 rounded-md"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block font-medium mb-1">
+                    Breadth (cm):
+                  </label>
+                  <input
+                    type="number"
+                    name="breadth"
+                    required
+                    min="0"
+                    step="any"
+                    onChange={handleChange}
+                    value={formData.breadth}
+                    className="w-full border border-gray-300 p-2 rounded-md"
+                  />
+                </div>
+              </div>
+
+              {/* Auction Price or Fixed Price */}
+              {sellingMode === "auction" ? (
+                <div>
+                  <label className="block font-medium mb-1">
+                    Starting Price (₹):
+                  </label>
+                  <input
+                    type="number"
+                    name="startingPrice"
+                    required
+                    min="0"
+                    step="any"
+                    onChange={handleChange}
+                    value={formData.startingPrice}
+                    className="w-full border border-gray-300 p-2 rounded-md"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="block font-medium mb-1">
+                    Fixed Price (₹):
+                  </label>
+                  <input
+                    type="number"
+                    name="fixedPrice"
+                    required
+                    min="0"
+                    step="any"
+                    onChange={handleChange}
+                    value={formData.fixedPrice}
+                    className="w-full border border-gray-300 p-2 rounded-md"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="block font-medium mb-1">User ID:</label>
+                <input
+                  type="number"
+                  name="userId"
+                  required
+                  min="0"
+                  onChange={handleChange}
+                  value={formData.userId}
+                  className="w-full border border-gray-300 p-2 rounded-md"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="bg-[#5a3c28] text-white px-6 py-2 rounded-lg hover:bg-[#3d281a]"
+              >
+                Submit Application
+              </button>
+            </form>
+          </motion.div>
+        )}
+
+        {/* 🔸Step 4: Success screen (same for both) */}
+        {step === 4 && (
+          <motion.div
+            key="step4"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="text-[#5a3c28] text-center space-y-4">
+              <h2 className="text-2xl font-semibold">
+                Your application is being processed!
+              </h2>
+              <p>
+                Thank you for your interest in becoming a seller. We are
+                reviewing your application and will notify you via email once
+                approved.
+              </p>
+              <p className="italic">
+                Please wait while we verify your details.
+              </p>
+            </div>
+          </motion.div>
         )}
       </motion.div>
     </div>
