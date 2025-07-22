@@ -45,7 +45,7 @@ const Sell = () => {
   };
 
   return (
-    <div className="w-screen min-h-[100%] mt-5 bg-[#fffaf3] px-6 py-12 font-serif">
+    <div className="w-auto  h-[850px] mt-5  py-12 font-serif">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -58,7 +58,7 @@ const Sell = () => {
 
         {step === 1 && (
           <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-[#5a3c28]">
+            <div className="grid grid-cols-1 md:grid-cols-2  gap-10 text-[#5a3c28]">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -135,7 +135,9 @@ const Sell = () => {
         {step === 2 && (
           <form onSubmit={handleSubmit} className="space-y-6 text-[#5a3c28]">
             <div>
-              <label className="block font-medium mb-1">Painting Image: &lt; 5Mb </label>
+              <label className="block font-medium mb-1">
+                Painting Image: &lt; 5Mb{" "}
+              </label>
               <input
                 type="file"
                 name="file"
@@ -196,7 +198,9 @@ const Sell = () => {
               </div>
             </div>
             <div>
-              <label className="block font-medium mb-1">Starting Price (₹):</label>
+              <label className="block font-medium mb-1">
+                Starting Price (₹):
+              </label>
               <input
                 type="number"
                 name="startingPrice"

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom"; // Add this import
 
 const Auction = () => {
   const [paintings, setPaintings] = useState([]);
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [pageNo, setPageNo] = useState(0);
-  const [hasNextPage, setHasNextPage] = useState(true); // Track if next page exists
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const navigate = useNavigate(); // Add this
 
   useEffect(() => {
     fetchPaintings(pageNo);
@@ -14,11 +16,15 @@ const Auction = () => {
 
   const fetchPaintings = async (page = 0) => {
     try {
-      const res = await axios.get(`http://localhost:8085/auctions?pageNo=${page}`);
+      const res = await axios.get(
+        `http://localhost:8085/auctions?pageNo=${page}`
+      );
       const data = res.data.content || res.data;
       setPaintings(data);
       // Check if next page has paintings
-      const nextRes = await axios.get(`http://localhost:8085/auctions?pageNo=${page + 1}`);
+      const nextRes = await axios.get(
+        `http://localhost:8085/auctions?pageNo=${page + 1}`
+      );
       const nextData = nextRes.data.content || nextRes.data;
       setHasNextPage(Array.isArray(nextData) ? nextData.length > 0 : false);
     } catch (err) {
@@ -28,12 +34,12 @@ const Auction = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fefaf6] px-20 py-10 font-serif relative">
+    <div className="  px-20 py-10 font-serif relative">
       <h1 className="text-4xl font-bold text-center text-[#3e2e1e] mb-12">
-        🎨 Auction Paintings
+        Auction Paintings
       </h1>
 
-      <div className="grid gap-10 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-[1300px] mx-auto">
         {paintings.length > 0 ? (
           paintings.map((painting) => (
             <motion.div
@@ -41,17 +47,24 @@ const Auction = () => {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition"
+              className=" rounded-2xl  bg-[#f0e2d2] h-[500px]  transform hover:-translate-y-2  duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition"
             >
               {painting.imageUrl && (
-                <img
-                  src={`http://localhost:8085${painting.imageUrl}`}
-                  alt={painting.title}
-                  className="w-full h-60 object-cover cursor-pointer"
-                  onClick={() => setFullscreenImage(`http://localhost:8085${painting.imageUrl}`)}
-                />
+                <div className="overflow-hidden h-1/2 rounded-t-2xl">
+                  <img
+                    src={`http://localhost:8085${painting.imageUrl}`}
+                    alt={painting.title}
+                    className="w-full h-full object-cover cursor-pointer 
+                transform transition-transform duration-300 hover:scale-110"
+                    onClick={() =>
+                      setFullscreenImage(
+                        `http://localhost:8085${painting.imageUrl}`
+                      )
+                    }
+                  />
+                </div>
               )}
-              <div className="p-6 flex flex-col justify-between h-[350px]">
+              <div className="p-6 flex flex-col justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-[#5a3c28] mb-1">
                     {painting.title}
@@ -66,18 +79,23 @@ const Auction = () => {
                     💰 Starting Price: ₹{painting.startingPrice}
                   </p>
                   <p className="text-sm text-gray-500 mb-1">
-                    {painting.isSold ? '✅ Sold' : '🟢 Available'}
+                    {painting.isSold ? "✅ Sold" : "🟢 Available"}
                   </p>
                   <p className="text-sm text-gray-500">
-                    Seller: <span className="font-medium text-[#6b4c35]">{painting.seller || 'Unknown'}</span>
+                    Seller:{" "}
+                    <span className="font-medium text-[#6b4c35]">
+                      {painting.seller || "Unknown"}
+                    </span>
                   </p>
                 </div>
-                <a
-                  href={`/auction/${painting.paintingId}`}
-                  className="mt-4 block text-center py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold transition"
+                <button
+                  onClick={() =>
+                    navigate(`/biddingFrontend/${painting.paintingId}`)
+                  }
+                  className="mt-4 block text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold transition"
                 >
                   Place Bid
-                </a>
+                </button>
               </div>
             </motion.div>
           ))

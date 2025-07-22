@@ -1,14 +1,30 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
 
 const WalletModal = ({ isOpen, onClose }) => {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [balance, setBalance] = useState('₹0.00');
+  const [activeTab, setActiveTab] = useState("overview");
+  const [balance, setBalance] = useState("₹0.00");
 
-  const tabs = [
-    { id: 'overview', label: 'Overview' },
-  ];
+  useEffect(() => {
+    if (isOpen) {
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
 
+      axios
+        .get(`http://localhost:8085/wallet/${userId}`)
+        .then((res) => {
+          const rawBalance = parseFloat(res.data.balance || 0);
+          setBalance(`₹${rawBalance.toFixed(2)}`);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch wallet balance:", err);
+          setBalance("₹0.00");
+        });
+    }
+  }, [isOpen]);
+
+  const tabs = [{ id: "overview", label: "Overview" }];
   if (!isOpen) return null;
 
   return (
@@ -17,7 +33,7 @@ const WalletModal = ({ isOpen, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        className="fixed inset-0   flex items-center justify-center z-50 p-4 backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div
@@ -46,8 +62,8 @@ const WalletModal = ({ isOpen, onClose }) => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 py-4 px-6 text-sm font-semibold transition-colors ${
                   activeTab === tab.id
-                    ? 'text-[#a17b5d] border-b-2 border-[#a17b5d]'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? "text-[#a17b5d] border-b-2 border-[#a17b5d]"
+                    : "text-gray-500 hover:text-gray-700"
                 }`}
               >
                 {tab.label}
@@ -57,7 +73,7 @@ const WalletModal = ({ isOpen, onClose }) => {
 
           {/* Content */}
           <div className="p-6">
-            {activeTab === 'overview' && (
+            {activeTab === "overview" && (
               <div className="text-center">
                 {/* Wallet Illustration */}
                 <div className="relative mb-6">
@@ -66,7 +82,6 @@ const WalletModal = ({ isOpen, onClose }) => {
                       <span className="text-3xl">💰</span>
                     </div>
                   </div>
-                  {/* Curtain effect */}
                   <div className="absolute inset-0 bg-gradient-to-t from-red-500/20 to-transparent rounded-full"></div>
                 </div>
 
@@ -79,14 +94,17 @@ const WalletModal = ({ isOpen, onClose }) => {
                     {balance}
                   </div>
                   <p className="text-gray-600 text-sm">
-                    Your wallet is currently empty
+                    {balance === "₹0.00"
+                      ? "Your wallet is currently empty"
+                      : "Use your balance to participate in auctions or purchase artwork"}
                   </p>
                 </div>
 
                 {/* Instructions */}
                 <p className="text-gray-600 mb-6 text-sm leading-relaxed">
-                  Add funds to your wallet to purchase artwork or participate in auctions. 
-                  You can add money via various payment methods available in your region.
+                  Add funds to your wallet to purchase artwork or participate in
+                  auctions. You can add money via various payment methods
+                  available in your region.
                 </p>
 
                 {/* Action Buttons */}
@@ -94,13 +112,13 @@ const WalletModal = ({ isOpen, onClose }) => {
                   <button className="w-full bg-[#a17b5d] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#8c6448] transition-colors">
                     Add Funds
                   </button>
+                  {/* Optional: Uncomment below when history is ready */}
                   {/* <button className="w-full bg-gray-100 text-[#5a3c28] py-3 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
                     View Transaction History
                   </button> */}
                 </div>
               </div>
             )}
-
           </div>
         </motion.div>
       </motion.div>
@@ -108,4 +126,4 @@ const WalletModal = ({ isOpen, onClose }) => {
   );
 };
 
-export default WalletModal; 
+export default WalletModal;

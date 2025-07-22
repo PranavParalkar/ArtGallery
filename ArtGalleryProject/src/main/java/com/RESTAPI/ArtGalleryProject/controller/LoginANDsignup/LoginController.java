@@ -1,5 +1,7 @@
 package com.RESTAPI.ArtGalleryProject.controller.LoginANDsignup;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,37 +34,17 @@ public class LoginController {
 	@PostMapping("/register")
 	public ResponseEntity<?> registerUser(@Validated @RequestBody SignupRequest request) {
 		logger.info("registerUser started.");
-		String email = request.email();
-		String password = request.password();
-		String confirmPassword = request.confirmPassword();
-		if (!email.matches(emailPattern)) {
-			logger.info("registerUser finished.");
-			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
-		}
-
-		if (!password.matches(passwordPattern)) {
-			logger.info("registerUser finished.");
-			return new ResponseEntity<>(
-					"Password should contain atleast 8 characters, 1 capital letter, 1 small letter, 1 digit, and 1 special character",
-					HttpStatus.BAD_REQUEST);
-		}
-
-		if (!password.equals(confirmPassword)) {
-			logger.info("registerUser finished.");
-			return new ResponseEntity<>("Passwords do not match", HttpStatus.BAD_REQUEST);
-		}
-
-		String response = service.register(request);
+		Map<String, Object> response = service.register(request);
+		String message = (String) response.get("message");
 		logger.info("registerUser finished.");
-		switch (response) {
-		case "Account already exists":
-			return new ResponseEntity<>(response, HttpStatus.CONFLICT);
 
-		case "Registration Successful":
-			return new ResponseEntity<>(response, HttpStatus.CREATED);
-
-		default:
-			return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+		switch (message) {
+			case "Account already exists":
+				return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+			case "Registration Successful":
+				return new ResponseEntity<>(response, HttpStatus.CREATED);
+			default:
+				return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -98,25 +80,20 @@ public class LoginController {
 	@PostMapping("/login")
 	public ResponseEntity<?> validateLogin(@Validated @RequestBody LoginRequest request) {
 		logger.info("validateLogin started.");
-		if (!request.email().matches(emailPattern)) {
-			logger.info("validateLogin finished.");
-			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
-		}
+		Map<String, Object> response = service.validateLogin(request);
 
-		String response = service.validateLogin(request);
+		String message = (String) response.get("message");
 		logger.info("validateLogin finished.");
-		switch (response) {
-		case "Invalid Email":
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
-		case "Invalid Password":
-			return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-
-		case "Login Successful":
-			return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
-
-		default:
-			return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+		switch (message) {
+			case "Invalid Email":
+				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+			case "Invalid Password":
+				return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+			case "Login Successful":
+				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+			default:
+				return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}

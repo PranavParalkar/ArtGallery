@@ -1,6 +1,8 @@
 package com.RESTAPI.ArtGalleryProject.service.loginANDsignup;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -34,17 +36,20 @@ public class LoginServiceImpl implements LoginService {
 	private WalletRepo walletrepo;
 
 	@Override
-	public String register(SignupRequest request) {
+	public Map<String, Object> register(SignupRequest request) {
 		logger.info("register started.");
+		Map<String, Object> result = new HashMap<>();
 		if (loginrepo.existsById(request.email())) {
 			logger.info("register finished.");
-			return "Account already exists";
+			result.put("message", "Account already exists");
+			return result;
 		}
 
 		var wallet = new Wallet();
 		wallet.setBalance(0.0);
 
 		var user = new User();
+		user.setEmail(request.email());
 		user.setAuthorizedSeller(false);
 		user.setCreatedAt(LocalDate.now());
 		user.setWallet(wallet);
@@ -59,8 +64,12 @@ public class LoginServiceImpl implements LoginService {
 		walletrepo.save(wallet);
 		userrepo.save(user);
 		loginrepo.save(logincred);
+
+		result.put("userId", user.getUserId());
+		result.put("userName", user.getName());
+		result.put("message", "Registration Successful");
 		logger.info("register finished.");
-		return "Registration Successful";
+		return result;
 	}
 
 	@Override
@@ -83,20 +92,28 @@ public class LoginServiceImpl implements LoginService {
 	}
 
 	@Override
-	public String validateLogin(LoginRequest request) {
+	public Map<String, Object> validateLogin(LoginRequest request) {
 		logger.info("validateLogin started.");
-		if (loginrepo.existsById(request.email())) {
-			String password = loginrepo.findById(request.email()).orElse(null).getPassword();
+		Map<String, Object> result = new HashMap<>();
+		Optional<LoginCredentials> credOpt = loginrepo.findById(request.email());
+		if (credOpt.isPresent()) {
+			String password = credOpt.get().getPassword();
 			if (encoder.matches(request.password(), password)) {
+				User user = credOpt.get().getUser();
+				result.put("userId", user.getUserId());
+				result.put("userName", user.getName());
+				result.put("message", "Login Successful");
 				logger.info("validateLogin finished.");
-				return "Login Successful";
+				return result;
 			} else {
+				result.put("message", "Invalid Password");
 				logger.info("validateLogin finished.");
-				return "Invalid Password";
+				return result;
 			}
 		} else {
+			result.put("message", "Invalid Email");
 			logger.info("validateLogin finished.");
-			return "Invalid Email";
+			return result;
 		}
 	}
 

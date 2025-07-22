@@ -39,5 +39,18 @@ public class BidController {
         logger.info("Fetching top 10 bids for painting ID: {}", paintingId);
         List<TopBidDTO> topBids = service.getTop10BidsWithRank(paintingId);
         return ResponseEntity.ok(topBids);
+
+
+        
     }
+    @GetMapping("/user-bids/{userId}/{paintingId}")
+        public ResponseEntity<List<UserBidDTO>> getUserBids(
+        @PathVariable Long userId,
+        @PathVariable Long paintingId
+        ) {
+            logger.info("Fetching user bids for userId={} and paintingId={}", userId, paintingId);
+            List<UserBidDTO> userBids = service.getUserBidsForPainting(userId, paintingId);
+            return ResponseEntity.ok(userBids);
+        }
+
 }

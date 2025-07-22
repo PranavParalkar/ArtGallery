@@ -88,7 +88,7 @@ const Shop = () => {
   };
 
   return (
-    <div className="bg-[#fffaf5] w-[100%] px-6 py-12 font-serif">
+    <div className=" w-[100%] px-6 py-12 font-serif">
       <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

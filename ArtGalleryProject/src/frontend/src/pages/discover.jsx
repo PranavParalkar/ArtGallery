@@ -55,7 +55,7 @@ const highlights = [
 
 const Discover = () => {
   return (
-    <div className="bg-[#fdf7f1] w-screen h-[870px] px-6 py-12 font-serif">
+    <div className=" w-auto h-[870px] px-6 py-12 font-serif">
       <motion.h1
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

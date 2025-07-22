@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import WalletModal from "./WalletModal";
+import ProfileModal from "./ProfileModal";
 
 const Header = () => {
   const [isWalletOpen, setIsWalletOpen] = useState(false);
-  
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navLinks = {
     auctions: "/auctions",
     sell: "/sell",
@@ -14,7 +15,7 @@ const Header = () => {
   };
 
   // ✅ Check if user is logged in
-  const isLoggedIn = localStorage.getItem("userName"); // or "token" if that's what you store
+  const isLoggedIn = !!localStorage.getItem("userId"); // Use userId for login check
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white z-50 border-b shadow-md text-sm">
@@ -41,7 +42,7 @@ const Header = () => {
         <div className="flex items-center gap-4">
           <div className="relative group">
             {/* Wallet Icon Button */}
-            <button 
+            <button
               onClick={() => setIsWalletOpen(true)}
               className="w-9 h-9 shadow-2xl shadow-black flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition duration-200"
             >
@@ -62,37 +63,16 @@ const Header = () => {
             </button>
 
             {/* Hover Box with Balance */}
-            <div className="absolute left-1/2 w-32 transform -translate-x-1/2 mt-2 hidden group-hover:block bg-white text-gray-800 text-sm border border-gray-300 rounded-lg shadow-md px-4 py-2 z-50">
-              💰Balance: ₹0.0
-            </div>
-          </div>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search by keyword"
-              className="pl-2 pr-6 py-1 text-sm border-b border-gray-400 focus:outline-none"
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-4 h-4 absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 6.65a7.5 7.5 0 010 10.6z"
-              />
-            </svg>
           </div>
 
           <span className="border-l h-4 border-gray-400"></span>
 
           {/* ✅ Conditional route */}
-          <Link to={isLoggedIn ? "/profile" : "/login"}>
-            <button className="flex items-center cursor-pointer hover:scale-115 gap-1 text-sm text-gray-800">
+          {isLoggedIn ? (
+            <button
+              className="flex items-center cursor-pointer border-1 duration-300 rounded-full hover:scale-115 gap-1 text-sm text-gray-800"
+              onClick={() => setIsProfileOpen(true)}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-5 h-5"
@@ -108,14 +88,38 @@ const Header = () => {
                 />
               </svg>
             </button>
-          </Link>
+          ) : (
+            <Link to="/login">
+              <button className=" hover:shadow-lg hover:shadow-gray-300 border-1  cursor-pointer h-8 w-16 rounded-2xl px-2  text-sm text-gray-800">
+                {/* <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5.121 17.804A13.937 13.937 0 0112 15c2.21 0 4.29.534 6.121 1.477M15 10a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg> */}
+                Login
+              </button>
+            </Link>
+          )}
         </div>
       </div>
-      
+
       {/* Wallet Modal */}
-      <WalletModal 
-        isOpen={isWalletOpen} 
-        onClose={() => setIsWalletOpen(false)} 
+      <WalletModal
+        isOpen={isWalletOpen}
+        onClose={() => setIsWalletOpen(false)}
+      />
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
       />
     </header>
   );

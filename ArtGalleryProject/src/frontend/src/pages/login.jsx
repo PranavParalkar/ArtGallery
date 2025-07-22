@@ -82,9 +82,13 @@ const Login = () => {
           pincode: userDetails.pincode,
         },
       };
-      const res = await axios.post("http://localhost:8085/auth/user-info", payload);
+      const res = await axios.post(
+        "http://localhost:8085/auth/user-info",
+        payload
+      );
       if (res.data === "User info saved") {
-        navigate("/");
+        navigate("/"); // or set a state to show the profile modal
+        window.location.reload(); // to update header/profile
       } else {
         setUserDetailsError(res.data || "Could not save user info.");
       }
@@ -125,11 +129,25 @@ const Login = () => {
     try {
       const res = await axios.post(url, payload);
       if (!isLogin) {
-        // Signup successful, show user details form
-        setShowUserDetails(true);
+        // If backend returns userId and userName after registration, store them
+        if (res.data && res.data.userId) {
+          localStorage.setItem("userId", res.data.userId);
+        }
+        if (res.data && res.data.userName) {
+          localStorage.setItem("userName", res.data.userName);
+        }
+        setShowUserDetails(true); // Show user details form
       } else {
+        // After login
+        if (res.data && res.data.userId) {
+          localStorage.setItem("userId", res.data.userId);
+        }
+        if (res.data && res.data.userName) {
+          localStorage.setItem("userName", res.data.userName);
+        }
         alert(res.data.message || res.data || "Success");
         navigate("/");
+        window.location.reload();
       }
     } catch (err) {
       alert(
@@ -176,9 +194,7 @@ const Login = () => {
         setForgotError(res.data || "Incorrect answer.");
       }
     } catch (err) {
-      setForgotError(
-        err.response?.data || "Incorrect answer or server error."
-      );
+      setForgotError(err.response?.data || "Incorrect answer or server error.");
     } finally {
       setForgotLoading(false);
     }
@@ -225,8 +241,9 @@ const Login = () => {
           src="https://paperplanedesign.in/cdn/shop/files/collage-wallpaper-featuring-famous-van-gogh-paintings-251088.jpg?v=1715591219&width=1080"
           alt=""
           className="absolute left-0 top-0 w-full h-full object-cover opacity-80"
-        />
-      </div>
+        />
+              
+      </div>
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -236,15 +253,25 @@ const Login = () => {
         {/* Toggle */}
         <div className="flex justify-center gap-4 mb-8">
           <button
-            onClick={() => { setIsLogin(true); setShowForgot(false); setShowUserDetails(false); }}
+            onClick={() => {
+              setIsLogin(true);
+              setShowForgot(false);
+              setShowUserDetails(false);
+            }}
             className={`px-6 py-2 rounded-full font-semibold ${
-              isLogin && !showForgot && !showUserDetails ? "bg-purple-500 text-white hover:cursor-pointer" : "bg-white/60 text-gray-800 hover:cursor-pointer"
+              isLogin && !showForgot && !showUserDetails
+                ? "bg-purple-500 text-white hover:cursor-pointer"
+                : "bg-white/60 text-gray-800 hover:cursor-pointer"
             }`}
           >
             Login
           </button>
           <button
-            onClick={() => { setIsLogin(false); setShowForgot(false); setShowUserDetails(false); }}
+            onClick={() => {
+              setIsLogin(false);
+              setShowForgot(false);
+              setShowUserDetails(false);
+            }}
             className={`px-6 py-2 rounded-full font-semibold ${
               !isLogin && !showForgot && !showUserDetails
                 ? "bg-purple-500 text-white hover:cursor-pointer"
@@ -256,7 +283,13 @@ const Login = () => {
         </div>
 
         <h2 className="text-3xl font-bold text-center font-serif text-gray-800 mb-6">
-          {showForgot ? "Forgot Password" : showUserDetails ? "Complete Your Profile" : isLogin ? "Welcome Back" : "Create Account"}
+          {showForgot
+            ? "Forgot Password"
+            : showUserDetails
+            ? "Complete Your Profile"
+            : isLogin
+            ? "Welcome Back"
+            : "Create Account"}
         </h2>
 
         {/* User Details Form After Signup */}
@@ -350,7 +383,9 @@ const Login = () => {
             >
               {userDetailsLoading ? "Saving..." : "Save & Go to Dashboard"}
             </button>
-            {userDetailsError && <p className="text-red-600 text-sm">{userDetailsError}</p>}
+            {userDetailsError && (
+              <p className="text-red-600 text-sm">{userDetailsError}</p>
+            )}
           </form>
         ) : showForgot ? (
           <div>
@@ -361,7 +396,7 @@ const Login = () => {
                   name="forgotEmail"
                   placeholder="Enter your email"
                   required
-                  onChange={e => setForgotEmail(e.target.value)}
+                  onChange={(e) => setForgotEmail(e.target.value)}
                   value={forgotEmail}
                   className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
                 />
@@ -372,19 +407,25 @@ const Login = () => {
                 >
                   {forgotLoading ? "Checking..." : "Next"}
                 </button>
-                {forgotError && <p className="text-red-600 text-sm">{forgotError}</p>}
+                {forgotError && (
+                  <p className="text-red-600 text-sm">{forgotError}</p>
+                )}
               </form>
             )}
             {forgotStep === 2 && (
               <form onSubmit={handleForgotAnswer} className="space-y-4">
-                <div className="mb-2 text-gray-800 font-medium">Security Question:</div>
-                <div className="mb-4 text-purple-700 font-semibold">{forgotQuestion}</div>
+                <div className="mb-2 text-gray-800 font-medium">
+                  Security Question:
+                </div>
+                <div className="mb-4 text-purple-700 font-semibold">
+                  {forgotQuestion}
+                </div>
                 <input
                   type="text"
                   name="forgotAnswer"
                   placeholder="Your Answer"
                   required
-                  onChange={e => setForgotAnswer(e.target.value)}
+                  onChange={(e) => setForgotAnswer(e.target.value)}
                   value={forgotAnswer}
                   className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
                 />
@@ -395,7 +436,9 @@ const Login = () => {
                 >
                   {forgotLoading ? "Verifying..." : "Next"}
                 </button>
-                {forgotError && <p className="text-red-600 text-sm">{forgotError}</p>}
+                {forgotError && (
+                  <p className="text-red-600 text-sm">{forgotError}</p>
+                )}
               </form>
             )}
             {forgotStep === 3 && (
@@ -405,7 +448,7 @@ const Login = () => {
                   name="forgotNewPassword"
                   placeholder="New Password"
                   required
-                  onChange={e => setForgotNewPassword(e.target.value)}
+                  onChange={(e) => setForgotNewPassword(e.target.value)}
                   value={forgotNewPassword}
                   className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
                 />
@@ -414,7 +457,7 @@ const Login = () => {
                   name="forgotConfirmPassword"
                   placeholder="Confirm New Password"
                   required
-                  onChange={e => setForgotConfirmPassword(e.target.value)}
+                  onChange={(e) => setForgotConfirmPassword(e.target.value)}
                   value={forgotConfirmPassword}
                   className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
                 />
@@ -425,7 +468,9 @@ const Login = () => {
                 >
                   {forgotLoading ? "Resetting..." : "Reset Password"}
                 </button>
-                {forgotError && <p className="text-red-600 text-sm">{forgotError}</p>}
+                {forgotError && (
+                  <p className="text-red-600 text-sm">{forgotError}</p>
+                )}
               </form>
             )}
             <button
@@ -493,12 +538,24 @@ const Login = () => {
                     value={formData.securityQuestion}
                     className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner hover:cursor-pointer"
                   >
-                    <option value="" disabled hidden>Select a security question</option>
-                    <option value="What is your mother's maiden name?" >What is your mother's maiden name?</option>
-                    <option value="What was the name of your first pet?">What was the name of your first pet?</option>
-                    <option value="What is your favorite book?">What is your favorite book?</option>
-                    <option value="What city were you born in?">What city were you born in?</option>
-                    <option value="What is your favorite food?">What is your favorite food?</option>
+                    <option value="" disabled hidden>
+                      Select a security question
+                    </option>
+                    <option value="What is your mother's maiden name?">
+                      What is your mother's maiden name?
+                    </option>
+                    <option value="What was the name of your first pet?">
+                      What was the name of your first pet?
+                    </option>
+                    <option value="What is your favorite book?">
+                      What is your favorite book?
+                    </option>
+                    <option value="What city were you born in?">
+                      What city were you born in?
+                    </option>
+                    <option value="What is your favorite food?">
+                      What is your favorite food?
+                    </option>
                   </select>
                   <input
                     type="text"
@@ -537,7 +594,6 @@ const Login = () => {
           </>
         )}
       </motion.div>
-      
     </div>
   );
 };
