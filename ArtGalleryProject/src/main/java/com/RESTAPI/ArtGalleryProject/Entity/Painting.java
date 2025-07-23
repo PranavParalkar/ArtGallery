@@ -2,6 +2,8 @@ package com.RESTAPI.ArtGalleryProject.Entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -44,6 +46,7 @@ public class Painting {
 	// user sold painting
 	@ManyToOne
 	@JoinColumn(name = "seller_id", nullable = false)
+	@JsonIgnore // 👈 Add this
 	private User seller;
 
 	// user bought painting

@@ -8,4 +8,6 @@ public interface DashboardService {
 	public PagePaintingResponse<PaintingResponse> getPaintingsByPageShop(int pageNo, int size);
 	public PaintingResponse getPaintingById(long id);
 	public Object walletBalance(long id);
+	
+	
 }

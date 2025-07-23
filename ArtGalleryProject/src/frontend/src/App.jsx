@@ -10,6 +10,8 @@ import Sell from "./pages/sell";
 import Discover from "./pages/discover";
 import Shop from "./pages/shop";
 import BiddingFrontend from "./pages/biddingFrontend";
+import Admin from "./pages/admin";
+import ProfilePage from "./components/ProfilePage";
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -38,6 +40,14 @@ const router = createBrowserRouter([
       {
         path: "/shop",
         element: <Shop />,
+      },
+      {
+        path: "/admin",
+        element: <Admin />,
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />,
       },
 
       {
