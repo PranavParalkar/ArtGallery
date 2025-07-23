@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import axiosInstance from '../axiosInstance';
 import { FaSignOutAlt, FaUserCircle, FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
 
 const ProfileModal = ({ isOpen, onClose }) => {
@@ -9,12 +9,8 @@ const ProfileModal = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (isOpen && token) {
-      axios
-        .get(`http://localhost:8085/user/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}` 
-        }
-      })
+      axiosInstance
+        .get(`/user/profile`)
         .then((res) => {
           console.log("Profile data received:", res.data);
           setProfile(res.data);

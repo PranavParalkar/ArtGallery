@@ -1,6 +1,6 @@
 package com.RESTAPI.ArtGalleryProject.Enum;
 
 public enum Role {
-	USER,
-	ADMIN
+	ROLE_USER,
+	ROLE_ADMIN
 }

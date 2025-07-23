@@ -25,7 +25,7 @@ public class DashboardController {
 	public ResponseEntity<?> getPainting(@RequestParam(defaultValue = "0") int pageNo) {
 		logger.info("getPainting started.");
 		final int pageSize = 12;
-		var allPaintings = service.getPaintingsByPage(pageNo, pageSize);
+		var allPaintings = service.getPaintingsByPageAuction(pageNo, pageSize);
 		logger.info("getPainting finished.");
 		return new ResponseEntity<>(allPaintings, HttpStatus.OK);
 	}

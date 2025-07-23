@@ -46,7 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter  {
             String role = claims.get("role", String.class);
             
             // Create custom authentication token with claims
-            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     email, null, authorities);

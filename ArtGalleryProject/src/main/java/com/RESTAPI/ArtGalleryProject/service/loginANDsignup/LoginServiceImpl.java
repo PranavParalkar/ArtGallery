@@ -52,22 +52,22 @@ public class LoginServiceImpl implements LoginService {
 		var user = new User();
 		user.setAuthorizedSeller(false);
 		user.setCreatedAt(LocalDate.now());
-		user.setRole(Role.USER);
+		user.setRole(Role.ROLE_USER);
 		user.setWallet(wallet);
 
 		var logincred = new LoginCredentials();
+		logincred.setEmail(request.email());
 		logincred.setPassword(encoder.encode(request.password()));
+		logincred.setSecurityQuestion(request.securityQuestion());
 		logincred.setSecurityAnswer(encoder.encode(request.securityAnswer()));
 		logincred.setUser(user);
-		logincred.setEmail(request.email());
-		logincred.setSecurityQuestion(request.securityQuestion());
 
 		walletrepo.save(wallet);
 		userrepo.save(user);
 		loginrepo.save(logincred);
 
 		long userId = logincred.getUser().getUserId();
-		String token = jwtService.generateToken(logincred.getEmail(), userId, Role.USER);
+		String token = jwtService.generateToken(logincred.getEmail(), userId, Role.ROLE_USER);
 		logger.info("register finished.");
 		return new JwtResponse(token);
 	}
@@ -170,7 +170,7 @@ public class LoginServiceImpl implements LoginService {
 		logincred.setPassword(encoder.encode(newPassword));
 		loginrepo.save(logincred);
 		long userId = logincred.getUser().getUserId();
-		String token = jwtService.generateToken(Email, userId, Role.USER);
+		String token = jwtService.generateToken(Email, userId, Role.ROLE_USER);
 		logger.info("passwordReset finished.");
 		return new JwtResponse(token);
 	}

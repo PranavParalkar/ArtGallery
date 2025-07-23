@@ -40,7 +40,7 @@ public class UploadPaintingController {
 			e.printStackTrace();
 		}
 		logger.info("upload finished.");
-		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>("internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }

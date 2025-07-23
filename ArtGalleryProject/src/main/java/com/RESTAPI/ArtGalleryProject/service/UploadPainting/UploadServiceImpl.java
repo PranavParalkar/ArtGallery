@@ -50,10 +50,10 @@ public class UploadServiceImpl implements UploadService {
         painting.setDescription(request.description());
         painting.setLength(request.length());
         painting.setBreadth(request.breadth());
-        painting.setStartingPrice(request.startingPrice());
+        painting.setStartingPrice(request.price());
         painting.setSellerId(userId);
+        painting.setForAuction(request.isForAuction());
         painting.setImageUrl("/image/" + name);
-
 
         unverifiedRepo.save(painting);
         logger.info("uploadPainting finished.");

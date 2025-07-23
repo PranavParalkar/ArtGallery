@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from '../axiosInstance';
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -16,14 +16,14 @@ const Auction = () => {
 
   const fetchPaintings = async (page = 0) => {
     try {
-      const res = await axios.get(
-        `http://localhost:8085/auctions?pageNo=${page}`
+      const res = await axiosInstance.get(
+        `/auctions?pageNo=${page}`
       );
       const data = res.data.content || res.data;
       setPaintings(data);
       // Check if next page has paintings
-      const nextRes = await axios.get(
-        `http://localhost:8085/auctions?pageNo=${page + 1}`
+      const nextRes = await axiosInstance.get(
+        `/auctions?pageNo=${page + 1}`
       );
       const nextData = nextRes.data.content || nextRes.data;
       setHasNextPage(Array.isArray(nextData) ? nextData.length > 0 : false);

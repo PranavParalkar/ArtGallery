@@ -61,6 +61,7 @@ public class AdminServiceImpl implements AdminService {
         painting.setBreadth(unverified.getBreadth());
         painting.setStartingPrice(unverified.getStartingPrice());
         painting.setImageUrl(unverified.getImageUrl());
+        painting.setForAuction(unverified.isForAuction());
         painting.setSeller(seller);
         painting.setSold(false);
 
@@ -68,7 +69,10 @@ public class AdminServiceImpl implements AdminService {
         unverifiedRepo.deleteById(id);
 
         logger.info("Painting with ID {} approved and moved to verified painting table.", id);
-        return "Painting approved and moved to auction.";
+        String response = painting.isForAuction() ? 
+        		"Painting approved and moved to auction.": 
+        		"Painting approved and moved to Shop.";
+        return response;
     }
 
     @Override

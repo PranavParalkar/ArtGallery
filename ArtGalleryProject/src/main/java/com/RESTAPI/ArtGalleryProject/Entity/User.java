@@ -7,6 +7,7 @@ import com.RESTAPI.ArtGalleryProject.Embeddable.Address;
 import com.RESTAPI.ArtGalleryProject.Enum.Role;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -42,6 +43,7 @@ public class User {
     private boolean authorizedSeller;
     private LocalDate createdAt;
 
+    @Column(name = "ROLE_User", length = 20)
     @Enumerated(EnumType.STRING)
     private Role role;
     // relational

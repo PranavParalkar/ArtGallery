@@ -28,11 +28,43 @@ public class DashboardServiceImpl implements DashboardService{
 	private UserRepo userrepo;
 
 	@Override
-	public PagePaintingResponse<PaintingResponse> getPaintingsByPage(int pageNo, int size) {
+	public PagePaintingResponse<PaintingResponse> getPaintingsByPageAuction(int pageNo, int size) {
 		logger.info("getPaintingsByPage started.");
 		
 		Pageable pageable = PageRequest.of(pageNo, size);
-		Page<Painting> paintingsPage = paintingrepo.findAll(pageable);
+		Page<Painting> paintingsPage = paintingrepo.findByIsSoldFalseAndIsForAuctionTrue(pageable);
+
+		Page<PaintingResponse> pageResult = paintingsPage.map(p -> new PaintingResponse(
+		    p.getPaintingId(),
+		    p.getImageUrl(),
+		    p.getTitle(),
+		    p.getDescription(),
+		    p.getLength(),
+		    p.getBreadth(),
+		    p.getStartingPrice(),
+		    p.getFinalPrice(),
+		    p.isForAuction(),
+		    p.isSold(),
+		    p.getSeller().getName()
+		));
+		
+		logger.info("getPaintingsByPage finished.");
+		return new PagePaintingResponse<PaintingResponse>(
+		        pageResult.getContent(),
+		        pageResult.getNumber(),
+		        pageResult.getSize(),
+		        pageResult.getTotalElements(),
+		        pageResult.getTotalPages(),
+		        pageResult.isLast()
+		    );
+	}
+
+	@Override
+	public PagePaintingResponse<PaintingResponse> getPaintingsByPageShop(int pageNo, int size) {
+logger.info("getPaintingsByPage started.");
+		
+		Pageable pageable = PageRequest.of(pageNo, size);
+		Page<Painting> paintingsPage = paintingrepo.findByIsSoldFalseAndIsForAuctionFalse(pageable);
 
 		Page<PaintingResponse> pageResult = paintingsPage.map(p -> new PaintingResponse(
 	        p.getPaintingId(),
@@ -43,6 +75,7 @@ public class DashboardServiceImpl implements DashboardService{
 	        p.getBreadth(),
 	        p.getStartingPrice(),
 	        p.getFinalPrice(),
+	        p.isForAuction(),
 	        p.isSold(),
 	        p.getSeller().getName()
 	    ));
@@ -57,7 +90,7 @@ public class DashboardServiceImpl implements DashboardService{
 		        pageResult.isLast()
 		    );
 	}
-
+	
 	@Override
 	public PaintingResponse getPaintingById(long id) {
 		logger.info("getPaintingById started.");
@@ -76,6 +109,7 @@ public class DashboardServiceImpl implements DashboardService{
 		        painting.getBreadth(),
 		        painting.getStartingPrice(),
 		        painting.getFinalPrice(),
+		        painting.isForAuction(),
 		        painting.isSold(),
 		        painting.getSeller().getName()
 		);

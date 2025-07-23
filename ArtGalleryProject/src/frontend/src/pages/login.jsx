@@ -1,10 +1,10 @@
 import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom"; // ✅ 1
+import axiosInstance from '../axiosInstance';
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Login = () => {
-  const navigate = useNavigate(); // ✅ 2
+  const navigate = useNavigate(); 
   const [isLogin, setIsLogin] = useState(true);
   const [showForgot, setShowForgot] = useState(false);
   const [forgotStep, setForgotStep] = useState(1);
@@ -80,10 +80,8 @@ const Login = () => {
           pincode: userDetails.pincode,
         },
       };
-      const res = await axios.post(
-        "http://localhost:8085/auth/user-info", payload ,{
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      }
+      const res = await axiosInstance.post(
+        "/auth/user-info", payload
       );
       if (res.data === "User info saved") {
         navigate("/"); // or set a state to show the profile modal
@@ -126,7 +124,7 @@ const Login = () => {
       };
 
     try {
-      const res = await axios.post(url, payload);
+      const res = await axiosInstance.post(url, payload);
       const data = res.data;
 
       if (data?.token) {
@@ -158,8 +156,8 @@ const Login = () => {
     setForgotLoading(true);
     setForgotError("");
     try {
-      const res = await axios.post(
-        "http://localhost:8085/auth/forgot-password?step=check-email",
+      const res = await axiosInstance.post(
+        "/auth/forgot-password?step=check-email",
         { email: forgotEmail }
       );
       setForgotQuestion(res.data); // Assume backend returns question as string
@@ -178,8 +176,8 @@ const Login = () => {
     setForgotLoading(true);
     setForgotError("");
     try {
-      const res = await axios.post(
-        "http://localhost:8085/auth/forgot-password?step=verify-answer",
+      const res = await axiosInstance.post(
+        "/auth/forgot-password?step=verify-answer",
         { email: forgotEmail, answer: forgotAnswer }
       );
       if (res.data === "Verification Success") {
@@ -199,8 +197,8 @@ const Login = () => {
     setForgotLoading(true);
     setForgotError("");
     try {
-      const res = await axios.put(
-        "http://localhost:8085/auth/forgot-password?step=password-reset",
+      const res = await axiosInstance.put(
+        "/auth/forgot-password?step=password-reset",
         {
           email: forgotEmail,
           newPassword: forgotNewPassword,

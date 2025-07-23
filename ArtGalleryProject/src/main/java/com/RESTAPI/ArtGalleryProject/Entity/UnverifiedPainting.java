@@ -22,7 +22,8 @@ public class UnverifiedPainting {
     private double length;
     private double breadth;
     private double startingPrice;
-
+    private boolean forAuction;
+    
     private Long sellerId;
     
     @Enumerated(EnumType.STRING)

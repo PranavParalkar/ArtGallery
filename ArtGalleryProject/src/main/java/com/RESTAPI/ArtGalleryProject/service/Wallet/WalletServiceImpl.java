@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.WalletResponse;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.Entity.Wallet;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
@@ -37,7 +38,7 @@ public class WalletServiceImpl implements WalletService{
 			return "wallet doesn't exist";
 		}
 		logger.info("getBalance finished.");
-		return wallet.getBalance();
+		return new WalletResponse(wallet.getBalance());
 	}
 
 

@@ -26,36 +26,39 @@ public class SecurityConfig {
 	@Autowired
 	private JwtAuthFilter jwtAuthFilter;
 
-    // Allow all requests and enable CORS
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    	logger.info("securityFilterChain started.");
-    	http
+	// Allow all requests and enable CORS
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		logger.info("securityFilterChain started.");
+		http
         	.cors(Customizer.withDefaults()) // enables CORS with default settings
         	.csrf(csrf -> csrf.disable())    // disables CSRF
         	.authorizeHttpRequests(auth -> auth
         			.requestMatchers("/admin/**").hasRole("ADMIN")
-        			.requestMatchers("/auctions/bid/**").authenticated()
-        			.requestMatchers("/user/profile").authenticated()
-        			.requestMatchers("/licenses/**").authenticated()
-        			.requestMatchers("/createOrder").authenticated()
-        			.requestMatchers("/paymentCallback").authenticated()
-        			.requestMatchers("/upload-painting").authenticated()
+        			.requestMatchers(
+        					"/auctions/bid/**",
+        		            "/user/profile",
+        		            "/licenses/**",
+        		            "/createOrder",
+        		            "/paymentCallback",
+        		            "/upload-painting"
+        		        ).authenticated()
                     .anyRequest().permitAll())
         	.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-    	logger.info("securityFilterChain finished.");
-        return http.build();
-    }
+		logger.info("securityFilterChain finished.");
+		return http.build();
+	}
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		return config.getAuthenticationManager();
+	}
 
-    // BCrypt password encoder bean
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	// BCrypt password encoder bean
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
 }

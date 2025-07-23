@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import axios from "axios";
+import axiosInstance from '../axiosInstance';
 
 const Sell = () => {
   const [step, setStep] = useState(1);
@@ -32,26 +32,23 @@ const Sell = () => {
     data.append("description", formData.description);
     data.append("length", formData.length);
     data.append("breadth", formData.breadth);
-
+    data.append("price", parseFloat(formData.price));
     if (sellingMode === "auction") {
-      data.append("startingPrice", formData.startingPrice);
+      data.append("isForAuction", true);
     } else {
-      data.append("fixedPrice", formData.fixedPrice);
+      data.append("isForAuction", false);
     }
 
     try {
-      const url =
-        sellingMode === "auction"
-          ? "http://localhost:8085/upload-painting"
-          : "http://localhost:8085/upload-painting-store";
-
-      await axios.post(url, data, {
+      const url = "/upload-painting"
+      await axiosInstance.post(url, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("Painting uploaded successfully");
       setStep(4);
     } catch (err) {
       alert("Failed to upload painting");
+      console.error(err);
     }
   };
 
@@ -268,12 +265,12 @@ const Sell = () => {
                   </label>
                   <input
                     type="number"
-                    name="startingPrice"
+                    name="Price"
                     required
                     min="0"
                     step="any"
                     onChange={handleChange}
-                    value={formData.startingPrice}
+                    value={formData.price}
                     className="w-full border border-gray-300 p-2 rounded-md"
                   />
                 </div>
@@ -284,12 +281,12 @@ const Sell = () => {
                   </label>
                   <input
                     type="number"
-                    name="fixedPrice"
+                    name="Price"
                     required
                     min="0"
                     step="any"
                     onChange={handleChange}
-                    value={formData.fixedPrice}
+                    value={formData.price}
                     className="w-full border border-gray-300 p-2 rounded-md"
                   />
                 </div>

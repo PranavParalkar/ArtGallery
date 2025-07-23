@@ -1,32 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import axiosInstance from '../axiosInstance';
 
 const WalletModal = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState("overview");
-  const [balance, setBalance] = useState("₹0.00");
-  const token = localStorage.getItem("token");
+  const [balance, setBalance] = useState(null); // null = not loaded
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
     if (isOpen) {
-      if (!token) return;
-
-      axios
-        .get(`http://localhost:8085/wallet`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-        )
+      setLoading(true);
+      setError("");
+      setBalance(null);
+      axiosInstance
+        .get(`/wallet`)
         .then((res) => {
+          if (cancelled) return;
           const rawBalance = parseFloat(res.data.balance || 0);
-          setBalance(`₹${rawBalance.toFixed(2)}`);
+          console.log(balance);
+          setBalance(rawBalance);
+          setLoading(false);
         })
         .catch((err) => {
-          console.error("Failed to fetch wallet balance:", err);
-          setBalance("₹0.00");
+          if (cancelled) return;
+          setError("Failed to fetch wallet balance");
+          setBalance(0);
+          setLoading(false);
         });
     }
+    return () => {
+      cancelled = true;
+    };
   }, [isOpen]);
 
   const tabs = [{ id: "overview", label: "Overview" }];
@@ -91,15 +97,24 @@ const WalletModal = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Balance Display */}
-                <div className="mb-6">
+                <div className="mb-6 min-h-[3.5rem] flex flex-col items-center justify-center">
                   <h3 className="text-xl font-bold text-[#5a3c28] mb-2">
                     Your Art Gallery Wallet
                   </h3>
-                  <div className="text-3xl font-bold text-[#a17b5d] mb-2">
-                    {balance}
-                  </div>
+                  {loading ? (
+                    <div className="text-lg text-gray-500 flex items-center gap-2">
+                      <svg className="animate-spin h-6 w-6 text-[#a17b5d]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                      Loading balance...
+                    </div>
+                  ) : error ? (
+                    <div className="text-red-600 text-sm font-semibold">{error}</div>
+                  ) : (
+                    <div className="text-3xl font-bold text-[#a17b5d] mb-2">
+                      ₹{balance !== null ? balance.toFixed(2) : "0.00"}
+                    </div>
+                  )}
                   <p className="text-gray-600 text-sm">
-                    {balance === "₹0.00"
+                    {balance === 0 || balance === null
                       ? "Your wallet is currently empty"
                       : "Use your balance to participate in auctions or purchase artwork"}
                   </p>

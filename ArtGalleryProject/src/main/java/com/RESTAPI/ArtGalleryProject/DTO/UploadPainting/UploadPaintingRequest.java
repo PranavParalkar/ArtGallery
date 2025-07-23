@@ -8,5 +8,6 @@ public record UploadPaintingRequest (
 	String description,
 	double length,
 	double breadth,
-	double startingPrice
+	double price,
+	boolean isForAuction
 ) {}
