@@ -1,4 +1,4 @@
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 // Get role by decoding the JWT token using jwt-decode library
 export function getUserRole() {

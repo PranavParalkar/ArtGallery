@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.UserDetailsResponse;
+import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.UserDetailRequest;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.DashBoard.UserService;
 
@@ -38,5 +40,21 @@ public class UserController {
     	}
     	logger.info("getUserProfile finished.");
     	return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    
+    @PutMapping("/profile-update")
+    public ResponseEntity<?> updateUserProfile(@RequestBody UserDetailRequest request) {
+    	logger.info("updateUserProfile started.");
+    	long userId = authHelper.getCurrentUserId();
+    	String response = service.updateUserDetails(request, userId);
+    	switch (response) {
+		case "Internal error occurred":
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		case "User info updated":
+		return new ResponseEntity<>(response, HttpStatus.OK);
+		default:			
+			logger.info("updateUserProfile finished.");
+			throw new IllegalArgumentException("Unexpected value: " + response);
+		}
     }
 }

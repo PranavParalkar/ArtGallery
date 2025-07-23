@@ -49,9 +49,9 @@ const Shop = () => {
           paintings.map((painting) => (
             <motion.div
               key={painting.paintingId}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.75 }}
               className="rounded-2xl bg-[#f0e2d2] h-[500px] transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition"
             >
               {painting.imageUrl && (

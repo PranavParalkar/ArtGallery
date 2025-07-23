@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { getUserRole } from "../utils/auth";
 import WalletModal from "./WalletModal";
-import ProfileModal from "./ProfileModal";
 
 const Header = () => {
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const token = localStorage.getItem("token");
+  const userRole = getUserRole();
   const navLinks = {
     auctions: "/auctions",
     sell: "/sell",
@@ -14,8 +15,13 @@ const Header = () => {
     shop: "/shop",
   };
 
-  // ✅ Check if user is logged in
+  if (userRole === "ROLE_ADMIN") {
+    navLinks.admin = "/admin";
+  }
+
   const isLoggedIn = !!token; // Use token for login check
+  // Example usage: you can use userRole to conditionally render UI
+  // e.g. const isAdmin = userRole === "ADMIN";
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white z-50 border-b shadow-md text-sm">

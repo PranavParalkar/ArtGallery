@@ -54,6 +54,8 @@ const ProfilePage = () => {
     );
   }
 
+  console.log(profile);
+
   return (
     <div className="p-6 sm:p-10 max-w-4xl mx-auto text-[#5a3c28]">
       <div className="mb-6 flex items-center gap-4">

@@ -1,8 +1,7 @@
 package com.RESTAPI.ArtGalleryProject.Entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,6 +38,9 @@ public class Painting {
 	private double startingPrice;
 	private double finalPrice;
 	private boolean isForAuction;
+	private boolean isAuctionLive = false;
+    private LocalDateTime auctionStartTime;
+    private LocalDateTime auctionEndTime;
 	private boolean isSold;
 
 	// --Relation tables
@@ -46,7 +48,6 @@ public class Painting {
 	// user sold painting
 	@ManyToOne
 	@JoinColumn(name = "seller_id", nullable = false)
-	@JsonIgnore // 👈 Add this
 	private User seller;
 
 	// user bought painting
