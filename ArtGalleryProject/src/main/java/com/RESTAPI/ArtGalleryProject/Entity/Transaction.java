@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Builder       // <--- Required for `.builder()` in your code
+@Builder       
 @AllArgsConstructor
 @NoArgsConstructor
 public class Transaction {

@@ -14,15 +14,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
-import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.OrderService.OrderService;
 import com.razorpay.RazorpayException;
 
 @Controller
 public class OrdersController {
-
-	@Autowired
-	private AuthHelper authHelper;
+	
 	@Autowired
 	private OrderService orderService;
 
@@ -34,7 +31,6 @@ public class OrdersController {
 	@PostMapping(value = "/createOrder", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<?> createOrder(@RequestBody OrderRequest request) throws RazorpayException {
-		String Email = authHelper.getCurrentEmail();
 		Orders razorpayOrder = orderService.createOrder(request);
 		return new ResponseEntity<>(razorpayOrder, HttpStatus.CREATED);
 	}

@@ -48,8 +48,8 @@ public class PaymentServiceImpl implements PaymentService {
         if (success) {
             txn.setStatus(TransactionStatus.SUCCESS);
 
-            Wallet wallet = walletRepo.findByUserId(txn.getUserId())
-                    .orElseThrow(() -> new RuntimeException("Wallet not found"));
+            Wallet wallet = userRepo.findById(txn.getUserId())
+                    .orElseThrow(() -> new RuntimeException("Wallet not found")).getWallet();
 
             wallet.setBalance(wallet.getBalance() + txn.getAmount());
             walletRepo.save(wallet);
