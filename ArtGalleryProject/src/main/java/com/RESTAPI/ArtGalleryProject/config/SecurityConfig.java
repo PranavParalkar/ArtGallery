@@ -34,6 +34,7 @@ public class SecurityConfig {
         	.cors(Customizer.withDefaults()) // enables CORS with default settings
         	.csrf(csrf -> csrf.disable())    // disables CSRF
         	.authorizeHttpRequests(auth -> auth
+        			.requestMatchers("/admin/**").hasRole("ADMIN")
         			.requestMatchers("/auctions/bid/**").authenticated()
         			.requestMatchers("/user/profile").authenticated()
         			.requestMatchers("/licenses/**").authenticated()

@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -15,6 +17,7 @@ import io.jsonwebtoken.Claims;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter  {
@@ -41,10 +44,13 @@ public class JwtAuthFilter extends OncePerRequestFilter  {
             Claims claims = jwtService.extractAllClaims(token);
             String email = claims.get("email", String.class);
             Long userId = claims.get("userId", Long.class);
-
+            String role = claims.get("role", String.class);
+            
             // Create custom authentication token with claims
+            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    email, null, new ArrayList<>());
+                    email, null, authorities);
 
             // Store additional details (optional)
             authentication.setDetails(userId);

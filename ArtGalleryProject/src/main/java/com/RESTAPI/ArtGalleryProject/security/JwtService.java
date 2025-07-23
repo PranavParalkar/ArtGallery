@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
+import com.RESTAPI.ArtGalleryProject.Enum.Role;
+
 import javax.crypto.SecretKey;
 
 import java.nio.charset.StandardCharsets;
@@ -20,16 +22,17 @@ public class JwtService {
 
 	private final SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 	
-	public String generateToken(String email, long userId) {
+	public String generateToken(String email, long userId, Role role) {
 		Map<String, Object> claims = new HashMap<>();
 	    claims.put("email", email);
 	    claims.put("userId", userId);
-		return Jwts.builder()
-				.claims(claims) 
-				.issuedAt(new Date(System.currentTimeMillis()))
-				.expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-				.signWith(key, Jwts.SIG.HS256) 
-				.compact();
+	    claims.put("role", role);
+	    return Jwts.builder()
+	            .claims(claims)
+	            .issuedAt(new Date(System.currentTimeMillis()))
+	            .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+	            .signWith(key, Jwts.SIG.HS256)
+	            .compact();
 	}
 
 	Claims extractAllClaims(String token) {

@@ -5,14 +5,19 @@ import axios from "axios";
 const WalletModal = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [balance, setBalance] = useState("₹0.00");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (isOpen) {
-      const userId = localStorage.getItem("userId");
-      if (!userId) return;
+      if (!token) return;
 
       axios
-        .get(`http://localhost:8085/wallet/${userId}`)
+        .get(`http://localhost:8085/wallet`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+        )
         .then((res) => {
           const rawBalance = parseFloat(res.data.balance || 0);
           setBalance(`₹${rawBalance.toFixed(2)}`);

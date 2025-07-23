@@ -70,7 +70,6 @@ public class LoginController {
 		}
 
 		String email = authHelper.getCurrentEmail();
-		System.out.println(email);
 		String response = service.acceptDetails(request, email);
 		logger.info("saveUserLogin finished.");
 		switch (response) {

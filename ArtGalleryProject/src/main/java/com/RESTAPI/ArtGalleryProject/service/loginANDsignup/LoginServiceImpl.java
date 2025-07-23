@@ -16,6 +16,7 @@ import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.UserDetailRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.Entity.Wallet;
+import com.RESTAPI.ArtGalleryProject.Enum.Role;
 import com.RESTAPI.ArtGalleryProject.repository.LoginCredRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
@@ -51,6 +52,7 @@ public class LoginServiceImpl implements LoginService {
 		var user = new User();
 		user.setAuthorizedSeller(false);
 		user.setCreatedAt(LocalDate.now());
+		user.setRole(Role.USER);
 		user.setWallet(wallet);
 
 		var logincred = new LoginCredentials();
@@ -65,7 +67,7 @@ public class LoginServiceImpl implements LoginService {
 		loginrepo.save(logincred);
 
 		long userId = logincred.getUser().getUserId();
-		String token = jwtService.generateToken(logincred.getEmail(), userId);
+		String token = jwtService.generateToken(logincred.getEmail(), userId, Role.USER);
 		logger.info("register finished.");
 		return new JwtResponse(token);
 	}
@@ -105,7 +107,9 @@ public class LoginServiceImpl implements LoginService {
 		}
 
 		long userId = login.getUser().getUserId();
-		String token = jwtService.generateToken(request.email(), userId);
+		String email = request.email();
+		Role role = login.getUser().getRole();
+		String token = jwtService.generateToken(email, userId, role);
 
 		logger.info("validateLogin finished.");
 		return new JwtResponse(token);
@@ -162,11 +166,11 @@ public class LoginServiceImpl implements LoginService {
 			logger.info("passwordReset finished.");
 			return "New password and current password are same";
 		}
-		
+
 		logincred.setPassword(encoder.encode(newPassword));
 		loginrepo.save(logincred);
 		long userId = logincred.getUser().getUserId();
-		String token = jwtService.generateToken(Email, userId);
+		String token = jwtService.generateToken(Email, userId, Role.USER);
 		logger.info("passwordReset finished.");
 		return new JwtResponse(token);
 	}
