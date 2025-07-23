@@ -83,48 +83,102 @@ const BiddingFrontend = () => {
   };
 
   return (
-    <div className="font-serif min-h-screen bg-[#fdf6f0] flex items-center justify-center py-10">
-      <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-14 px-4 lg:px-8">
-        {/* Artwork Section */}
-        <section className="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center max-w-2xl mx-auto lg:mx-0">
+    <div className="  font-serif">
+      <div className="max-w-7xl px-6 pt-10 pb-7 grid grid-cols-2">
+        {/* Painting Section */}
+        <section className="bg-white rounded-2xl h-[810px] shadow-xl p-8 flex-1 flex flex-col max-w-xl mx-auto xl:mx-0 transition-all duration-500">
           {painting ? (
             <>
-              <h1 className="text-4xl font-bold text-[#3e2e1e] mb-8 text-center">Art work</h1>
-              <div className="overflow-hidden rounded-2xl mb-6 w-full h-96 flex items-center justify-center bg-[#f8f5f0]">
+              <p className="text-4xl font-bold text-center text-[#3e2e1e] mb-8 ">
+                Art work
+              </p>
+              {/* <div className="overflow-hidden rounded-2xl mb-6">
                 <img
                   src={`http://localhost:8085${painting.imageUrl}`}
                   alt={painting.title}
-                  className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
-                  onClick={() => setFullscreenImage(`http://localhost:8085${painting.imageUrl}`)}
+                  className="w-full h-72 object-cover transform transition-transform duration-500 hover:scale-105 shadow-md"
+                />
+              </div> */}
+              <div className="overflow-hidden h-1/2 rounded-2xl">
+                <img
+                  src={`http://localhost:8085${painting.imageUrl}`}
+                  alt={painting.title}
+                  className="w-full h-full object-cover cursor-pointer 
+                transform transition-transform duration-300 hover:scale-110"
+                  onClick={() =>
+                    setFullscreenImage(
+                      `http://localhost:8085${painting.imageUrl}`
+                    )
+                  }
                 />
               </div>
-              <h2 className="text-3xl font-extrabold text-[#5a3c28] mb-4 text-center">{painting.title}</h2>
-              <p className="text-md text-gray-700 mb-2 text-center"><b>Description:</b> {painting.description}</p>
-              <div className="grid grid-cols-2 gap-4 mb-4 text-sm text-gray-700 w-full">
-                <p><b>Length:</b> {painting.length} cm</p>
-                <p><b>Breadth:</b> {painting.breadth} cm</p>
-                <p><b>Seller:</b> <span className="text-[#6b4c35]">{painting.seller}</span></p>
-                <p><b>{painting.is_sold ? "Buyer ID:" : "Available For Bidding"}</b> {painting.is_sold ? painting.buyer_id ?? "N/A" : ""}</p>
+              <h2 className="text-3xl text-center mt-3 font-extrabold text-[#5a3c28] mb-6 tracking-wide">
+                {painting.title}
+              </h2>
+              <p className="text-md text-gray-700 mb-2 ">
+                <b>Description:</b> {painting.description}
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
+                <p>
+                  <b>Length:</b> {painting.length} cm
+                </p>
+                <p>
+                  <b>Breadth:</b> {painting.breadth} cm
+                </p>
+                <p>
+                  <b>Seller:</b>{" "}
+                  <span className="text-[#6b4c35]">{painting.seller}</span>
+                </p>
+                <p>
+                  <b>
+                    {painting.is_sold ? "Buyer ID:" : "Available For Bidding"}
+                  </b>{" "}
+                  {painting.is_sold ? painting.buyer_id ?? "N/A" : ""}
+                </p>
               </div>
-              <div className="flex flex-col gap-2 text-lg font-semibold mb-4 w-full">
-                <span className="text-green-700">Starting: ₹{painting.startingPrice}</span>
-                <span className="text-blue-700">Current Price: ₹{bids.length > 0 ? bids[0].bid : painting.final_price > 0 ? painting.final_price : painting.starting_price}</span>
+
+              <div className="flex flex-col gap-2 text-lg font-semibold mb-4">
+                <span className="text-green-700">
+                  Starting: ₹{painting.startingPrice}
+                </span>
+                <span className="text-blue-700">
+                  Current Price: ₹
+                  {bids.length > 0
+                    ? bids[0].bid
+                    : painting.final_price > 0
+                    ? painting.final_price
+                    : painting.starting_price}
+                </span>
                 {painting.final_price > 0 && (
-                  <span className="text-purple-700">🎯 Final Price: ₹{painting.final_price}</span>
+                  <span className="text-purple-700">
+                    🎯 Final Price: ₹{painting.final_price}
+                  </span>
                 )}
               </div>
-              <span className={`inline-block px-4 py-1 rounded-full text-white text-sm font-bold ${painting.is_sold ? "bg-red-600" : "bg-green-600"}`}>{painting.is_sold ? "✅ Sold" : "🟢 Available"}</span>
+
+              <span
+                className={`inline-block px-4 py-1 rounded-full text-white text-sm font-bold ${
+                  painting.is_sold ? "bg-red-600" : "bg-green-600"
+                }`}
+              >
+                {painting.is_sold ? "✅ Sold" : "🟢 Available"}
+              </span>
             </>
           ) : (
-            <div className="text-gray-500 animate-pulse">Loading painting details...</div>
+            <div className="text-gray-500 animate-pulse">
+              Loading painting details...
+            </div>
           )}
         </section>
 
         {/* Bidding Section */}
-        <section className="bg-white rounded-2xl shadow-2xl p-10 flex flex-col gap-10 sticky top-10 min-h-[700px] lg:ml-4">
-          {/* Top 3 Bidders */}
-          <div>
-            <h4 className="text-2xl font-bold mb-4 text-[#3e2e1e]">Top 3 Bidders</h4>
+        <section className="bg-white rounded-2xl shadow-xl p-8 transition w-[1230px] ">
+          {/* Bidders List */}
+          <div className="mt-6 h-1/2">
+            <h4 className="text-lg font-bold mb-3 text-[#5a3c28]">
+              Top 3 Bidders
+            </h4>
             <ul className="space-y-3">
               {bids.length === 0 ? (
                 <li className="text-gray-500 italic">No bids yet.</li>
@@ -132,46 +186,58 @@ const BiddingFrontend = () => {
                 bids.slice(0, 3).map((bidder, idx) => (
                   <li
                     key={idx}
-                    className="flex items-center justify-between bg-[#fefaf6] border border-gray-200 rounded-lg px-4 py-3 shadow-sm hover:shadow-md transition"
+                    className="flex items-center justify-between bg-[#fefaf6] border border-gray-300 rounded-lg px-4 py-3 shadow-sm hover:shadow-md transition"
                   >
                     <div className="flex items-center gap-3">
                       <div className="bg-yellow-100 rounded-full w-10 h-10 flex items-center justify-center font-bold text-[#5a3c28]">
                         {bidder.name?.charAt(0).toUpperCase() || "B"}
                       </div>
-                      <span className="font-semibold text-[#6b4c35]">{bidder.name || "Anonymous"}</span>
+                      <span className="font-semibold text-[#6b4c35]">
+                        {bidder.name || "Anonymous"}
+                      </span>
                     </div>
-                    <span className="font-semibold text-blue-700 text-lg">₹{bidder.bid}</span>
+                    <span className="font-semibold text-blue-700 text-lg">
+                      ₹{bidder.bid}
+                    </span>
                   </li>
                 ))
               )}
             </ul>
           </div>
+          <h3 className="text-2xl font-extrabold text-[#3e2e1e] mb-6">
+            Place Your Bid
+          </h3>
+          <form
+            onSubmit={handleBid}
+            className="flex flex-col sm:flex-row gap-4 mb-6"
+          >
+            <input
+              type="number"
+              min="1"
+              value={bidAmount}
+              onChange={(e) => setBidAmount(e.target.value)}
+              placeholder="Enter your bid (₹)"
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+              required
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition shadow-md"
+            >
+              Place Bid
+            </button>
+          </form>
 
-          <hr className="my-2 border-gray-200" />
-
-          {/* Place Your Bid */}
-          <div>
-            <h3 className="text-2xl font-extrabold text-[#3e2e1e] mb-4">Place Your Bid</h3>
-            <form onSubmit={handleBid} className="flex flex-col sm:flex-row gap-4 mb-4">
-              <input
-                type="number"
-                min="1"
-                value={bidAmount}
-                onChange={(e) => setBidAmount(e.target.value)}
-                placeholder="Enter your bid (₹)"
-                className="flex-1 px-6 py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg transition"
-                required
-              />
-              <button
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              >
-                Place Bid
-              </button>
-            </form>
-            {message && <div className="text-green-700 font-semibold text-center mb-2 transition duration-300">{message}</div>}
-            {error && <div className="text-red-600 font-semibold text-center mb-2 transition duration-300">{error}</div>}
-          </div>
+          {message && (
+            <div className="text-green-700 font-semibold text-center mb-4 transition duration-300">
+              {message}
+            </div>
+          )}
+          {error && (
+            <div className="text-red-600 font-semibold text-center mb-4 transition duration-300">
+              {error}
+            </div>
+          )}
         </section>
       </div>
       {/* Fullscreen Image Modal */}
@@ -217,4 +283,4 @@ const BiddingFrontend = () => {
   );
 };
 
-export default BiddingFrontend;
+export default BiddingFrontend

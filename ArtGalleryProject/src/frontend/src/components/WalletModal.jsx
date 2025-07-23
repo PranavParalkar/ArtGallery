@@ -1,38 +1,141 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axiosInstance from '../axiosInstance';
+import axios from "axios";
 
+// 🔐 Authenticated Axios Instance
+const axiosInstance = axios.create({
+  baseURL: "http://localhost:8085",
+});
+
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// -----------------------------
+// Deposit Modal Component
+// -----------------------------
+const DepositModal = ({ onClose }) => {
+  const presetAmounts = [500, 5000, 30000];
+  const [selectedAmount, setSelectedAmount] = useState(null);
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 flex items-center justify-center z-50"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          onClick={(e) => e.stopPropagation()}
+          className="bg-white text-[#3e2e1e] border-1 rounded-xl p-6 w-full max-w-md shadow-xl space-y-4"
+        >
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-xl font-semibold">Deposit</h2>
+            <button
+              onClick={onClose}
+              className="text-[#3e2e1e] text-2xl font-bold"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="bg-[#f0e2d2] rounded-lg p-4">
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold mb-1">New account</h3>
+              <div className="bg-white p-2 rounded-md text-sm">UPI ID</div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              {presetAmounts.map((amt) => (
+                <button
+                  key={amt}
+                  onClick={() => setSelectedAmount(amt)}
+                  className={`py-2 rounded-md text-sm font-medium ${
+                    selectedAmount === amt
+                      ? "bg-[#2e9afe]"
+                      : "bg-white hover:bg-orange-100"
+                  }`}
+                >
+                  ₹{amt.toLocaleString()}
+                </button>
+              ))}
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="number"
+                placeholder="Amount"
+                className="w-full p-2 bg-white rounded-md outline-none text-black placeholder-gray-400"
+              />
+              <p className="text-xs mt-2 text-gray-400">
+                Minimum: ₹500 | Maximum: ₹49,999
+              </p>
+            </div>
+
+            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md">
+              Set amount
+            </button>
+
+            <div className="flex justify-center mt-4">
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThWX8FGxoSiZEFeky-wDqxpSVpbgGbhEl3TA&s"
+                alt="UPI QR Code"
+                className="w-40 h-auto rounded-md shadow-md"
+              />
+            </div>
+
+            <p className="text-xs mt-4 text-gray-400 text-center">
+              Improve your account security with Two-Factor Authentication
+            </p>
+            <button className="w-full mt-2 bg-orange-100 hover:bg-orange-200 text-sm py-1 rounded-md">
+              Enable 2FA
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+// -----------------------------
+// Wallet Modal Component
+// -----------------------------
 const WalletModal = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState("overview");
-  const [balance, setBalance] = useState(null); // null = not loaded
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [balance, setBalance] = useState("₹0.00");
+  const [showDepositModal, setShowDepositModal] = useState(false);
+
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    let cancelled = false;
     if (isOpen) {
-      setLoading(true);
-      setError("");
-      setBalance(null);
-      axiosInstance
-        .get(`/wallet`)
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      axios
+        .get(`http://localhost:8085/wallet`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then((res) => {
-          if (cancelled) return;
           const rawBalance = parseFloat(res.data.balance || 0);
-          console.log(balance);
-          setBalance(rawBalance);
-          setLoading(false);
+          setBalance(`₹${rawBalance.toFixed(2)}`);
         })
         .catch((err) => {
-          if (cancelled) return;
-          setError("Failed to fetch wallet balance");
-          setBalance(0);
-          setLoading(false);
+          console.error("Failed to fetch wallet balance:", err);
+          setBalance("₹0.00");
         });
     }
-    return () => {
-      cancelled = true;
-    };
   }, [isOpen]);
 
   const tabs = [{ id: "overview", label: "Overview" }];
@@ -44,7 +147,7 @@ const WalletModal = ({ isOpen, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0   flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+        className="fixed inset-0 flex items-center justify-center z-40 p-4 backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div
@@ -86,7 +189,6 @@ const WalletModal = ({ isOpen, onClose }) => {
           <div className="p-6">
             {activeTab === "overview" && (
               <div className="text-center">
-                {/* Wallet Illustration */}
                 <div className="relative mb-6">
                   <div className="w-32 h-32 mx-auto bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center mb-4">
                     <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
@@ -96,51 +198,43 @@ const WalletModal = ({ isOpen, onClose }) => {
                   <div className="absolute inset-0 bg-gradient-to-t from-red-500/20 to-transparent rounded-full"></div>
                 </div>
 
-                {/* Balance Display */}
-                <div className="mb-6 min-h-[3.5rem] flex flex-col items-center justify-center">
+                <div className="mb-6">
                   <h3 className="text-xl font-bold text-[#5a3c28] mb-2">
                     Your Art Gallery Wallet
                   </h3>
-                  {loading ? (
-                    <div className="text-lg text-gray-500 flex items-center gap-2">
-                      <svg className="animate-spin h-6 w-6 text-[#a17b5d]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
-                      Loading balance...
-                    </div>
-                  ) : error ? (
-                    <div className="text-red-600 text-sm font-semibold">{error}</div>
-                  ) : (
-                    <div className="text-3xl font-bold text-[#a17b5d] mb-2">
-                      ₹{balance !== null ? balance.toFixed(2) : "0.00"}
-                    </div>
-                  )}
+                  <div className="text-3xl font-bold text-[#a17b5d] mb-2">
+                    {balance}
+                  </div>
                   <p className="text-gray-600 text-sm">
-                    {balance === 0 || balance === null
+                    {balance === "₹0.00"
                       ? "Your wallet is currently empty"
                       : "Use your balance to participate in auctions or purchase artwork"}
                   </p>
                 </div>
 
-                {/* Instructions */}
                 <p className="text-gray-600 mb-6 text-sm leading-relaxed">
                   Add funds to your wallet to purchase artwork or participate in
                   auctions. You can add money via various payment methods
                   available in your region.
                 </p>
 
-                {/* Action Buttons */}
                 <div className="space-y-3">
-                  <button className="w-full bg-[#a17b5d] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#8c6448] transition-colors">
+                  <button
+                    onClick={() => setShowDepositModal(true)}
+                    className="w-full bg-[#a17b5d] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#8c6448] transition-colors"
+                  >
                     Add Funds
                   </button>
-                  {/* Optional: Uncomment below when history is ready */}
-                  {/* <button className="w-full bg-gray-100 text-[#5a3c28] py-3 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
-                    View Transaction History
-                  </button> */}
                 </div>
               </div>
             )}
           </div>
         </motion.div>
+
+        {/* Deposit Modal */}
+        {showDepositModal && (
+          <DepositModal onClose={() => setShowDepositModal(false)} />
+        )}
       </motion.div>
     </AnimatePresence>
   );

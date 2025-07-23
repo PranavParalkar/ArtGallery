@@ -1,14 +1,14 @@
 package com.RESTAPI.ArtGalleryProject.controller.DashBoard;
 
-import org.springframework.web.bind.annotation.RestController;
-
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PagePaintingResponse;
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
+import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.service.DashBoard.DashboardService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,5 +40,15 @@ public class DashboardController {
 		else
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
+	
+	@GetMapping("/store")
+	public ResponseEntity<?> getStorePaintings(@RequestParam(defaultValue = "0") int pageNo) {
+	    logger.info("getStorePaintings started.");
+	    final int pageSize = 12;
+	    var allPaintings = service.getPaintingsByPageShop(pageNo, pageSize);
+	    logger.info("getStorePaintings finished.");
+	    return new ResponseEntity<>(allPaintings, HttpStatus.OK);
+	}
+
 
 }

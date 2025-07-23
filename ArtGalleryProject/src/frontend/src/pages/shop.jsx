@@ -1,139 +1,262 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../axiosInstance";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-const shopItems = [
-  {
-    id: 1,
-    title: "Blue Reverie",
-    artist: "Meera Shah",
-    price: "₹18,000",
-    category: "Abstract",
-    image:
-      "https://images.unsplash.com/photo-1625737186484-f8d4cd0ab8c6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Qmx1ZSUyMFJldmVyaWUlMjBwYWludGluZ3xlbnwwfHwwfHx8MA%3D%3D",
-  },
-  {
-    id: 2,
-    title: "Divine Kathakali",
-    artist: "Rahul Nair",
-    price: "₹25,000",
-    category: "Traditional",
-    image:
-      "https://plus.unsplash.com/premium_photo-1691030926024-4a5664b37ef8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8RGl2aW5lJTIwS2F0aGFrYWxpJTIwcGFpbnRpbmd8ZW58MHx8MHx8fDA%3D",
-  },
-  {
-    id: 3,
-    title: "Cosmic Gaze",
-    artist: "Aanya Rao",
-    price: "₹22,500",
-    category: "Modern",
-    image:
-      "https://plus.unsplash.com/premium_photo-1682308431525-6130fb37f641?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Q29zbWljJTIwR2F6ZXBhaW50aW5nfGVufDB8fDB8fHww",
-  },
-  {
-    id: 4,
-    title: "Madhubani Bloom",
-    artist: "Ramesh Verma",
-    price: "₹15,000",
-    category: "Folk",
-    image:
-      "https://plus.unsplash.com/premium_photo-1720253873735-5acba3758beb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8TWFkaHViYW5pJTIwQmxvb20lMjBwYWludGluZ3xlbnwwfHwwfHx8MA%3D%3D",
-  },
-  {
-    id: 5,
-    title: "Nature’s Verse",
-    artist: "Tanya Kulkarni",
-    price: "₹20,000",
-    category: "Landscape",
-    image:
-      "https://plus.unsplash.com/premium_photo-1711987235866-c0c38150a8eb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TmF0dXJlJUUyJTgwJTk5cyUyMFZlcnNlJTIwcGFpbnRpbmd8ZW58MHx8MHx8fDA%3D",
-  },
-  {
-    id: 6,
-    title: "Street Harmony",
-    artist: "Varun Jha",
-    price: "₹13,500",
-    category: "Urban",
-    image:
-      "https://images.unsplash.com/photo-1650531220654-8c87d2e311e2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8U3RyZWV0JTIwSGFybW9ueSUyMHBhaW50aW5nfGVufDB8fDB8fHww",
-  },
-  {
-    id: 7,
-    title: "Whispers of the Desert",
-    artist: "Sana Ahmed",
-    price: "₹19,800",
-    category: "Minimalist",
-    image:
-      "https://plus.unsplash.com/premium_photo-1694475441593-43f836bedc77?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8V2hpc3BlcnMlMjBvZiUyMHRoZSUyMERlc2VydCUyMHBhaW50aW5nfGVufDB8fDB8fHww",
-  },
-  {
-    id: 8,
-    title: "Golden Silence",
-    artist: "Vikram Joshi",
-    price: "₹27,000",
-    category: "Spiritual",
-    image:
-      "https://plus.unsplash.com/premium_photo-1670966447392-b5688615370b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8R29sZGVuJTIwU2lsZW5jZSUyMHBhaW50aW5nfGVufDB8fDB8fHww",
-  },
-];
-
 const Shop = () => {
+  const [paintings, setPaintings] = useState([]);
+  const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [pageNo, setPageNo] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(true);
   const navigate = useNavigate();
 
-  const handleBuyNow = (item) => {
-    // Navigate to the server endpoint that serves the orders.html page
-    // We can pass the item price as a query parameter to pre-fill the amount field
-    const price = item.price.replace(/[^\d]/g, ''); // Extract numeric value from price
-    window.location.href = `http://localhost:8085/orders?amount=${price}&item=${encodeURIComponent(item.title)}`;
+  useEffect(() => {
+    fetchPaintings(pageNo);
+  }, [pageNo]);
+
+  const fetchPaintings = async (page = 0) => {
+    try {
+      const res = await axiosInstance.get(`/store?pageNo=${page}`);
+      const data = res.data.content || res.data;
+      setPaintings(data);
+
+      const nextRes = await axiosInstance.get(`/store?pageNo=${page + 1}`);
+      const nextData = nextRes.data.content || nextRes.data;
+      setHasNextPage(Array.isArray(nextData) ? nextData.length > 0 : false);
+    } catch (err) {
+      setPaintings([]);
+      setHasNextPage(false);
+    }
   };
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [selectedPainting, setSelectedPainting] = useState(null);
+  const [orderInfo, setOrderInfo] = useState({
+    name: "",
+    email: "",
+    address: "",
+    paymentMode: "Cash on Delivery",
+  });
+  const [orderPlaced, setOrderPlaced] = useState(false);
 
   return (
-    <div className=" w-[100%] px-6 py-12 font-serif">
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-4xl font-bold text-center text-[#5a3c28] mb-12"
-      >
+    <div className="px-20 py-10 font-serif relative">
+      <h1 className="text-4xl font-bold text-center text-[#3e2e1e] mb-12">
         Art Store
-      </motion.h1>
+      </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-[1300px] mx-auto">
-        {shopItems.map((item, i) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-900 transition transform hover:-translate-y-2  duration-300"
-          >
-            <img
-              src={item.image}
-              alt={item.title}
-              className="w-full h-60 object-cover"
-            />
-            <div className="p-5 flex flex-col justify-between h-40">
-              <div>
-                <h2 className="text-lg font-bold text-[#6b4c35]">
-                  {item.title}
-                </h2>
-                <p className="text-sm text-gray-600 mb-1">by {item.artist}</p>
-              </div>
-              <div className="mt-4 flex justify-between items-center">
-                <span className="text-md font-semibold text-[#a17b5d]">
-                  {item.price}
-                </span>
-                <button 
-                  onClick={() => handleBuyNow(item)}
-                  className="px-4 py-2 rounded-full text-sm font-semibold text-white bg-[#a17b5d] hover:bg-[#8c6448] transition hover:cursor-pointer"
+        {paintings.length > 0 ? (
+          paintings.map((painting) => (
+            <motion.div
+              key={painting.paintingId}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="rounded-2xl bg-[#f0e2d2] h-[500px] transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition"
+            >
+              {painting.imageUrl && (
+                <div className="overflow-hidden h-1/2 rounded-t-2xl">
+                  <img
+                    src={`http://localhost:8085${painting.imageUrl}`}
+                    alt={painting.title}
+                    className="w-full h-full object-cover cursor-pointer transform transition-transform duration-300 hover:scale-110"
+                    onClick={() =>
+                      setFullscreenImage(
+                        `http://localhost:8085${painting.imageUrl}`
+                      )
+                    }
+                  />
+                </div>
+              )}
+              <div className="p-6 flex flex-col justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-[#5a3c28] mb-1">
+                    {painting.title}
+                  </h2>
+                  <p className="text-sm text-gray-700 mb-2">
+                    {painting.description}
+                  </p>
+                  <p className="text-sm text-gray-500 mb-1">
+                    📏 {painting.length}cm x {painting.breadth}cm
+                  </p>
+                  <p className="text-sm text-gray-500 mb-1">
+                    💰 Price: ₹{painting.finalPrice || painting.startingPrice}
+                  </p>
+                  <p className="text-sm text-gray-500 mb-1">
+                    {painting.isSold ? "✅ Sold" : "🟢 Available"}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Seller:{" "}
+                    <span className="font-medium text-[#6b4c35]">
+                      {painting.seller || "Unknown"}
+                    </span>
+                  </p>
+                </div>
+                <button
+                  className="mt-4 block text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition"
+                  onClick={() => {
+                    setSelectedPainting(painting);
+                    setShowOrderModal(true);
+                  }}
                 >
                   Buy Now
                 </button>
               </div>
+            </motion.div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500 col-span-full">
+            No paintings found.
+          </p>
+        )}
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-center mt-8 gap-4">
+        <button
+          onClick={() => setPageNo((p) => Math.max(0, p - 1))}
+          disabled={pageNo === 0}
+          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span className="px-4 py-2">Page {pageNo + 1}</span>
+        <button
+          onClick={() => setPageNo((p) => p + 1)}
+          disabled={!hasNextPage}
+          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
+
+      {/* Fullscreen Image Modal */}
+      <AnimatePresence>
+        {fullscreenImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+            onClick={() => setFullscreenImage(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              className="relative max-w-4xl w-full"
+            >
+              <img
+                src={fullscreenImage}
+                alt="Fullscreen Preview"
+                className="w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+              />
+              <button
+                onClick={() => setFullscreenImage(null)}
+                className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black"
+              >
+                ✕ Close
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showOrderModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50"
+          >
+            <div
+              className="bg-white p-8 rounded-xl shadow-lg w-[90%] max-w-md font-serif"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-2xl font-bold text-[#3e2e1e] mb-6 text-center">
+                Complete Your Order
+              </h2>
+
+              <label className="block mb-2 font-medium">Full Name</label>
+              <input
+                type="text"
+                value={orderInfo.name}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, name: e.target.value })
+                }
+                placeholder="Enter your full name"
+                className="w-full border px-4 py-2 mb-4 rounded-lg"
+              />
+
+              <label className="block mb-2 font-medium">Email Address</label>
+              <input
+                type="email"
+                value={orderInfo.email}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, email: e.target.value })
+                }
+                placeholder="Enter your email address"
+                className="w-full border px-4 py-2 mb-4 rounded-lg"
+              />
+
+              <label className="block mb-2 font-medium">Delivery Address</label>
+              <textarea
+                value={orderInfo.address}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, address: e.target.value })
+                }
+                placeholder="Enter your address"
+                className="w-full border px-4 py-2 mb-4 rounded-lg"
+              />
+
+              <label className="block mb-2 font-medium">Payment Mode</label>
+              <select
+                value={orderInfo.paymentMode}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, paymentMode: e.target.value })
+                }
+                className="w-full border px-4 py-2 mb-6 rounded-lg"
+              >
+                <option>Cash on Delivery</option>
+                <option>Debit/Credit Card</option>
+                <option>UPI</option>
+              </select>
+
+              <button
+                className="w-full py-2 bg-[#a0754f] text-white font-semibold rounded-full hover:bg-[#8c5e3d] transition"
+                onClick={() => {
+                  if (orderInfo.paymentMode === "Cash on Delivery") {
+                    setShowOrderModal(false);
+                    setOrderPlaced(true);
+                    setTimeout(() => setOrderPlaced(false), 3000);
+                  } else {
+                    alert(
+                      `Redirecting to ${orderInfo.paymentMode} payment gateway...`
+                    );
+                  }
+                }}
+              >
+                Proceed To Pay
+              </button>
             </div>
           </motion.div>
-        ))}
-      </div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {orderPlaced && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 text-4xl text-[#3e2e1e] font-serif flex items-center justify-center z-50 backdrop-blur-3xl cursor-pointer"
+            onClick={() => setOrderPlaced(false)}
+          >
+            ✅ You have placed an order successfully for "
+            {selectedPainting?.title}".
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
