@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PagePaintingResponse;
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
@@ -27,13 +28,13 @@ public class DashboardServiceImpl implements DashboardService{
 	private UserRepo userrepo;
 
 	@Override
-	public Page<PaintingResponse> getPaintingsByPage(int pageNo, int size) {
+	public PagePaintingResponse<PaintingResponse> getPaintingsByPage(int pageNo, int size) {
 		logger.info("getPaintingsByPage started.");
 		
 		Pageable pageable = PageRequest.of(pageNo, size);
 		Page<Painting> paintingsPage = paintingrepo.findAll(pageable);
 
-		Page<PaintingResponse> responsepainting = paintingsPage.map(p -> new PaintingResponse(
+		Page<PaintingResponse> pageResult = paintingsPage.map(p -> new PaintingResponse(
 	        p.getPaintingId(),
 	        p.getImageUrl(),
 	        p.getTitle(),
@@ -47,7 +48,14 @@ public class DashboardServiceImpl implements DashboardService{
 	    ));
 		
 		logger.info("getPaintingsByPage finished.");
-		return  responsepainting;
+		return new PagePaintingResponse<PaintingResponse>(
+		        pageResult.getContent(),
+		        pageResult.getNumber(),
+		        pageResult.getSize(),
+		        pageResult.getTotalElements(),
+		        pageResult.getTotalPages(),
+		        pageResult.isLast()
+		    );
 	}
 
 	@Override

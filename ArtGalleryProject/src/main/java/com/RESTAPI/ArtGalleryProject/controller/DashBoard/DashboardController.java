@@ -2,13 +2,13 @@ package com.RESTAPI.ArtGalleryProject.controller.DashBoard;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PagePaintingResponse;
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 import com.RESTAPI.ArtGalleryProject.service.DashBoard.DashboardService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +25,7 @@ public class DashboardController {
 	public ResponseEntity<?> getPainting(@RequestParam(defaultValue = "0") int pageNo) {
 		logger.info("getPainting started.");
 		final int pageSize = 12;
-		Page<PaintingResponse> allPaintings = service.getPaintingsByPage(pageNo, pageSize);
+		var allPaintings = service.getPaintingsByPage(pageNo, pageSize);
 		logger.info("getPainting finished.");
 		return new ResponseEntity<>(allPaintings, HttpStatus.OK);
 	}

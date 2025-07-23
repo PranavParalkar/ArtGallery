@@ -16,7 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import io.jsonwebtoken.Claims;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
