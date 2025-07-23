@@ -1,25 +1,24 @@
 package com.RESTAPI.ArtGalleryProject.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
 @Getter
 @Setter
-@ToString
-@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Wallet {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long walletId;
 
-	private double balance;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long walletId;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "userId")
+    private User user;
+
+    private double balance;
+
 }
