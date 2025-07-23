@@ -12,8 +12,7 @@ const Sell = () => {
     description: "",
     length: "",
     breadth: "",
-    startingPrice: "",
-    fixedPrice: "",
+    price: "",
   });
 
   const handleChange = (e) => {
@@ -265,7 +264,7 @@ const Sell = () => {
                   </label>
                   <input
                     type="number"
-                    name="Price"
+                    name="price"
                     required
                     min="0"
                     step="any"
@@ -281,7 +280,7 @@ const Sell = () => {
                   </label>
                   <input
                     type="number"
-                    name="Price"
+                    name="price"
                     required
                     min="0"
                     step="any"
