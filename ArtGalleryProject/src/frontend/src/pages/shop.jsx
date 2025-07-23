@@ -102,7 +102,7 @@ const Shop = () => {
         {shopItems.map((item, i) => (
           <motion.div
             key={item.id}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
             className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-900 transition transform hover:-translate-y-2  duration-300"

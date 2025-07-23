@@ -44,10 +44,10 @@ const Auction = () => {
           paintings.map((painting) => (
             <motion.div
               key={painting.paintingId}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className=" rounded-2xl  bg-[#f0e2d2] h-[500px]  transform hover:-translate-y-2  duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition"
+              transition={{ duration: 0.75 }}
+              className=" rounded-2xl  bg-[#f0e2d2] h-[500px] duration-150 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition"
             >
               {painting.imageUrl && (
                 <div className="overflow-hidden h-1/2 rounded-t-2xl">
