@@ -44,7 +44,6 @@ public class LoginController {
 			case "Registration Successful":
 				return new ResponseEntity<>(response, HttpStatus.CREATED);
 			default:
-				return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

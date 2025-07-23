@@ -2,6 +2,7 @@ package com.RESTAPI.ArtGalleryProject.controller.PaintingController;
 
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.PlaceBidRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.TopBidDTO;
+import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.UserBidDTO;
 import com.RESTAPI.ArtGalleryProject.service.DashBoard.BidService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
