@@ -118,9 +118,6 @@ const Shop = () => {
                   {item.title}
                 </h2>
                 <p className="text-sm text-gray-600 mb-1">by {item.artist}</p>
-                <p className="text-sm text-gray-500">
-                  Category: {item.category}
-                </p>
               </div>
               <div className="mt-4 flex justify-between items-center">
                 <span className="text-md font-semibold text-[#a17b5d]">

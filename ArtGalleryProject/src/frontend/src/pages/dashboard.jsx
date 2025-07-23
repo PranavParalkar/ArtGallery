@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import axiosInstance from '../axiosInstance';
 
 const newsItems = [
   {
@@ -36,7 +36,7 @@ const newsItems = [
   },
 ];
 
-const MainTab = () => {
+const Dashboard = () => {
   const [index, setIndex] = useState(0);
   const [paintings, setPaintings] = useState([]);
   const [carouselItems, setCarouselItems] = useState([]);
@@ -45,15 +45,15 @@ const MainTab = () => {
   // Fetch paintings from backend API with pagination
   const fetchPaintings = async (page = 0) => {
     try {
-      const res = await axios.get(
-        `http://localhost:8085/auctions?pageNo=${page}`
+      const res = await axiosInstance.get(
+        `/auctions?pageNo=${page}`
       );
       const data = res.data.content || res.data;
       setPaintings(data);
 
       // Check if next page has paintings
-      const nextRes = await axios.get(
-        `http://localhost:8085/auctions?pageNo=${page + 1}`
+      const nextRes = await axiosInstance.get(
+        `/auctions?pageNo=${page + 1}`
       );
       const nextData = nextRes.data.content || nextRes.data;
       setHasNextPage(Array.isArray(nextData) ? nextData.length > 0 : false);
@@ -108,9 +108,8 @@ const MainTab = () => {
           {carouselItems.map((_, i) => (
             <div
               key={i}
-              className={`w-2 h-2 rounded-full transition-all ${
-                i === index ? "bg-black" : "bg-gray-400"
-              }`}
+              className={`w-2 h-2 rounded-full transition-all ${i === index ? "bg-black" : "bg-gray-400"
+                }`}
             ></div>
           ))}
         </div>
@@ -125,6 +124,9 @@ const MainTab = () => {
       </div>
     </div>
   );
+
+  console.log(paintings);
+  console.log(typeof paintings);
 
   const upcomingAuctions = paintings.filter((p) => !p.isSold);
 
@@ -232,4 +234,4 @@ const MainTab = () => {
   );
 };
 
-export default MainTab;
+export default Dashboard;

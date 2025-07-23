@@ -3,7 +3,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import AppLayout from "./layouts/app-layout";
 
 import "./App.css";
-import MainTab from "./pages/dashboard";
+import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
 import Auction from "./pages/auction";
 import Sell from "./pages/sell";
@@ -16,7 +16,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <MainTab />,
+        element: <Dashboard />,
       },
       {
         path: "/login",

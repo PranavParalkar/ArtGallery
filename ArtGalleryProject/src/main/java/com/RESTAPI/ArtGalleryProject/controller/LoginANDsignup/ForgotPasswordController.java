@@ -17,17 +17,17 @@ import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.GetQuestionRequest;
 import com.RESTAPI.ArtGalleryProject.service.loginANDsignup.LoginService;
 
 @RestController
-@RequestMapping("/forgot-password")
+@RequestMapping("/auth/forgot-password")
 public class ForgotPasswordController {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ForgotPasswordController.class);
-	
+
 	@Autowired
 	private LoginService service;
-	
+
 	private String emailPattern = "^[a-zA-Z0-9.-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9.-]+$";
 	private String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$";
-	
+
 	@PostMapping(params = "step=check-email")
 	public ResponseEntity<?> getSecurityQuestion(@RequestBody GetQuestionRequest request) {
 		logger.info("getSecurityQuestion started.");
@@ -35,18 +35,18 @@ public class ForgotPasswordController {
 			logger.info("getSecurityQuestion finished.");
 			return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
 		}
-		
+
 		String response = service.getSecurityQuestion(request.email());
 		logger.info("getSecurityQuestion finished.");
 		switch (response) {
 		case "Invalid Email":
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-			
+
 		default:
 			return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 		}
 	}
-	
+
 	@PostMapping(params = "step=verify-answer")
 	public ResponseEntity<?> checkSecurityAnswer(@RequestBody CheckAnswerRequest request) {
 		logger.info("checkSecurityAnswer started.");
@@ -63,7 +63,7 @@ public class ForgotPasswordController {
 			return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@PutMapping(params = "step=password-reset")
 	public ResponseEntity<?> passwordReset(@RequestBody ForgotPasswordRequest request) {
 		logger.info("passwordReset started.");
@@ -78,20 +78,20 @@ public class ForgotPasswordController {
 					"Password should contain atleast 8 characters, 1 capital letter, 1 small letter, 1 digit, and 1 special character",
 					HttpStatus.BAD_REQUEST);
 		}
-		String response = service.passwordReset(request.email(), request.newPassword(), request.confirmPassword());
+		Object response = service.passwordReset(request.email(), request.newPassword(), request.confirmPassword());
 		logger.info("passwordReset finished.");
-		switch (response) {
-		case "Email not found":
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		case "Passwords don't match":
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-		case "New password and current password are same":
-			return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-		case "Password changed successfully":
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		default:
-			return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+		if (response instanceof String) {
+			switch ((String)response) {
+			case "Email not found":
+				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+			case "Passwords don't match":
+				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			case "New password and current password are same":
+				return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+			default:
+				return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		}
-		
+		return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 	}
 }

@@ -13,29 +13,34 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.UploadPaintingRequest;
+import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.UploadPainting.UploadService;
 
 @RestController
 public class UploadPaintingController {
 
 	private static final Logger logger = LoggerFactory.getLogger(UploadPaintingController.class);
-	
+
+	@Autowired
+	private AuthHelper authHelper;
 	@Autowired
 	private UploadService service;
 
 	@Value("${image.path}")
 	private String path;
+
 	@PostMapping(value = "/upload-painting", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> upload(@ModelAttribute UploadPaintingRequest request) {
 		logger.info("upload started.");
 		try {
+			long userId = authHelper.getCurrentUserId();
 			logger.info("upload finished.");
-			return new ResponseEntity<>(service.uploadPainting(path, request), HttpStatus.ACCEPTED);
+			return new ResponseEntity<>(service.uploadPainting(userId, path, request), HttpStatus.ACCEPTED);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		logger.info("upload finished.");
-		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>("internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }

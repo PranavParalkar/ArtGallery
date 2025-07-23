@@ -1,10 +1,11 @@
 package com.RESTAPI.ArtGalleryProject.service.DashBoard;
 
-import org.springframework.data.domain.Page;
-
+import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PagePaintingResponse;
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 
 public interface DashboardService {
-	public Page<PaintingResponse> getPaintingsByPage(int pageNo, int size);
+	public PagePaintingResponse<PaintingResponse> getPaintingsByPageAuction(int pageNo, int size);
+	public PagePaintingResponse<PaintingResponse> getPaintingsByPageShop(int pageNo, int size);
 	public PaintingResponse getPaintingById(long id);
+	public Object walletBalance(long id);
 }

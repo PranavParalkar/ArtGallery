@@ -1,7 +1,5 @@
 package com.RESTAPI.ArtGalleryProject.controller.LoginANDsignup;
 
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,18 +12,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.LoginRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.SignupRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.UserDetailRequest;
+import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.loginANDsignup.LoginService;
 
 @RestController
-@RequestMapping("/auth/")
+@RequestMapping("/auth")
 public class LoginController {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
 	@Autowired
+	private AuthHelper authHelper;
+	@Autowired
 	private LoginService service;
 
-	private String emailPattern = "^[a-zA-Z0-9.-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9.-]+$";
+//	private String emailPattern = "^[a-zA-Z0-9.-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9.-]+$";
 	private String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$";
 	private String phonePattern = "^[6-9]\\d{9}$";
 	private String pinCodePattern = "^[1-9][0-9]{5}$";
@@ -34,18 +35,24 @@ public class LoginController {
 	@PostMapping("/register")
 	public ResponseEntity<?> registerUser(@Validated @RequestBody SignupRequest request) {
 		logger.info("registerUser started.");
-		Map<String, Object> response = service.register(request);
-		String message = (String) response.get("message");
-		logger.info("registerUser finished.");
 
-		switch (message) {
+		if(!request.password().matches(passwordPattern)) {
+			logger.info("registerUser finished.");
+			return new ResponseEntity<>("Password should be atleast 8 characters and consist of atleast 1 lowercase letter, 1 uppercase letter, 1 special character and 1 number!!", HttpStatus.BAD_REQUEST);
+		}
+		
+		Object response = service.register(request);
+		if (response instanceof String) {
+			logger.info("registerUser finished.");
+			switch ((String)response) {
 			case "Account already exists":
 				return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-			case "Registration Successful":
-				return new ResponseEntity<>(response, HttpStatus.CREATED);
 			default:
 				return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		}
+		logger.info("registerUser finished.");
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	// Saving User Info Process
@@ -62,7 +69,8 @@ public class LoginController {
 			return new ResponseEntity<>("Invalid pincode", HttpStatus.BAD_REQUEST);
 		}
 
-		String response = service.acceptDetails(request);
+		String email = authHelper.getCurrentEmail();
+		String response = service.acceptDetails(request, email);
 		logger.info("saveUserLogin finished.");
 		switch (response) {
 		case "User not Found":
@@ -80,21 +88,18 @@ public class LoginController {
 	@PostMapping("/login")
 	public ResponseEntity<?> validateLogin(@Validated @RequestBody LoginRequest request) {
 		logger.info("validateLogin started.");
-		Map<String, Object> response = service.validateLogin(request);
+		Object response = service.validateLogin(request);
+	    logger.info("validateLogin finished.");
 
-		String message = (String) response.get("message");
-		logger.info("validateLogin finished.");
-
-		switch (message) {
-			case "Invalid Email":
-				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-			case "Invalid Password":
-				return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-			case "Login Successful":
-				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
-			default:
-				return new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	    if (response instanceof String) {
+	        return switch ((String) response) {
+	            case "Invalid Email" -> new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+	            case "Invalid Password" -> new ResponseEntity<>(response, HttpStatus.CONFLICT);
+	            default -> new ResponseEntity<>("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+	        };
+	    }
+	    System.out.println();
+	    return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
 
 	}
 

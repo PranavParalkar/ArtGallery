@@ -2,13 +2,13 @@ package com.RESTAPI.ArtGalleryProject.controller.DashBoard;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PagePaintingResponse;
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 import com.RESTAPI.ArtGalleryProject.service.DashBoard.DashboardService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class DashboardController {
 
 	private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
-	
+
 	@Autowired
 	private DashboardService service;
 
@@ -25,16 +25,13 @@ public class DashboardController {
 	public ResponseEntity<?> getPainting(@RequestParam(defaultValue = "0") int pageNo) {
 		logger.info("getPainting started.");
 		final int pageSize = 12;
-		Page<PaintingResponse> allPaintings = service.getPaintingsByPage(pageNo, pageSize);
+		var allPaintings = service.getPaintingsByPageAuction(pageNo, pageSize);
 		logger.info("getPainting finished.");
-		if (!allPaintings.isEmpty())
-			return new ResponseEntity<>(allPaintings, HttpStatus.OK);
-		else
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		return new ResponseEntity<>(allPaintings, HttpStatus.OK);
 	}
 
-	@GetMapping("/auctions/{id}")
-	public ResponseEntity<?> getPaintingById(@PathVariable(name = "id") int paintingId) {
+	@GetMapping("/auctions/{paintingId}")
+	public ResponseEntity<?> getPaintingById(@PathVariable long paintingId) {
 		logger.info("getPaintingById started.");
 		PaintingResponse painting = service.getPaintingById(paintingId);
 		logger.info("getPaintingById finished.");

@@ -1,11 +1,11 @@
 package com.RESTAPI.ArtGalleryProject.service.AdminService;
 
+import com.RESTAPI.ArtGalleryProject.Entity.UnverifiedPainting;
+
 import java.util.List;
 
-import com.RESTAPI.ArtGalleryProject.Entity.User;
-
 public interface AdminService {
-	 List<User> getPendingLicenses();
-	 void approveLicense(Long userId);
-	 void rejectLicense(Long userId);
+    List<UnverifiedPainting> getPendingPaintings();
+    String approvePainting(Long id);
+    String rejectPainting(Long id);
 }

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import axiosInstance from '../axiosInstance';
 import { FaSignOutAlt, FaUserCircle, FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
 
 const ProfileModal = ({ isOpen, onClose }) => {
   const [profile, setProfile] = useState(null);
-  const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (isOpen && userId) {
-      axios
-        .get(`http://localhost:8085/user/profile/${userId}`)
+    if (isOpen && token) {
+      axiosInstance
+        .get(`/user/profile`)
         .then((res) => {
           console.log("Profile data received:", res.data);
           setProfile(res.data);
@@ -22,7 +22,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
     } else {
       setProfile(null);
     }
-  }, [isOpen, userId]);
+  }, [isOpen, token]);
 
   if (!isOpen) return null;
 
@@ -58,7 +58,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* Content */}
-          {userId ? (
+          {token ? (
             profile ? (
               <div className="space-y-4 text-sm sm:text-base">
                 <div className="flex items-center gap-2">
@@ -103,6 +103,17 @@ const ProfileModal = ({ isOpen, onClose }) => {
             ) : (
               <div className="text-gray-500 text-center">
                 Could not load profile. Please try again.
+                {/* Logout Button */}
+                <button
+                  onClick={() => {
+                    localStorage.clear();
+                    onClose();
+                    window.location.reload();
+                  }}
+                  className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full shadow transition"
+                >
+                  <FaSignOutAlt /> Logout
+                </button>
               </div>
             )
           ) : (

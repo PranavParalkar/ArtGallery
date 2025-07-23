@@ -36,6 +36,7 @@ public class Painting {
 	private double breadth;
 	private double startingPrice;
 	private double finalPrice;
+	private boolean isForAuction;
 	private boolean isSold;
 
 	// --Relation tables

@@ -24,7 +24,6 @@ public class Orders {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer orderId;
 	private String name;
-	private String email;
 	private double amount;
 	private String orderStatus;
 	private String razorpayOrderId;
