@@ -47,7 +47,7 @@ const Auction = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75 }}
-              className=" rounded-2xl  bg-[#f0e2d2] h-[500px] duration-150 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition"
+              className=" rounded-2xl  bg-[#f0e2d2] h-[550px] duration-150 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition"
             >
               {painting.imageUrl && (
                 <div className="overflow-hidden h-1/2 rounded-t-2xl">
@@ -69,30 +69,34 @@ const Auction = () => {
                   <h2 className="text-xl font-bold text-[#5a3c28] mb-1">
                     {painting.title}
                   </h2>
-                  <p className="text-sm text-gray-700 mb-2">
+                  <p className="text-md text-[#6b4c35] mb-2">
                     {painting.description}
                   </p>
-                  <p className="text-sm text-gray-500 mb-1">
-                    📏 {painting.length}cm x {painting.breadth}cm
+                  <p className="text-md text-[#6b4c35] mb-1">
+                    <span className="font-bold">Dimensions</span>{" "}
+                    {painting.length}cm x {painting.breadth}cm
                   </p>
-                  <p className="text-sm text-gray-500 mb-1">
-                    💰 Starting Price: ₹{painting.startingPrice}
+                  <p className="text-md text-[#6b4c35] mb-1">
+                    <span className="font-bold">Starting Price:</span> ₹
+                    {painting.startingPrice}
                   </p>
-                  <p className="text-sm text-gray-500 mb-1">
-                    {painting.isSold ? "✅ Sold" : "🟢 Available"}
-                  </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-md font-bold text-[#6b4c35]">
                     Seller:{" "}
                     <span className="font-medium text-[#6b4c35]">
                       {painting.seller || "Unknown"}
                     </span>
+                  </p>
+                  <p className="text-sm text-center text-green-700 mt-3 mb-1">
+                    {painting.isSold
+                      ? "Auction was Done"
+                      : "Auction is Live, You can bid now!"}
                   </p>
                 </div>
                 <button
                   onClick={() =>
                     navigate(`/biddingFrontend/${painting.paintingId}`)
                   }
-                  className="mt-4 block text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold transition"
+                  className="mt-4 block text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-[#7c5c3d] hover:bg-[#847464] text-white font-semibold transition"
                 >
                   Place Bid
                 </button>

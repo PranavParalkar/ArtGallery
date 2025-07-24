@@ -92,7 +92,7 @@ const Admin = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="bg-white shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-shadow"
+              className="bg-white shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-orange-900 transition-shadow"
             >
               <img
                 src={`http://localhost:8085${p.imageUrl}`}
@@ -109,12 +109,14 @@ const Admin = () => {
                   <p>
                     <strong>Size:</strong> {p.length} x {p.breadth}
                   </p>
-                  <p>
+                  <p className="mt-2">
                     <strong>Price:</strong> ₹{p.startingPrice}
                   </p>
-                  <p>
-                    <strong>Auction:</strong>{" "}
-                    {p.forAuction ? "For Auction" : "For Store"}
+                  <p className="mt-2">
+                    <strong >
+                      {p.forAuction ? "For Auction" : "For Store"}
+                    </strong>{" "}
+                    {/* {p.forAuction ? "For Auction" : "For Store"} */}
                   </p>
                 </div>
 

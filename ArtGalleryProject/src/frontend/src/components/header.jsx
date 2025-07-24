@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { getUserRole } from "../utils/auth";
-import WalletModal from "./WalletModal";
+// import WalletModal from "./WalletModal";
 
-const Header = () => {
-  const [isWalletOpen, setIsWalletOpen] = useState(false);
+const Header = ({ setIsWalletOpen }) => {
   const token = localStorage.getItem("token");
   const userRole = getUserRole();
   const navLinks = {
@@ -24,7 +23,7 @@ const Header = () => {
   // e.g. const isAdmin = userRole === "ADMIN";
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white z-50 border-b shadow-md text-sm">
+    <header className="fixed top-0 left-0 w-full backdrop-blur-xl  z-50 border-b-1 shadow-lg text-sm">
       <div className="flex items-center justify-between px-6 py-5">
         {/* Left side: Logo and Menu */}
         <div className="flex items-center gap-8">
@@ -116,12 +115,6 @@ const Header = () => {
           )}
         </div>
       </div>
-
-      {/* Wallet Modal */}
-      <WalletModal
-        isOpen={isWalletOpen}
-        onClose={() => setIsWalletOpen(false)}
-      />
     </header>
   );
 };

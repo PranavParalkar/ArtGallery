@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import axiosInstance from '../axiosInstance';
+import axiosInstance from "../axiosInstance";
 import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -9,7 +9,7 @@ const BiddingFrontend = () => {
   const [painting, setPainting] = useState(null);
   const [bids, setBids] = useState([]);
   const [bidAmount, setBidAmount] = useState("");
-  const [message, setMessage] = useState("");
+  // const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -17,6 +17,85 @@ const BiddingFrontend = () => {
   const [isVisible, setIsVisible] = useState(true);
 
   const token = localStorage.getItem("token");
+const [message, setMessage] = useState("");
+const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
+const [auctionLive, setAuctionLive] = useState(false);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setAuctionLive(isAuctionLive());
+  }, 1000); // Check every second
+
+  return () => clearInterval(interval);
+}, []);
+const calculateTime = () => {
+  const now = new Date();
+  const currentDay = now.getDay(); // 0 (Sun) - 6 (Sat)
+  const currentTime = now.getTime();
+
+  // Friday 5 PM
+  const nextFriday = new Date(now);
+  nextFriday.setDate(now.getDate() + ((5 - currentDay + 7) % 7));
+  nextFriday.setHours(17, 0, 0, 0); // 5 PM
+
+  // Sunday 5 PM
+  const nextSunday = new Date(nextFriday);
+  nextSunday.setDate(nextFriday.getDate() + 2); // Sunday after Friday
+  nextSunday.setHours(17, 0, 0, 0);
+
+  let target, mode;
+
+  if (currentTime < nextFriday.getTime()) {
+    // Before auction start
+    target = nextFriday;
+    
+  } else if (
+    currentTime >= nextFriday.getTime() &&
+    currentTime < nextSunday.getTime()
+  ) {
+    // Auction ongoing
+    target = nextSunday;
+    mode = "Auction ends in";
+  } else {
+    // After Sunday 5 PM, next auction on next Friday
+    nextFriday.setDate(nextFriday.getDate() + 7);
+    target = nextFriday;
+    mode = "Auction starts in";
+  }
+
+  const diff = target - now;
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+
+  setTimeLeft({ hours, minutes, seconds });
+  setMessage(mode);
+};
+
+useEffect(() => {
+  calculateTime();
+  const timer = setInterval(calculateTime, 1000);
+  return () => clearInterval(timer);
+}, []);
+
+const isAuctionLive = () => {
+  const now = new Date();
+
+  const day = now.getDay(); // 0 = Sunday, 5 = Friday
+  const hours = now.getHours();
+
+  // Auction starts Friday 5 PM (day 5, hour 17)
+  const auctionStart = new Date(now);
+  auctionStart.setDate(now.getDate() + ((5 - day + 7) % 7)); // Next Friday
+  auctionStart.setHours(17, 0, 0, 0); // 5 PM
+
+  // Auction ends Sunday 5 PM
+  const auctionEnd = new Date(auctionStart);
+  auctionEnd.setDate(auctionStart.getDate() + 2); // Sunday
+  auctionEnd.setHours(17, 0, 0, 0); // 5 PM
+
+  return now >= auctionStart && now <= auctionEnd;
+};
 
   // Fetch painting details
   useEffect(() => {
@@ -47,16 +126,13 @@ const BiddingFrontend = () => {
       setPopupAmount(parseFloat(bidAmount));
       setShowPopup(true);
       setBidAmount("");
-      const res = await axiosInstance.get(
-        `/auctions/bid/${paintingId}`
-      );
+      const res = await axiosInstance.get(`/auctions/bid/${paintingId}`);
       setBids(res.data);
       setTimeout(() => setShowPopup(false), 3000);
     } catch (err) {
       setError(err?.response?.data || "Failed to place bid.");
     }
   };
-
 
   const handleClose = () => {
     setIsVisible(false);
@@ -94,13 +170,7 @@ const BiddingFrontend = () => {
               <p className="text-4xl font-bold text-center text-[#3e2e1e] mb-8 ">
                 Art work
               </p>
-              {/* <div className="overflow-hidden rounded-2xl mb-6">
-                <img
-                  src={`http://localhost:8085${painting.imageUrl}`}
-                  alt={painting.title}
-                  className="w-full h-72 object-cover transform transition-transform duration-500 hover:scale-105 shadow-md"
-                />
-              </div> */}
+
               <div className="overflow-hidden h-1/2 rounded-2xl">
                 <img
                   src={`http://localhost:8085${painting.imageUrl}`}
@@ -141,16 +211,16 @@ const BiddingFrontend = () => {
               </div>
 
               <div className="flex flex-col gap-2 text-lg font-semibold mb-4">
-                <span className="text-green-700">
+                <span className="text-[#483424]">
                   Starting: ₹{painting.startingPrice}
                 </span>
-                <span className="text-blue-700">
+                <span className="text-[#c2804d]">
                   Current Price: ₹
                   {bids.length > 0
                     ? bids[0].bid
                     : painting.final_price > 0
-                      ? painting.final_price
-                      : painting.starting_price}
+                    ? painting.final_price
+                    : painting.starting_price}
                 </span>
                 {painting.final_price > 0 && (
                   <span className="text-purple-700">
@@ -159,11 +229,10 @@ const BiddingFrontend = () => {
                 )}
               </div>
 
-              <span
-                className={`inline-block px-4 py-1 rounded-full text-white text-sm font-bold ${painting.is_sold ? "bg-red-600" : "bg-green-600"
-                  }`}
-              >
-                {painting.is_sold ? "✅ Sold" : "🟢 Available"}
+              <span className="text-sm text-gray-700 font-semibold">
+                ⏳ {String(timeLeft.hours).padStart(2, "0")} hrs :{" "}
+                {String(timeLeft.minutes).padStart(2, "0")} min :{" "}
+                {String(timeLeft.seconds).padStart(2, "0")} sec Remaining
               </span>
             </>
           ) : (
@@ -174,12 +243,12 @@ const BiddingFrontend = () => {
         </section>
 
         {/* Bidding Section */}
-        <section className="bg-white rounded-2xl shadow-xl p-8 transition w-[140%] ">
+        <section className="bg-white rounded-2xl shadow-xl p-8 transition w-[200%] ">
           {/* Bidders List */}
           <div className="mt-6 h-1/2">
             <h4 className="text-xl font-bold mb-4 text-[#5a3c28] tracking-wide flex items-center gap-2">
-              <span className="inline-block bg-yellow-200 rounded-full px-3 py-1 text-yellow-800 text-base font-semibold shadow-sm">
-                🏆 Top 3 Bidders
+              <span className="inline-block  rounded-full px-3 py-1 text-yellow-800 text-base font-semibold shadow-sm">
+                Top 3 Bidders...
               </span>
             </h4>
             <ul className="space-y-4">
@@ -195,18 +264,20 @@ const BiddingFrontend = () => {
                 bids.slice(0, 3).map((bidder, idx) => (
                   <li
                     key={idx}
-                    className="flex items-center justify-between bg-[#fefaf6] border border-[#e7d5c0] rounded-xl px-5 py-4 shadow-md hover:shadow-lg transition-all duration-200"
+                    className="flex items-center justify-between bg-[#fefaf6] border border-[#e7d5c0] rounded-xl px-5 py-2 shadow-md hover:shadow-lg transition-all duration-200"
                   >
                     <div className="flex items-center gap-4">
-                      <span className="text-lg font-bold text-[#bfa16a]">{bidder.rank}</span>
-                      <div className="bg-yellow-100 border-2 border-yellow-300 rounded-full w-12 h-12 flex items-center justify-center font-bold text-2xl text-[#5a3c28] shadow">
+                      <span className="text-lg font-bold text-[#bfa16a]">
+                        {bidder.rank}
+                      </span>
+                      <div className="bg-[#6b4c35] border-2 border-[#6b4c35] rounded-full w-12 h-12 flex items-center justify-center font-bold text-2xl text-white shadow">
                         {bidder.name?.charAt(0).toUpperCase() || "A"}
                       </div>
                       <span className="font-semibold text-[#6b4c35] text-lg tracking-wide">
                         {bidder.name || "Anonymous"}
                       </span>
                     </div>
-                    <span className="font-bold text-blue-700 text-xl bg-blue-50 px-4 py-2 rounded-lg shadow">
+                    <span className="font-bold text-[#6b4c35] text-xl bg-[#eeae7d] px-4 py-2 rounded-lg shadow">
                       ₹{bidder.bid}
                     </span>
                   </li>
@@ -231,7 +302,12 @@ const BiddingFrontend = () => {
               />
               <button
                 type="submit"
-                className="bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-800 hover:to-blue-600 text-white px-8 py-3 rounded-lg font-bold text-lg transition shadow-lg"
+                disabled={!auctionLive}
+                className={`${
+                  auctionLive
+                    ? "bg-gradient-to-r from-[#6b4c35] to-[#ca6b22] hover:from-[#d0732c] hover:to-[#6b4c35]"
+                    : "bg-gray-400 cursor-not-allowed"
+                } text-white px-8 py-3 rounded-lg font-bold text-lg transition shadow-lg`}
               >
                 Place Bid
               </button>
@@ -292,4 +368,4 @@ const BiddingFrontend = () => {
   );
 };
 
-export default BiddingFrontend
+export default BiddingFrontend;

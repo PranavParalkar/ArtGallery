@@ -1,29 +1,14 @@
-// import Header from "../components/header";
-// import { Outlet } from "react-router-dom";
-// import Footer from "../components/footer";
-
-// const AppLayout = () => {
-//   return (
-//     <div className="min-h-screen flex flex-col bg-[#fffaf3]">
-//       <Header />
-
-//       <main className="flex-grow pt-16">
-//         <Outlet />
-//       </main>
-
-//       <Footer />
-//     </div>
-//   );
-// };
-
-// export default AppLayout;
 
 
 import Header from "../components/header";
 import Footer from "../components/footer";
 import { Outlet } from "react-router-dom";
+import WalletModal from "../components/WalletModal";
+import React, { useState } from "react";
 
 const AppLayout = () => {
+  const [isWalletOpen, setIsWalletOpen] = useState(false);
+
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden">
       {/* 🔹 Background Video */}
@@ -43,7 +28,20 @@ const AppLayout = () => {
 
       {/* 🔹 Main Layout Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header />
+        <Header
+          setIsWalletOpen={setIsWalletOpen}
+        />
+        {/* Backdrop and Modal */}
+        {isWalletOpen && (
+          <div className="fixed inset-0 z-40 backdrop-blur-sm bg-black/30">
+            <WalletModal
+              isOpen={isWalletOpen}
+              onClose={() => setIsWalletOpen(false)}
+            />
+          </div>
+        )}
+
+        
         <main className="flex-grow pt-16">
           <Outlet />
         </main>

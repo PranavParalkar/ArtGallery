@@ -73,19 +73,18 @@ const Shop = () => {
                   <h2 className="text-xl font-bold text-[#5a3c28] mb-1">
                     {painting.title}
                   </h2>
-                  <p className="text-sm text-gray-700 mb-2">
+                  <p className="text-md text-[#6b4c35] mb-2">
                     {painting.description}
                   </p>
-                  <p className="text-sm text-gray-500 mb-1">
-                    📏 {painting.length}cm x {painting.breadth}cm
+                  <p className="text-md text-[#6b4c35] mb-1">
+                    <span className="font-bold">Dimensions</span>{" "}
+                    {painting.length}cm x {painting.breadth}cm
                   </p>
-                  <p className="text-sm text-gray-500 mb-1">
-                    💰 Price: ₹{painting.finalPrice || painting.startingPrice}
+                  <p className="text-md text-[#6b4c35] mb-1">
+                    <span className="font-bold">Price:</span> ₹
+                    {painting.startingPrice}
                   </p>
-                  <p className="text-sm text-gray-500 mb-1">
-                    {painting.isSold ? "✅ Sold" : "🟢 Available"}
-                  </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-md font-bold text-[#6b4c35]">
                     Seller:{" "}
                     <span className="font-medium text-[#6b4c35]">
                       {painting.seller || "Unknown"}
@@ -93,7 +92,7 @@ const Shop = () => {
                   </p>
                 </div>
                 <button
-                  className="mt-4 block text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition"
+                  className="mt-4 block text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-[#6b4c35] hover:bg-[#776354] text-white font-semibold transition"
                   onClick={() => {
                     setSelectedPainting(painting);
                     setShowOrderModal(true);
@@ -218,7 +217,6 @@ const Shop = () => {
                 className="w-full border px-4 py-2 mb-6 rounded-lg"
               >
                 <option>Cash on Delivery</option>
-                <option>Debit/Credit Card</option>
                 <option>UPI</option>
               </select>
 
@@ -229,6 +227,15 @@ const Shop = () => {
                     setShowOrderModal(false);
                     setOrderPlaced(true);
                     setTimeout(() => setOrderPlaced(false), 3000);
+                  } else {
+                    alert(
+                      `Redirecting to ${orderInfo.paymentMode} payment gateway...`
+                    );
+                  }
+                  if (orderInfo.paymentMode === "UPI") {
+                    navigate(
+                      "http://127.0.0.1:5500/ArtGallery/ArtGalleryProject/src/main/resources/templates/orders.html"
+                    );
                   } else {
                     alert(
                       `Redirecting to ${orderInfo.paymentMode} payment gateway...`

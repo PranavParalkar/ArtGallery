@@ -1,10 +1,10 @@
 import { useState } from "react";
-import axiosInstance from '../axiosInstance';
+import axiosInstance from "../axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Login = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [showForgot, setShowForgot] = useState(false);
   const [forgotStep, setForgotStep] = useState(1);
@@ -80,9 +80,7 @@ const Login = () => {
           pincode: userDetails.pincode,
         },
       };
-      const res = await axiosInstance.post(
-        "/auth/user-info", payload
-      );
+      const res = await axiosInstance.post("/auth/user-info", payload);
       if (res.data === "User info saved") {
         navigate("/"); // or set a state to show the profile modal
         window.location.reload(); // to update header/profile
@@ -112,16 +110,16 @@ const Login = () => {
 
     const payload = isLogin
       ? {
-        email: formData.email,
-        password: formData.password,
-      }
+          email: formData.email,
+          password: formData.password,
+        }
       : {
-        email: formData.email,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
-        securityQuestion: formData.securityQuestion,
-        securityAnswer: formData.securityAnswer,
-      };
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          securityQuestion: formData.securityQuestion,
+          securityAnswer: formData.securityAnswer,
+        };
 
     try {
       const res = await axiosInstance.post(url, payload);
@@ -144,8 +142,8 @@ const Login = () => {
     } catch (err) {
       alert(
         err.response?.data?.message ||
-        err.response?.data ||
-        "Something went wrong"
+          err.response?.data ||
+          "Something went wrong"
       );
     }
   };
@@ -234,7 +232,6 @@ const Login = () => {
           alt=""
           className="absolute left-0 top-0 w-full h-full object-cover opacity-80"
         />
-
       </div>
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -250,10 +247,11 @@ const Login = () => {
               setShowForgot(false);
               setShowUserDetails(false);
             }}
-            className={`px-6 py-2 rounded-full font-semibold ${isLogin && !showForgot && !showUserDetails
-              ? "bg-purple-500 text-white hover:cursor-pointer"
-              : "bg-white/60 text-gray-800 hover:cursor-pointer"
-              }`}
+            className={`px-6 py-2 rounded-full font-semibold ${
+              isLogin && !showForgot && !showUserDetails
+                ? "bg-purple-500 text-white hover:cursor-pointer"
+                : "bg-white/60 text-gray-800 hover:cursor-pointer"
+            }`}
           >
             Login
           </button>
@@ -263,10 +261,11 @@ const Login = () => {
               setShowForgot(false);
               setShowUserDetails(false);
             }}
-            className={`px-6 py-2 rounded-full font-semibold ${!isLogin && !showForgot && !showUserDetails
-              ? "bg-purple-500 text-white hover:cursor-pointer"
-              : "bg-white/60 text-gray-800 hover:cursor-pointer"
-              }`}
+            className={`px-6 py-2 rounded-full font-semibold ${
+              !isLogin && !showForgot && !showUserDetails
+                ? "bg-purple-500 text-white hover:cursor-pointer"
+                : "bg-white/60 text-gray-800 hover:cursor-pointer"
+            }`}
           >
             Sign Up
           </button>
@@ -276,15 +275,15 @@ const Login = () => {
           {showForgot
             ? "Forgot Password"
             : showUserDetails
-              ? "Complete Your Profile"
-              : isLogin
-                ? "Welcome Back"
-                : "Create Account"}
+            ? "Complete Your Profile"
+            : isLogin
+            ? "Welcome Back"
+            : "Create Account"}
         </h2>
 
         {/* User Details Form After Signup */}
         {showUserDetails ? (
-          <form onSubmit={handleUserDetailsSubmit} className="space-y-4">
+          <form onSubmit={handleUserDetailsSubmit} className="space-y-4 ">
             <input
               type="text"
               name="name"
@@ -294,6 +293,7 @@ const Login = () => {
               value={userDetails.name}
               className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
             />
+
             <input
               type="text"
               name="phoneNumber"
@@ -330,42 +330,46 @@ const Login = () => {
               value={userDetails.street}
               className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
             />
-            <input
-              type="text"
-              name="city"
-              placeholder="City"
-              required
-              onChange={handleUserDetailsChange}
-              value={userDetails.city}
-              className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
-            />
-            <input
-              type="text"
-              name="region"
-              placeholder="Region"
-              required
-              onChange={handleUserDetailsChange}
-              value={userDetails.region}
-              className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
-            />
-            <input
-              type="text"
-              name="country"
-              placeholder="Country"
-              required
-              onChange={handleUserDetailsChange}
-              value={userDetails.country}
-              className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
-            />
-            <input
-              type="text"
-              name="pincode"
-              placeholder="Pincode"
-              required
-              onChange={handleUserDetailsChange}
-              value={userDetails.pincode}
-              className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
-            />
+            <div className="flex flex-col md:flex-row gap-4">
+              <input
+                type="text"
+                name="city"
+                placeholder="City"
+                required
+                onChange={handleUserDetailsChange}
+                value={userDetails.city}
+                className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
+              />
+              <input
+                type="text"
+                name="region"
+                placeholder="Region"
+                required
+                onChange={handleUserDetailsChange}
+                value={userDetails.region}
+                className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
+              />
+            </div>
+            <div className="flex flex-col md:flex-row gap-4">
+              <input
+                type="text"
+                name="country"
+                placeholder="Country"
+                required
+                onChange={handleUserDetailsChange}
+                value={userDetails.country}
+                className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
+              />
+              <input
+                type="text"
+                name="pincode"
+                placeholder="Pincode"
+                required
+                onChange={handleUserDetailsChange}
+                value={userDetails.pincode}
+                className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
+              />
+            </div>
             <button
               type="submit"
               className="w-full py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold text-lg"
@@ -561,10 +565,11 @@ const Login = () => {
               {/* Submit */}
               <button
                 type="submit"
-                className={`w-full py-3 cursor-pointer rounded-xl bg-gradient-to-r ${isLogin
-                  ? "from-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-purple-600"
-                  : "from-green-500 to-emerald-500 hover:from-emerald-600 hover:to-green-600"
-                  } text-white font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl`}
+                className={`w-full py-3 cursor-pointer rounded-xl bg-gradient-to-r ${
+                  isLogin
+                    ? "from-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-purple-600"
+                    : "from-green-500 to-emerald-500 hover:from-emerald-600 hover:to-green-600"
+                } text-white font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl`}
               >
                 {isLogin ? "Login" : "Sign Up"}
               </button>

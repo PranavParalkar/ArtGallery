@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import axiosInstance from '../axiosInstance';
+import axiosInstance from "../axiosInstance";
 
 const newsItems = [
   {
@@ -45,16 +45,12 @@ const Dashboard = () => {
   // Fetch paintings from backend API with pagination
   const fetchPaintings = async (page = 0) => {
     try {
-      const res = await axiosInstance.get(
-        `/auctions?pageNo=${page}`
-      );
+      const res = await axiosInstance.get(`/auctions?pageNo=${page}`);
       const data = res.data.content || res.data;
       setPaintings(data);
 
       // Check if next page has paintings
-      const nextRes = await axiosInstance.get(
-        `/auctions?pageNo=${page + 1}`
-      );
+      const nextRes = await axiosInstance.get(`/auctions?pageNo=${page + 1}`);
       const nextData = nextRes.data.content || nextRes.data;
       setHasNextPage(Array.isArray(nextData) ? nextData.length > 0 : false);
 
@@ -98,18 +94,14 @@ const Dashboard = () => {
             📍 {data.location || "Online"}
           </div>
         </div>
-        <Link
-          to="/discover"
-          className="px-4 py-2 border border-black text-black text-sm hover:bg-black hover:text-white transition w-fit"
-        >
-          DISCOVER NOW
-        </Link>
+
         <div className="flex mt-10 gap-2">
           {carouselItems.map((_, i) => (
             <div
               key={i}
-              className={`w-2 h-2 rounded-full transition-all ${i === index ? "bg-black" : "bg-gray-400"
-                }`}
+              className={`w-2 h-2 rounded-full transition-all ${
+                i === index ? "bg-black" : "bg-gray-400"
+              }`}
             ></div>
           ))}
         </div>
@@ -191,6 +183,13 @@ const Dashboard = () => {
                   <div className="text-sm text-gray-600 mt-1">
                     📍 {auction.location || "Online"}
                   </div>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Click on{" "}
+                    <Link to="/auctions" className=" text-sm text-blue-800 font-medium ">
+                      View All
+                    </Link>{" "}
+                    to see more details
+                  </p>
                 </div>
               </div>
             ))

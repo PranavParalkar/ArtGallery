@@ -21,14 +21,30 @@ axiosInstance.interceptors.request.use((config) => {
 const DepositModal = ({ onClose }) => {
   const presetAmounts = [500, 5000, 30000];
   const [selectedAmount, setSelectedAmount] = useState(null);
+  const [amount, setAmount] = useState("");
 
+  const handlePresetClick = (amt) => {
+    setSelectedAmount(amt);
+    setAmount(amt); // auto-fill the input
+  };
+
+  const handleSetAmount = () => {
+    if (!amount || amount < 500 || amount > 49999) {
+      alert("Please enter a valid amount between ₹500 and ₹49,999.");
+      return;
+    }
+
+    // Redirect
+    window.location.href =
+      "http://127.0.0.1:5500/ArtGallery/ArtGalleryProject/src/main/resources/templates/orders.html";
+  };
   return (
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 flex items-center justify-center z-50"
+        className="fixed inset-0 backdrop-blur-3xl flex items-center justify-center z-50"
         onClick={onClose}
       >
         <motion.div
@@ -51,17 +67,21 @@ const DepositModal = ({ onClose }) => {
           <div className="bg-[#f0e2d2] rounded-lg p-4">
             <div className="mb-4">
               <h3 className="text-sm font-semibold mb-1">New account</h3>
-              <div className="bg-white p-2 rounded-md text-sm">UPI ID</div>
+              <input
+                type="text"
+                placeholder="UPI ID"
+                className="w-full p-2 bg-white rounded-md outline-none text-black placeholder-gray-400"
+              />
             </div>
 
             <div className="grid grid-cols-3 gap-3 mb-4">
               {presetAmounts.map((amt) => (
                 <button
                   key={amt}
-                  onClick={() => setSelectedAmount(amt)}
+                  onClick={() => handlePresetClick(amt)}
                   className={`py-2 rounded-md text-sm font-medium ${
                     selectedAmount === amt
-                      ? "bg-[#2e9afe]"
+                      ? "bg-[#3e2e1e] text-white"
                       : "bg-white hover:bg-orange-100"
                   }`}
                 >
@@ -74,17 +94,14 @@ const DepositModal = ({ onClose }) => {
               <input
                 type="number"
                 placeholder="Amount"
+                value={amount}
+                onChange={(e) => setAmount(Number(e.target.value))}
                 className="w-full p-2 bg-white rounded-md outline-none text-black placeholder-gray-400"
               />
               <p className="text-xs mt-2 text-gray-400">
                 Minimum: ₹500 | Maximum: ₹49,999
               </p>
             </div>
-
-            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md">
-              Set amount
-            </button>
-
             <div className="flex justify-center mt-4">
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThWX8FGxoSiZEFeky-wDqxpSVpbgGbhEl3TA&s"
@@ -93,11 +110,11 @@ const DepositModal = ({ onClose }) => {
               />
             </div>
 
-            <p className="text-xs mt-4 text-gray-400 text-center">
-              Improve your account security with Two-Factor Authentication
-            </p>
-            <button className="w-full mt-2 bg-orange-100 hover:bg-orange-200 text-sm py-1 rounded-md">
-              Enable 2FA
+            <button
+              onClick={handleSetAmount}
+              className="w-full bg-[#3e2e1e] mt-5 hover:bg-[#8d7a67] text-white font-semibold py-2 rounded-md"
+            >
+              Set amount
             </button>
           </div>
         </motion.div>
@@ -147,7 +164,7 @@ const WalletModal = ({ isOpen, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 flex items-center justify-center z-40 p-4 backdrop-blur-sm"
+        className="fixed inset-0 flex items-center justify-center z-40 p-4 "
         onClick={onClose}
       >
         <motion.div
