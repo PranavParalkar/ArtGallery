@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import axiosInstance from '../axiosInstance';
 import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,16 +19,18 @@ const BiddingFrontend = () => {
 
   // Fetch painting details
   useEffect(() => {
-    axiosInstance
-      .get(`/auctions/${paintingId}`)
+    axiosInstance.get(
+      `/auctions/${paintingId}`
+    )
       .then((res) => setPainting(res.data))
       .catch(() => setPainting(null));
   }, [paintingId]);
 
   // Fetch bids
   useEffect(() => {
-    axiosInstance
-      .get(`/auctions/bid/${paintingId}`)
+    axiosInstance.get(
+      `/auctions/bid/${paintingId}`
+    )
       .then((res) => setBids(res.data))
       .catch(() => setBids([]));
   }, [paintingId]);
@@ -40,7 +41,8 @@ const BiddingFrontend = () => {
     setMessage("");
     setError("");
     try {
-      await axiosInstance.post(`/auctions/bid/${paintingId}`, {
+      await axiosInstance.post(
+        `/auctions/bid/${paintingId}`, {
         bidAmount: parseFloat(bidAmount),
       });
       setMessage("Bid placed successfully!");

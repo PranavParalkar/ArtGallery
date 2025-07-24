@@ -1,24 +1,3 @@
-// import Header from "../components/header";
-// import { Outlet } from "react-router-dom";
-// import Footer from "../components/footer";
-
-// const AppLayout = () => {
-//   return (
-//     <div className="min-h-screen flex flex-col bg-[#fffaf3]">
-//       <Header />
-
-//       <main className="flex-grow pt-16">
-//         <Outlet />
-//       </main>
-
-//       <Footer />
-//     </div>
-//   );
-// };
-
-// export default AppLayout;
-
-
 import Header from "../components/header";
 import Footer from "../components/footer";
 import { Outlet } from "react-router-dom";

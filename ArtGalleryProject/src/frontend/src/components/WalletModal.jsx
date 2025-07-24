@@ -1,19 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
-
-// 🔐 Authenticated Axios Instance
-const axiosInstance = axios.create({
-  baseURL: "http://localhost:8085",
-});
-
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import axiosInstance from '../axiosInstance';
 
 // -----------------------------
 // Deposit Modal Component
@@ -59,11 +46,10 @@ const DepositModal = ({ onClose }) => {
                 <button
                   key={amt}
                   onClick={() => setSelectedAmount(amt)}
-                  className={`py-2 rounded-md text-sm font-medium ${
-                    selectedAmount === amt
-                      ? "bg-[#2e9afe]"
-                      : "bg-white hover:bg-orange-100"
-                  }`}
+                  className={`py-2 rounded-md text-sm font-medium ${selectedAmount === amt
+                    ? "bg-[#2e9afe]"
+                    : "bg-white hover:bg-orange-100"
+                    }`}
                 >
                   ₹{amt.toLocaleString()}
                 </button>
@@ -114,19 +100,14 @@ const WalletModal = ({ isOpen, onClose }) => {
   const [balance, setBalance] = useState("₹0.00");
   const [showDepositModal, setShowDepositModal] = useState(false);
 
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
     if (isOpen) {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      axios
-        .get(`http://localhost:8085/wallet`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      axiosInstance.get(
+        "/wallet/balance",
+      )
         .then((res) => {
           const rawBalance = parseFloat(res.data.balance || 0);
           setBalance(`₹${rawBalance.toFixed(2)}`);
@@ -174,11 +155,10 @@ const WalletModal = ({ isOpen, onClose }) => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 py-4 px-6 text-sm font-semibold transition-colors ${
-                  activeTab === tab.id
-                    ? "text-[#a17b5d] border-b-2 border-[#a17b5d]"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`flex-1 py-4 px-6 text-sm font-semibold transition-colors ${activeTab === tab.id
+                  ? "text-[#a17b5d] border-b-2 border-[#a17b5d]"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 {tab.label}
               </button>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import axios from "axios";
+import axiosInstance from '../axiosInstance';
 import {
   FaSignOutAlt,
   FaUserCircle,
@@ -12,32 +12,18 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
   const token = localStorage.getItem("token");
 
-  const axiosInstance = useMemo(() => {
-    const instance = axios.create({
-      baseURL: "http://localhost:8085",
-    });
-    instance.interceptors.request.use((config) => {
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
-    return instance;
-  }, [token]);
-
   useEffect(() => {
-    if (token) {
-      axiosInstance
-        .get("/user/profile")
-        .then((res) => {
-          console.dir(res.data, { depth: null });
-          setProfile(res.data);
-        })
-        .catch((err) => {
-          console.error("Failed to load profile:", err);
-          setProfile(null);
-        });
-    }
+    axiosInstance.get(
+      "/user/profile"
+    )
+      .then((res) => {
+        console.dir(res.data, { depth: null });
+        setProfile(res.data);
+      })
+      .catch((err) => {
+        console.error("Failed to load profile:", err);
+        setProfile(null);
+      });
   }, [axiosInstance, token]);
 
   if (!token) {
