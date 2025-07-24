@@ -12,10 +12,11 @@ const BiddingFrontend = () => {
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [popupAmount, setPopupAmount] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   const token = localStorage.getItem("token");
   const [message, setMessage] = useState("");
-  const [mode, setMode] = useState("");
+  const [auctionMode, setAuctionMode] = useState("");
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
   const [auctionLive, setAuctionLive] = useState(false);
 
@@ -26,41 +27,38 @@ const BiddingFrontend = () => {
 
     return () => clearInterval(interval);
   }, []);
+
   const calculateTime = () => {
     const now = new Date();
     const currentDay = now.getDay(); // 0 (Sun) - 6 (Sat)
-    const currentTime = now.getTime();
 
-    // Friday 5 PM
-    const nextFriday = new Date(now);
-    nextFriday.setDate(now.getDate() + ((4 - currentDay + 7) % 7));
-    nextFriday.setHours(17, 0, 0, 0); // 5 PM
-
-    // Sunday 5 PM
-    const nextSunday = new Date(nextFriday);
-    nextSunday.setDate(nextFriday.getDate() + 2); // Sunday after Friday
-    nextSunday.setHours(17, 0, 0, 0);
-
-    let target, auctionMode;
-
-    if (currentTime < nextFriday.getTime()) {
-      // Before auction start
-      target = nextFriday;
-      auctionMode = "Auction starts in";
-      setAuctionLive(false);
-    } else if (
-      currentTime >= nextFriday.getTime() &&
-      currentTime < nextSunday.getTime()
-    ) {
-      // Auction ongoing
-      target = nextSunday;
-      auctionMode = "Auction ends in";
-      setAuctionLive(true);
+    const thursday = new Date();
+    if(currentDay >= 4 && currentDay <= 6)  {
+      thursday.setDate(now.getDate() + ((4 - currentDay)));  
     } else {
-      // After Sunday 5 PM, next auction on next Friday
-      nextFriday.setDate(nextFriday.getDate() + 7);
-      target = nextFriday;
-      auctionMode = "Auction starts in";
+      thursday.setDate(now.getDate() + ((4 - currentDay + 7) % 7));
+    }
+    thursday.setHours(17, 0, 0, 0); // Thursday 5 PM
+
+    const saturday = new Date(thursday);
+    saturday.setDate(thursday.getDate() + 2); // Saturday
+    saturday.setHours(17, 0, 0, 0); // Saturday 5 PM
+
+    let target, mode;
+
+    if(now.getTime() >= thursday.getTime() && now.getTime() < saturday.getTime()) {
+      // Auction is live
+      target = saturday;
+      mode = "Auction ends in";
+      setAuctionLive(true);
+    } else{
+      // Auction is not live, count down to next Thursday 5 PM
+      if (now >= saturday) {
+        // It's already past this week's Saturday 5 PM → move to next Thursday
+        thursday.setDate(thursday.getDate() + 7);
+      }
+      target = thursday;
+      mode = "Auction starts in";
       setAuctionLive(false);
     }
 
@@ -68,8 +66,30 @@ const BiddingFrontend = () => {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff / (1000 * 60)) % 60);
     const seconds = Math.floor((diff / 1000) % 60);
+
     setTimeLeft({ hours, minutes, seconds });
-    setMode(auctionMode);
+    setAuctionMode(mode);
+  };
+
+
+
+  const isAuctionLive = () => {
+    const now = new Date();
+
+    const day = now.getDay(); // 0 = Sunday, 4 = Thursday
+    const hours = now.getHours();
+
+    // Auction starts Thursday 5 PM (day 5, hour 17)
+    const auctionStart = new Date(now);
+    auctionStart.setDate(now.getDate() + ((4 - day + 7) % 7)); // Next Thursday
+    auctionStart.setHours(17, 0, 0, 0); // 5 PM
+
+    // Auction ends Saturday 5 PM
+    const auctionEnd = new Date(auctionStart);
+    auctionEnd.setDate(auctionStart.getDate() + 2); // Saturday
+    auctionEnd.setHours(17, 0, 0, 0); // 5 PM
+
+    return now >= auctionStart && now <= auctionEnd;
   };
 
   useEffect(() => {
@@ -78,24 +98,6 @@ const BiddingFrontend = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const isAuctionLive = () => {
-    const now = new Date();
-
-    const day = now.getDay(); // 0 = Sunday, 5 = Friday
-    const hours = now.getHours();
-
-    // Auction starts Friday 5 PM (day 5, hour 17)
-    const auctionStart = new Date(now);
-    auctionStart.setDate(now.getDate() + ((5 - day + 7) % 7)); // Next Friday
-    auctionStart.setHours(17, 0, 0, 0); // 5 PM
-
-    // Auction ends Sunday 5 PM
-    const auctionEnd = new Date(auctionStart);
-    auctionEnd.setDate(auctionStart.getDate() + 2); // Sunday
-    auctionEnd.setHours(17, 0, 0, 0); // 5 PM
-
-    return now >= auctionStart && now <= auctionEnd;
-  };
 
   // Fetch painting details
   useEffect(() => {
@@ -105,7 +107,7 @@ const BiddingFrontend = () => {
       .catch(() => setPainting(null));
   }, [paintingId]);
 
-  // Fetch bids on mount and when paintingId changes
+  // Fetch bids
   useEffect(() => {
     axiosInstance
       .get(
@@ -114,18 +116,6 @@ const BiddingFrontend = () => {
       .then((res) => setBids(res.data))
       .catch(() => setBids([]));
   }, [paintingId]);
-
-  // Poll bids every 3 seconds when auction is live
-  useEffect(() => {
-    if (!auctionLive) return;
-    const interval = setInterval(() => {
-      axiosInstance
-        .get(`/auctions/bid/${paintingId}`)
-        .then((res) => setBids(res.data))
-        .catch(() => {});
-    }, 3000); // Poll every 3 seconds
-    return () => clearInterval(interval);
-  }, [auctionLive, paintingId]);
 
   // Place bid
   const handleBid = async (e) => {
@@ -152,33 +142,30 @@ const BiddingFrontend = () => {
   };
 
   const handleClose = () => {
-    setShowPopup(false);
+    setIsVisible(false);
+    setTimeout(() => {
+      onClose();
+    }, 300); // Wait for animation to complete
   };
 
-  const BidSuccessPopup = ({ amount, onClose }) => (
-    <AnimatePresence>
-      {showPopup && (
-        <motion.div
-          onClick={onClose}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-          className="fixed inset-0 text-3xl text-[#3e2e1e] font-serif flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer"
-        >
-          ✅ You have placed a bid successfully for ₹{amount}.
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-
-  // Hide popup after 3 seconds only when showPopup becomes true
-  React.useEffect(() => {
-    if (showPopup) {
-      const timeout = setTimeout(() => setShowPopup(false), 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [showPopup]);
+  const BidSuccessPopup = ({ amount, onClose }) => {
+    return (
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            onClick={handleClose}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 text-3xl text-[#3e2e1e] font-serif flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer"
+          >
+            ✅ You have placed a bid successfully for ₹{amount}.
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  };
 
   return (
     <div className="  font-serif">
@@ -187,52 +174,53 @@ const BiddingFrontend = () => {
         <section className="bg-white rounded-2xl h-[810px] shadow-xl p-8 flex-1 flex flex-col max-w-xl mx-auto xl:mx-0 transition-all duration-500">
           {painting ? (
             <>
-              <p className="text-4xl font-bold text-center text-[#3e2e1e] mb-8 ">
-                Art work
-              </p>
-
-              <div className="overflow-hidden h-1/2 rounded-2xl">
+              <h1 className="text-4xl font-extrabold text-center text-[#3e2e1e] mb-6 tracking-tight">
+                {painting.title}
+              </h1>
+              <div className="relative overflow-hidden rounded-2xl mb-6 group">
                 <img
                   src={`http://localhost:8085${painting.imageUrl}`}
                   alt={painting.title}
-                  className="w-full h-full object-cover cursor-pointer 
-                transform transition-transform duration-300 hover:scale-110"
+                  className="w-full h-80 object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
                   onClick={() =>
-                    setFullscreenImage(
-                      `http://localhost:8085${painting.imageUrl}`
-                    )
+                    setFullscreenImage(`http://localhost:8085${painting.imageUrl}`)
                   }
                 />
+                <button
+                  onClick={() =>
+                    setFullscreenImage(`http://localhost:8085${painting.imageUrl}`)
+                  }
+                  className="absolute bottom-3 right-3 bg-[#6b4c35]/80 text-white px-4 py-1 rounded shadow hover:bg-[#3e2e1e]/90 transition"
+                >
+                  🔍
+                </button>
               </div>
-              <h2 className="text-3xl text-center mt-3 font-extrabold text-[#5a3c28] mb-6 tracking-wide">
-                {painting.title}
-              </h2>
-              <p className="text-md text-gray-700 mb-2 ">
-                <b>Description:</b> {painting.description}
-              </p>
-
-              <div className="grid grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
-                <p>
-                  <b>Length:</b> {painting.length} cm
+              <div className="mb-4">
+                <p className="text-lg text-gray-700 mb-2">
+                  <span className="font-semibold">Description:</span> {painting.description}
                 </p>
-                <p>
-                  <b>Breadth:</b> {painting.breadth} cm
-                </p>
-                <p>
-                  <b>Seller:</b>{" "}
-                  <span className="text-[#6b4c35]">{painting.seller}</span>
-                </p>
-                <p>
-                  <b>
-                    {painting.is_sold ? "Buyer ID:" : "Available For Bidding"}
-                  </b>{" "}
-                  {painting.is_sold ? painting.buyer_id ?? "N/A" : ""}
-                </p>
+                <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
+                  <p>
+                    <span className="font-semibold">Length:</span> {painting.length} cm
+                  </p>
+                  <p>
+                    <span className="font-semibold">Breadth:</span> {painting.breadth} cm
+                  </p>
+                  <p>
+                    <span className="font-semibold">Seller:</span>{" "}
+                    <span className="text-[#6b4c35]">{painting.seller}</span>
+                  </p>
+                  <p>
+                    <span className="font-semibold">
+                      {painting.is_sold ? "Buyer ID:" : "Available For Bidding"}
+                    </span>{" "}
+                    {painting.is_sold ? painting.buyer_id ?? "N/A" : ""}
+                  </p>
+                </div>
               </div>
-
-              <div className="flex flex-col gap-2 text-lg font-semibold mb-4">
+              <div className="flex flex-col gap-1 text-lg font-semibold mb-4">
                 <span className="text-[#483424]">
-                  Starting: ₹{painting.startingPrice}
+                  Starting Price: ₹{painting.startingPrice}
                 </span>
                 <span className="text-[#c2804d]">
                   Current Price: ₹
@@ -240,7 +228,7 @@ const BiddingFrontend = () => {
                     ? bids[0].bid
                     : painting.final_price > 0
                       ? painting.final_price
-                      : "----"}
+                      : painting.starting_price}
                 </span>
                 {painting.final_price > 0 && (
                   <span className="text-purple-700">
@@ -248,24 +236,27 @@ const BiddingFrontend = () => {
                   </span>
                 )}
               </div>
-              {/* Show mode above the remaining time */}
-              <span className="text-lg font-semibold text-[#6b4c35] block mb-1">
-                {mode || ''}
-              </span>
-              <span className="text-sm text-gray-700 font-semibold">
-                ⏳ {String(timeLeft.hours).padStart(2, "0")} hrs :{" "}
-                {String(timeLeft.minutes).padStart(2, "0")} min :{" "}
-                {String(timeLeft.seconds).padStart(2, "0")} sec
-              </span>
+              <div className="flex flex-col items-center mt-2">
+                <span className="text-base font-semibold text-[#6b4c35] mb-1">
+                  {auctionMode || ''}
+                </span>
+                <span className="text-sm text-gray-700 font-semibold">
+                  ⏳ {String(timeLeft.hours).padStart(2, "0")} hrs :{" "}
+                  {String(timeLeft.minutes).padStart(2, "0")} min :{" "}
+                  {String(timeLeft.seconds).padStart(2, "0")} sec
+                </span>
+              </div>
             </>
           ) : (
-            <div className="text-gray-500 animate-pulse">
+            <div className="flex flex-col items-center justify-center h-full text-gray-500 animate-pulse">
+              <svg className="w-12 h-12 mb-4 text-[#c2804d] animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+              </svg>
               Loading painting details...
             </div>
           )}
         </section>
-
-        {/* Bidding Section */}
         <section className="bg-white rounded-2xl shadow-xl p-8 transition w-[140%] ">
           {/* Bidders List */}
           <div className="mt-6 h-1/2">
@@ -379,10 +370,12 @@ const BiddingFrontend = () => {
           )}
         </AnimatePresence>
         <AnimatePresence>
-          <BidSuccessPopup
-            amount={popupAmount}
-            onClose={handleClose}
-          />
+          {showPopup && (
+            <BidSuccessPopup
+              amount={popupAmount}
+              onClose={() => setShowPopup(false)}
+            />
+          )}
         </AnimatePresence>
       </div>
     </div>
