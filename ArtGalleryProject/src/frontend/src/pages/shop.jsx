@@ -227,9 +227,13 @@ const Shop = () => {
                     setShowOrderModal(false);
                     setOrderPlaced(true);
                     setTimeout(() => setOrderPlaced(false), 3000);
+
                   } else {
                     alert(
                       `Redirecting to ${orderInfo.paymentMode} payment gateway...`
+                    );
+                    navigate(
+                      "http://127.0.0.1:8085/ArtGallery/ArtGalleryProject/src/main/resources/templates/orders.html"
                     );
                   }
                   if (orderInfo.paymentMode === "UPI") {

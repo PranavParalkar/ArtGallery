@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import axiosInstance from "../axiosInstance";
+  import React, { useEffect, useState } from "react";
+import axiosInstance from '../axiosInstance';
 import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -99,18 +99,18 @@ const BiddingFrontend = () => {
 
   // Fetch painting details
   useEffect(() => {
-    axiosInstance
-      .get(`/auctions/${paintingId}`)
+    axiosInstance.get(
+      `/auctions/${paintingId}`
+    )
       .then((res) => setPainting(res.data))
       .catch(() => setPainting(null));
   }, [paintingId]);
 
   // Fetch bids on mount and when paintingId changes
   useEffect(() => {
-    axiosInstance
-      .get(
-        `/auctions/bid/${paintingId}`
-      )
+    axiosInstance.get(
+      `/auctions/bid/${paintingId}`
+    )
       .then((res) => setBids(res.data))
       .catch(() => setBids([]));
   }, [paintingId]);

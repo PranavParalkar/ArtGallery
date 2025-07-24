@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion";
-
+import axiosInstance from '../axiosInstance';
 import {
   FaSignOutAlt,
   FaUserCircle,
@@ -18,32 +16,18 @@ const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const token = localStorage.getItem("token");
 
-  const axiosInstance = useMemo(() => {
-    const instance = axios.create({ baseURL: "http://localhost:8085" });
-    instance.interceptors.request.use((config) => {
-      if (token) config.headers.Authorization = `Bearer ${token}`;
-      return config;
-    });
-    return instance;
-  }, [token]);
-
   useEffect(() => {
-    if (token) {
-      axiosInstance
-        .get("/user/profile")
-        .then((res) => {
-          setProfile(res.data);
-          setForm({
-            name: res.data.name || "",
-            phoneNumber: res.data.phoneNumber || "",
-            address: { ...res.data.address } || {},
-          });
-        })
-        .catch((err) => {
-          console.error("Failed to load profile:", err);
-          setProfile(null);
-        });
-    }
+    axiosInstance.get(
+      "/user/profile"
+    )
+      .then((res) => {
+        console.dir(res.data, { depth: null });
+        setProfile(res.data);
+      })
+      .catch((err) => {
+        console.error("Failed to load profile:", err);
+        setProfile(null);
+      });
   }, [axiosInstance, token]);
 
   const handleInputChange = (e) => {
