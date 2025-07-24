@@ -1,125 +1,5 @@
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-
-// const Admin = () => {
-//   const [paintings, setPaintings] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [msg, setMsg] = useState("");
-
-//   const fetchUnverifiedPaintings = async () => {
-//     try {
-//       setLoading(true);
-//       const res = await axios.get(
-//         "http://localhost:8085/admin/paintings/unverified"
-//       );
-//       setPaintings(res.data);
-//       setLoading(false);
-//     } catch (err) {
-//       console.error("Error fetching unverified paintings", err);
-//       setMsg("Failed to load paintings.");
-//     }
-//   };
-
-//   const approvePainting = async (id) => {
-//     try {
-//       const res = await axios.post(
-//         `http://localhost:8085/admin/paintings/approve/${id}`
-//       );
-//       setMsg(res.data);
-//       fetchUnverifiedPaintings(); // refresh list
-//     } catch (err) {
-//       console.error("Approval failed", err);
-//       setMsg("Approval failed.");
-//     }
-//   };
-
-//   const rejectPainting = async (id) => {
-//     try {
-//       const res = await axios.post(
-//         `http://localhost:8085/admin/paintings/reject/${id}`
-//       );
-//       setMsg(res.data);
-//       fetchUnverifiedPaintings(); // refresh list
-//     } catch (err) {
-//       console.error("Rejection failed", err);
-//       setMsg("Rejection failed.");
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchUnverifiedPaintings();
-//   }, []);
-
-//   if (loading) return <div className="text-center p-4">Loading...</div>;
-
-//   return (
-//     <div className="p-4">
-//       <h2 className="text-2xl font-bold mb-4">Unverified Paintings</h2>
-//       {msg && <div className="mb-4 text-green-600">{msg}</div>}
-
-//       {paintings.length === 0 ? (
-//         <p>No unverified paintings available.</p>
-//       ) : (
-//         <div className="overflow-x-auto">
-//           <table className="min-w-full bg-white border">
-//             <thead>
-//               <tr className="bg-gray-100">
-//                 <th className="py-2 px-4 border">Image</th>
-//                 <th className="py-2 px-4 border">Title</th>
-//                 <th className="py-2 px-4 border">Description</th>
-//                 <th className="py-2 px-4 border">Length</th>
-//                 <th className="py-2 px-4 border">Breadth</th>
-//                 <th className="py-2 px-4 border">Price</th>
-//                 <th className="py-2 px-4 border">Auction</th>
-//                 <th className="py-2 px-4 border">Actions</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {paintings.map((p) => (
-//                 <tr key={p.id} className="border-t">
-//                   <td className="py-2 px-4 border">
-//                     <img
-//                       src={p.imageUrl}
-//                       alt={p.title}
-//                       className="h-20 w-auto object-cover"
-//                     />
-//                   </td>
-//                   <td className="py-2 px-4 border">{p.title}</td>
-//                   <td className="py-2 px-4 border">{p.description}</td>
-//                   <td className="py-2 px-4 border">{p.length}</td>
-//                   <td className="py-2 px-4 border">{p.breadth}</td>
-//                   <td className="py-2 px-4 border">₹{p.startingPrice}</td>
-//                   <td className="py-2 px-4 border">
-//                     {p.forAuction ? "Yes" : "No"}
-//                   </td>
-//                   <td className="py-2 px-4 border space-x-2">
-//                     <button
-//                       onClick={() => approvePainting(p.id)}
-//                       className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
-//                     >
-//                       Approve
-//                     </button>
-//                     <button
-//                       onClick={() => rejectPainting(p.id)}
-//                       className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-//                     >
-//                       Reject
-//                     </button>
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default Admin;
-
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 import { motion } from "framer-motion";
 
 const Admin = () => {
@@ -130,8 +10,8 @@ const Admin = () => {
   const fetchUnverifiedPaintings = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(
-        "http://localhost:8085/admin/paintings/unverified"
+      const res = await axiosInstance.get(
+        "/admin/paintings/unverified"
       );
       setPaintings(res.data);
       setLoading(false);
@@ -144,8 +24,8 @@ const Admin = () => {
 
   const approvePainting = async (id) => {
     try {
-      const res = await axios.post(
-        `http://localhost:8085/admin/paintings/approve/${id}`
+      const res = await axiosInstance.post(
+        `/admin/paintings/approve/${id}`
       );
       setMsg(res.data);
       fetchUnverifiedPaintings();
@@ -157,8 +37,8 @@ const Admin = () => {
 
   const rejectPainting = async (id) => {
     try {
-      const res = await axios.post(
-        `http://localhost:8085/admin/paintings/reject/${id}`
+      const res = await axiosInstance.post(
+        `/admin/paintings/reject/${id}`
       );
       setMsg(res.data);
       fetchUnverifiedPaintings();

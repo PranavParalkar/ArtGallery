@@ -37,10 +37,17 @@ public class SecurityConfig {
 		logger.info("securityFilterChain started.");
 		http.cors(Customizer.withDefaults()) // enables CORS with default settings
 				.csrf(csrf -> csrf.disable()) // disables CSRF
-				.authorizeHttpRequests(auth -> auth.requestMatchers("/admin/**").permitAll()
-						.requestMatchers("/auctions/bid/**", "/user/profile", "/licenses/**", "/createOrder",
-								"/paymentCallback", "/upload-painting")
-						.authenticated().anyRequest().permitAll())
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/admin/**").hasRole("ADMIN")
+						.requestMatchers(
+								"/auctions/bid/**",
+								"/user/profile",
+								"/licenses/**",
+								"/createOrder",
+								"/paymentCallback",
+								"/upload-painting")
+						.authenticated()
+						.anyRequest().permitAll())
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
 		logger.info("securityFilterChain finished.");

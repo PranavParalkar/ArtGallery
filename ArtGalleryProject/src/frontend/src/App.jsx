@@ -12,6 +12,8 @@ import Shop from "./pages/shop";
 import BiddingFrontend from "./pages/biddingFrontend";
 import Admin from "./pages/admin";
 import ProfilePage from "./components/ProfilePage";
+import { isTokenExpired, logoutUser } from './axiosInstance';
+
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -57,6 +59,12 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+
+// Check token on app load
+const token = localStorage.getItem('token');
+if (token && isTokenExpired(token)) {
+  logoutUser();
+}
 
 function App() {
   return <RouterProvider router={router} />;
