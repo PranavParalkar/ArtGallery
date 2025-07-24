@@ -39,7 +39,6 @@ public class Painting {
 	private double finalPrice;
 	private boolean isForAuction;
 	private boolean isAuctionLive = false;
-    private LocalDateTime auctionStartTime;
     private LocalDateTime auctionEndTime;
 	private boolean isSold;
 

@@ -17,44 +17,44 @@ import com.RESTAPI.ArtGalleryProject.service.DashBoard.UserService;
 public class UserController {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-	
+
 	@Autowired
 	private AuthHelper authHelper;
-    
+
 	@Autowired
 	private UserService service;
 
-    @GetMapping("/profile")
-    public ResponseEntity<?> getUserProfile() {
-    	logger.info("getUserProfile started.");
-        long userId = authHelper.getCurrentUserId();
-        String email = authHelper.getCurrentEmail();
-    	Object response = service.getUserDetials(userId, email);
-    	if(response instanceof String) {
-    		switch ((String) response) {
-			case "User not found": 
+	@GetMapping("/profile")
+	public ResponseEntity<?> getUserProfile() {
+		logger.info("getUserProfile started.");
+		long userId = authHelper.getCurrentUserId();
+		String email = authHelper.getCurrentEmail();
+		Object response = service.getUserDetials(userId, email);
+		if (response instanceof String) {
+			switch ((String) response) {
+			case "User not found":
 				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 			default:
 				return new ResponseEntity<>("Unexpected error occured", HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-    	}
-    	logger.info("getUserProfile finished.");
-    	return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-    
-    @PutMapping("/profile-update")
-    public ResponseEntity<?> updateUserProfile(@RequestBody UserDetailRequest request) {
-    	logger.info("updateUserProfile started.");
-    	long userId = authHelper.getCurrentUserId();
-    	String response = service.updateUserDetails(request, userId);
-    	switch (response) {
+		}
+		logger.info("getUserProfile finished.");
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	@PutMapping("/profile-update")
+	public ResponseEntity<?> updateUserProfile(@RequestBody UserDetailRequest request) {
+		logger.info("updateUserProfile started.");
+		long userId = authHelper.getCurrentUserId();
+		String response = service.updateUserDetails(request, userId);
+		switch (response) {
 		case "Internal error occurred":
 			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		case "User info updated":
-		return new ResponseEntity<>(response, HttpStatus.OK);
-		default:			
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		default:
 			logger.info("updateUserProfile finished.");
 			throw new IllegalArgumentException("Unexpected value: " + response);
 		}
-    }
+	}
 }

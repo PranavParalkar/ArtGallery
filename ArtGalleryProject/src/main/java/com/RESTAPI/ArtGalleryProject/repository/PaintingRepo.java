@@ -17,7 +17,7 @@ public interface PaintingRepo extends JpaRepository<Painting, Long> {
 	Page<Painting> findByIsSoldFalseAndIsForAuctionFalse(Pageable pageable);// for shop paintings
 
 	//for live bidding
-	List<Painting> findByIsForAuctionTrueAndIsAuctionLiveFalseAndAuctionStartTimeBefore(LocalDateTime now);
-	List<Painting> findByIsForAuctionTrueAndIsAuctionLiveTrueAndAuctionEndTimeBefore(LocalDateTime now);
+	List<Painting> findByIsForAuctionTrueAndIsAuctionLiveFalse(); // For Tuesday start
+    List<Painting> findByIsForAuctionTrueAndIsAuctionLiveTrueAndAuctionEndTimeBefore(LocalDateTime time); // For closing
 
 }
