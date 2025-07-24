@@ -28,11 +28,11 @@ public class DashboardServiceImpl implements DashboardService{
 	private UserRepo userrepo;
 
 	@Override
-	public PagePaintingResponse<PaintingResponse> getPaintingsByPageAuction(int pageNo, int size) {
+	public PagePaintingResponse<PaintingResponse> getUpcomingPaintingsByPageAuction(int pageNo, int size) {
 		logger.info("getPaintingsByPage started.");
 		
 		Pageable pageable = PageRequest.of(pageNo, size);
-		Page<Painting> paintingsPage = paintingrepo.findByIsSoldFalseAndIsForAuctionTrue(pageable);
+		Page<Painting> paintingsPage = paintingrepo.findByIsForAuctionTrueAndIsAuctionLiveFalse(pageable);
 
 		Page<PaintingResponse> pageResult = paintingsPage.map(p -> new PaintingResponse(
 		    p.getPaintingId(),

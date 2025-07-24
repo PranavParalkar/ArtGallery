@@ -3,6 +3,7 @@ package com.RESTAPI.ArtGalleryProject.DTO.DashBoard;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 import com.RESTAPI.ArtGalleryProject.Embeddable.Address;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 
@@ -12,6 +13,6 @@ public record UserDetailsResponse(
 		String email,
 		String phoneNumber,
 		LocalDate createdAt,
-		List<Painting> paintingsSold,
-		List<Painting> paintingsBought
+		List<PaintingResponse> paintingsSold,
+		List<PaintingResponse> paintingsBought
 ) {}

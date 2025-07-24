@@ -1,5 +1,7 @@
 package com.RESTAPI.ArtGalleryProject.config;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,9 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.RESTAPI.ArtGalleryProject.security.JwtAuthFilter;
 
@@ -30,24 +35,29 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		logger.info("securityFilterChain started.");
-		http
-        	.cors(Customizer.withDefaults()) // enables CORS with default settings
-        	.csrf(csrf -> csrf.disable())    // disables CSRF
-        	.authorizeHttpRequests(auth -> auth
-        			.requestMatchers("/admin/**").permitAll()
-        			.requestMatchers(
-        					"/auctions/bid/**",
-        		            "/user/profile",
-        		            "/licenses/**",
-        		            "/createOrder",
-        		            "/paymentCallback",
-        		            "/upload-painting"
-        		        ).authenticated()
-                    .anyRequest().permitAll())
-        	.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+		http.cors(Customizer.withDefaults()) // enables CORS with default settings
+				.csrf(csrf -> csrf.disable()) // disables CSRF
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/admin/**").permitAll()
+						.requestMatchers("/auctions/bid/**", "/user/profile", "/licenses/**", "/createOrder",
+								"/paymentCallback", "/upload-painting")
+						.authenticated().anyRequest().permitAll())
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
 		logger.info("securityFilterChain finished.");
 		return http.build();
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174"));
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		config.setAllowedHeaders(List.of("*"));
+		config.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", config);
+		return source;
 	}
 
 	@Bean

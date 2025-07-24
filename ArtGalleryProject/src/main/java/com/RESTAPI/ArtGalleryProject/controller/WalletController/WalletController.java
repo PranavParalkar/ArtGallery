@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.updateBalanceRequest;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.Wallet.WalletService;
+import com.RESTAPI.ArtGalleryProject.DTO.Payment.InitiatePaymentRequest;
+import com.RESTAPI.ArtGalleryProject.service.PaymentService.PaymentService;
 
 @RestController
 @RequestMapping("/wallet")
@@ -62,5 +64,21 @@ public class WalletController {
         logger.info("updateWalletBalance finished.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    
+    private final PaymentService paymentService = null;
 
+    @PostMapping("/initiate")
+    public ResponseEntity<String> initiatePayment(@RequestBody InitiatePaymentRequest request) {
+        String gatewayTxnId = paymentService.initiatePayment(request);
+        return ResponseEntity.ok(gatewayTxnId);
+    }
+
+    @PostMapping("/update-status")
+    public ResponseEntity<String> updatePaymentStatus(
+            @RequestParam String txnId,
+            @RequestParam boolean success) {
+
+        paymentService.updateTransactionStatus(txnId, success);
+        return ResponseEntity.ok("Updated");
+    }
 }

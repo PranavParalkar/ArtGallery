@@ -1,6 +1,5 @@
 package com.RESTAPI.ArtGalleryProject.controller.OrdersController;
 
-
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
-import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.OrderService.OrderService;
 import com.razorpay.RazorpayException;
 
@@ -22,27 +21,24 @@ import com.razorpay.RazorpayException;
 public class OrdersController {
 	
 	@Autowired
-	private AuthHelper authHelper;
-	@Autowired
 	private OrderService orderService;
 
 	@GetMapping("/orders")
 	public String ordersPage() {
 		return "orders";
 	}
-	
+
 	@PostMapping(value = "/createOrder", produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<Orders> createOrder(@RequestBody Orders orders) throws RazorpayException{
-		String Email = authHelper.getCurrentEmail();
-		Orders razorpayOrder = orderService.createOrder(orders, Email);
-		return new ResponseEntity<>(razorpayOrder,HttpStatus.CREATED);
+	public ResponseEntity<?> createOrder(@RequestBody OrderRequest request) throws RazorpayException {
+		Orders razorpayOrder = orderService.createOrder(request);
+		return new ResponseEntity<>(razorpayOrder, HttpStatus.CREATED);
 	}
-	
+
 	@PostMapping("/paymentCallback")
 	public String paymentCallback(@RequestParam Map<String, String> response) {
-		 	orderService.updateStatus(response);
-		 	return "success";
-		
+		orderService.updateStatus(response);
+		return "success";
+
 	}
 }

@@ -1,6 +1,5 @@
 package com.RESTAPI.ArtGalleryProject.Entity;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Entity
 @Getter
 @Setter
@@ -19,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Table(name = "Orders")
 public class Orders {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer orderId;
@@ -27,4 +25,5 @@ public class Orders {
 	private double amount;
 	private String orderStatus;
 	private String razorpayOrderId;
+	private String email;
 }
