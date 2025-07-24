@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 // 🔐 Authenticated Axios Instance
 const axiosInstance = axios.create({
@@ -18,8 +19,9 @@ axiosInstance.interceptors.request.use((config) => {
 // -----------------------------
 // Deposit Modal Component
 // -----------------------------
+
 const DepositModal = ({ onClose }) => {
-  const presetAmounts = [500, 5000, 30000];
+const presetAmounts = [500, 5000, 30000];
   const [selectedAmount, setSelectedAmount] = useState(null);
   const [amount, setAmount] = useState("");
 
@@ -36,10 +38,10 @@ const DepositModal = ({ onClose }) => {
 
     // Redirect
     window.location.href =
-      "http://127.0.0.1:5500/ArtGallery/ArtGalleryProject/src/main/resources/templates/orders.html";
+      "http://localhost:8085/orders";
   };
   return (
-    <AnimatePresence>
+   <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -81,7 +83,7 @@ const DepositModal = ({ onClose }) => {
                   onClick={() => handlePresetClick(amt)}
                   className={`py-2 rounded-md text-sm font-medium ${
                     selectedAmount === amt
-                      ? "bg-[#3e2e1e] text-white"
+                      ? "bg-[#2e9afe] text-white"
                       : "bg-white hover:bg-orange-100"
                   }`}
                 >
@@ -102,6 +104,14 @@ const DepositModal = ({ onClose }) => {
                 Minimum: ₹500 | Maximum: ₹49,999
               </p>
             </div>
+
+            <button
+              onClick={handleSetAmount}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md"
+            >
+              Set amount
+            </button>
+
             <div className="flex justify-center mt-4">
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThWX8FGxoSiZEFeky-wDqxpSVpbgGbhEl3TA&s"
