@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import axiosInstance from "../axiosInstance";
 import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,93 +8,94 @@ const BiddingFrontend = () => {
   const [painting, setPainting] = useState(null);
   const [bids, setBids] = useState([]);
   const [bidAmount, setBidAmount] = useState("");
-  // const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [popupAmount, setPopupAmount] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
 
   const token = localStorage.getItem("token");
-const [message, setMessage] = useState("");
-const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
-const [auctionLive, setAuctionLive] = useState(false);
+  const [message, setMessage] = useState("");
+  const [mode, setMode] = useState("");
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [auctionLive, setAuctionLive] = useState(false);
 
-useEffect(() => {
-  const interval = setInterval(() => {
-    setAuctionLive(isAuctionLive());
-  }, 1000); // Check every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAuctionLive(isAuctionLive());
+    }, 1000); // Check every second
 
-  return () => clearInterval(interval);
-}, []);
-const calculateTime = () => {
-  const now = new Date();
-  const currentDay = now.getDay(); // 0 (Sun) - 6 (Sat)
-  const currentTime = now.getTime();
+    return () => clearInterval(interval);
+  }, []);
+  const calculateTime = () => {
+    const now = new Date();
+    const currentDay = now.getDay(); // 0 (Sun) - 6 (Sat)
+    const currentTime = now.getTime();
 
-  // Friday 5 PM
-  const nextFriday = new Date(now);
-  nextFriday.setDate(now.getDate() + ((5 - currentDay + 7) % 7));
-  nextFriday.setHours(17, 0, 0, 0); // 5 PM
+    // Friday 5 PM
+    const nextFriday = new Date(now);
+    nextFriday.setDate(now.getDate() + ((4 - currentDay + 7) % 7));
+    nextFriday.setHours(17, 0, 0, 0); // 5 PM
 
-  // Sunday 5 PM
-  const nextSunday = new Date(nextFriday);
-  nextSunday.setDate(nextFriday.getDate() + 2); // Sunday after Friday
-  nextSunday.setHours(17, 0, 0, 0);
+    // Sunday 5 PM
+    const nextSunday = new Date(nextFriday);
+    nextSunday.setDate(nextFriday.getDate() + 2); // Sunday after Friday
+    nextSunday.setHours(17, 0, 0, 0);
 
-  let target, mode;
+    let target, auctionMode;
 
-  if (currentTime < nextFriday.getTime()) {
-    // Before auction start
-    target = nextFriday;
-    
-  } else if (
-    currentTime >= nextFriday.getTime() &&
-    currentTime < nextSunday.getTime()
-  ) {
-    // Auction ongoing
-    target = nextSunday;
-    mode = "Auction ends in";
-  } else {
-    // After Sunday 5 PM, next auction on next Friday
-    nextFriday.setDate(nextFriday.getDate() + 7);
-    target = nextFriday;
-    mode = "Auction starts in";
-  }
+    if (currentTime < nextFriday.getTime()) {
+      // Before auction start
+      target = nextFriday;
+      auctionMode = "Auction starts in";
+      setAuctionLive(false);
+    } else if (
+      currentTime >= nextFriday.getTime() &&
+      currentTime < nextSunday.getTime()
+    ) {
+      // Auction ongoing
+      target = nextSunday;
+      auctionMode = "Auction ends in";
+      setAuctionLive(true);
+    } else {
+      // After Sunday 5 PM, next auction on next Friday
+      nextFriday.setDate(nextFriday.getDate() + 7);
+      target = nextFriday;
+      auctionMode = "Auction starts in";
+      setAuctionLive(false);
+    }
 
-  const diff = target - now;
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  const seconds = Math.floor((diff / 1000) % 60);
+    const diff = target - now;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+    setTimeLeft({ hours, minutes, seconds });
+    setMode(auctionMode);
+  };
 
-  setTimeLeft({ hours, minutes, seconds });
-  setMessage(mode);
-};
+  useEffect(() => {
+    calculateTime();
+    const timer = setInterval(calculateTime, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
-useEffect(() => {
-  calculateTime();
-  const timer = setInterval(calculateTime, 1000);
-  return () => clearInterval(timer);
-}, []);
+  const isAuctionLive = () => {
+    const now = new Date();
 
-const isAuctionLive = () => {
-  const now = new Date();
+    const day = now.getDay(); // 0 = Sunday, 5 = Friday
+    const hours = now.getHours();
 
-  const day = now.getDay(); // 0 = Sunday, 5 = Friday
-  const hours = now.getHours();
+    // Auction starts Friday 5 PM (day 5, hour 17)
+    const auctionStart = new Date(now);
+    auctionStart.setDate(now.getDate() + ((5 - day + 7) % 7)); // Next Friday
+    auctionStart.setHours(17, 0, 0, 0); // 5 PM
 
-  // Auction starts Friday 5 PM (day 5, hour 17)
-  const auctionStart = new Date(now);
-  auctionStart.setDate(now.getDate() + ((5 - day + 7) % 7)); // Next Friday
-  auctionStart.setHours(17, 0, 0, 0); // 5 PM
+    // Auction ends Sunday 5 PM
+    const auctionEnd = new Date(auctionStart);
+    auctionEnd.setDate(auctionStart.getDate() + 2); // Sunday
+    auctionEnd.setHours(17, 0, 0, 0); // 5 PM
 
-  // Auction ends Sunday 5 PM
-  const auctionEnd = new Date(auctionStart);
-  auctionEnd.setDate(auctionStart.getDate() + 2); // Sunday
-  auctionEnd.setHours(17, 0, 0, 0); // 5 PM
-
-  return now >= auctionStart && now <= auctionEnd;
-};
+    return now >= auctionStart && now <= auctionEnd;
+  };
 
   // Fetch painting details
   useEffect(() => {
@@ -105,13 +105,27 @@ const isAuctionLive = () => {
       .catch(() => setPainting(null));
   }, [paintingId]);
 
-  // Fetch bids
+  // Fetch bids on mount and when paintingId changes
   useEffect(() => {
     axiosInstance
-      .get(`/auctions/bid/${paintingId}`)
+      .get(
+        `/auctions/bid/${paintingId}`
+      )
       .then((res) => setBids(res.data))
       .catch(() => setBids([]));
   }, [paintingId]);
+
+  // Poll bids every 3 seconds when auction is live
+  useEffect(() => {
+    if (!auctionLive) return;
+    const interval = setInterval(() => {
+      axiosInstance
+        .get(`/auctions/bid/${paintingId}`)
+        .then((res) => setBids(res.data))
+        .catch(() => {});
+    }, 3000); // Poll every 3 seconds
+    return () => clearInterval(interval);
+  }, [auctionLive, paintingId]);
 
   // Place bid
   const handleBid = async (e) => {
@@ -119,14 +133,17 @@ const isAuctionLive = () => {
     setMessage("");
     setError("");
     try {
-      await axiosInstance.post(`/auctions/bid/${paintingId}`, {
+      await axiosInstance.post(
+        `/auctions/bid/${paintingId}`, {
         bidAmount: parseFloat(bidAmount),
       });
       setMessage("Bid placed successfully!");
       setPopupAmount(parseFloat(bidAmount));
       setShowPopup(true);
       setBidAmount("");
-      const res = await axiosInstance.get(`/auctions/bid/${paintingId}`);
+      const res = await axiosInstance.get(
+        `/auctions/bid/${paintingId}`
+      );
       setBids(res.data);
       setTimeout(() => setShowPopup(false), 3000);
     } catch (err) {
@@ -135,30 +152,33 @@ const isAuctionLive = () => {
   };
 
   const handleClose = () => {
-    setIsVisible(false);
-    setTimeout(() => {
-      onClose();
-    }, 300); // Wait for animation to complete
+    setShowPopup(false);
   };
 
-  const BidSuccessPopup = ({ amount, onClose }) => {
-    return (
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            onClick={handleClose}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 text-3xl text-[#3e2e1e] font-serif flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer"
-          >
-            ✅ You have placed a bid successfully for ₹{amount}.
-          </motion.div>
-        )}
-      </AnimatePresence>
-    );
-  };
+  const BidSuccessPopup = ({ amount, onClose }) => (
+    <AnimatePresence>
+      {showPopup && (
+        <motion.div
+          onClick={onClose}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 text-3xl text-[#3e2e1e] font-serif flex items-center justify-center z-50 backdrop-blur-sm cursor-pointer"
+        >
+          ✅ You have placed a bid successfully for ₹{amount}.
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+
+  // Hide popup after 3 seconds only when showPopup becomes true
+  React.useEffect(() => {
+    if (showPopup) {
+      const timeout = setTimeout(() => setShowPopup(false), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [showPopup]);
 
   return (
     <div className="  font-serif">
@@ -219,8 +239,8 @@ const isAuctionLive = () => {
                   {bids.length > 0
                     ? bids[0].bid
                     : painting.final_price > 0
-                    ? painting.final_price
-                    : painting.starting_price}
+                      ? painting.final_price
+                      : "----"}
                 </span>
                 {painting.final_price > 0 && (
                   <span className="text-purple-700">
@@ -228,11 +248,14 @@ const isAuctionLive = () => {
                   </span>
                 )}
               </div>
-
+              {/* Show mode above the remaining time */}
+              <span className="text-lg font-semibold text-[#6b4c35] block mb-1">
+                {mode || ''}
+              </span>
               <span className="text-sm text-gray-700 font-semibold">
                 ⏳ {String(timeLeft.hours).padStart(2, "0")} hrs :{" "}
                 {String(timeLeft.minutes).padStart(2, "0")} min :{" "}
-                {String(timeLeft.seconds).padStart(2, "0")} sec Remaining
+                {String(timeLeft.seconds).padStart(2, "0")} sec
               </span>
             </>
           ) : (
@@ -243,7 +266,7 @@ const isAuctionLive = () => {
         </section>
 
         {/* Bidding Section */}
-        <section className="bg-white rounded-2xl shadow-xl p-8 transition w-[200%] ">
+        <section className="bg-white rounded-2xl shadow-xl p-8 transition w-[140%] ">
           {/* Bidders List */}
           <div className="mt-6 h-1/2">
             <h4 className="text-xl font-bold mb-4 text-[#5a3c28] tracking-wide flex items-center gap-2">
@@ -292,6 +315,7 @@ const isAuctionLive = () => {
               className="flex flex-col sm:flex-row gap-4 mb-6"
             >
               <input
+                id="bidAmount"
                 type="number"
                 min="1"
                 value={bidAmount}
@@ -303,11 +327,10 @@ const isAuctionLive = () => {
               <button
                 type="submit"
                 disabled={!auctionLive}
-                className={`${
-                  auctionLive
-                    ? "bg-gradient-to-r from-[#6b4c35] to-[#ca6b22] hover:from-[#d0732c] hover:to-[#6b4c35]"
-                    : "bg-gray-400 cursor-not-allowed"
-                } text-white px-8 py-3 rounded-lg font-bold text-lg transition shadow-lg`}
+                className={`${auctionLive
+                  ? "bg-gradient-to-r from-[#6b4c35] to-[#ca6b22] hover:from-[#d0732c] hover:to-[#6b4c35]"
+                  : "bg-gray-400 cursor-not-allowed"
+                  } text-white px-8 py-3 rounded-lg font-bold text-lg transition shadow-lg`}
               >
                 Place Bid
               </button>
@@ -356,12 +379,10 @@ const isAuctionLive = () => {
           )}
         </AnimatePresence>
         <AnimatePresence>
-          {showPopup && (
-            <BidSuccessPopup
-              amount={popupAmount}
-              onClose={() => setShowPopup(false)}
-            />
-          )}
+          <BidSuccessPopup
+            amount={popupAmount}
+            onClose={handleClose}
+          />
         </AnimatePresence>
       </div>
     </div>

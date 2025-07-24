@@ -122,13 +122,13 @@ const ProfilePage = () => {
         className="flex flex-row justify-evenly gap-8 items-start"
       >
         {/* Profile Section */}
-        <div className="flex flex-col items-center justify-center w-full lg:items-start lg:pl-20">
+        <div className="flex flex-col items-center justify-center w-full lg:pl-20">
           <img
             className="rounded-full md:h-2/3 md:w-2/3 mt-10 w-40 h-40 hover:scale-110 transition-all duration-500 shadow-xl"
             src="https://images.unsplash.com/photo-1740252117070-7aa2955b25f8?w=600&auto=format&fit=crop&q=60"
             alt="Profile"
           />
-          <h2 className="text-6xl text-center ml-16 font-serif font-bold mt-16 ">
+          <h2 className="text-5xl items-center justify-center ml-16 font-serif font-bold mt-16 ">
             Hello {profile.name} !
           </h2>
         </div>
