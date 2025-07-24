@@ -36,29 +36,28 @@ public class OrderServiceImpl implements OrderService {
 		this.razorpayCLient = new RazorpayClient(razorpayId, razorpaySecret);
 	}
 
-	
 	@Override
 	public Orders createOrder(OrderRequest request) throws RazorpayException {
-	    JSONObject options = new JSONObject();
-	    double amountInPaise = request.amount() * 100;
-	    options.put("amount", amountInPaise);
-	    options.put("currency", "INR");
-	    options.put("receipt", request.email());
+		JSONObject options = new JSONObject();
+		options.put("amount", request.amount() * 100); // amount in paise
+		options.put("currency", "INR");
+		options.put("receipt", request.email());
+		Order razorpayOrder = razorpayCLient.orders.create(options);
+		Orders order = new Orders();
+		order.setAmount(request.amount());
+		order.setEmail(request.email());
+		order.setName(request.name());
+		if (razorpayOrder != null) {
+			order.setRazorpayOrderId(razorpayOrder.get("id"));
+			order.setOrderStatus(razorpayOrder.get("status"));
+		}
+		emailService.sendOrderConfirmationEmail(order.getEmail(), "Your Art Gallery Order is Placed",
+				"Hi " + order.getName()
+						+ ",\n\nYour order has been successfully placed. We'll deliver it soon!\n\nOrder ID: "
+						+ order.getOrderId() + "\nAmount: ₹" + order.getAmount() + "\n\nThank you!");
 
-	    Order razorpayOrder = razorpayCLient.orders.create(options);
-
-	    Orders order = new Orders();
-	    order.setAmount(amountInPaise); // ✅ now in paise
-	    order.setEmail(request.email());
-	    order.setName(request.name());
-
-	    if (razorpayOrder != null) {
-	        order.setRazorpayOrderId(razorpayOrder.get("id"));
-	        order.setOrderStatus(razorpayOrder.get("status"));
-	    }
-	    return ordersRepository.save(order);
+		return ordersRepository.save(order);
 	}
-
 
 	@Override
 	public Orders updateStatus(Map<String, String> map) {

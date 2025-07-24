@@ -67,12 +67,7 @@ public class WalletController {
     
     private final PaymentService paymentService = null;
 
-    @PostMapping("/initiate")
-    public ResponseEntity<String> initiatePayment(@RequestBody InitiatePaymentRequest request) {
-    	long userId = authHelper.getCurrentUserId();
-        String gatewayTxnId = paymentService.initiatePayment(request, userId);
-        return ResponseEntity.ok(gatewayTxnId);
-    }
+  
 
     @PostMapping("/update-status")
     public ResponseEntity<String> updatePaymentStatus(

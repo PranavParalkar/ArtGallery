@@ -26,51 +26,46 @@ const BiddingFrontend = () => {
 
     return () => clearInterval(interval);
   }, []);
+
   const calculateTime = () => {
-    const now = new Date();
-    const currentDay = now.getDay(); // 0 (Sun) - 6 (Sat)
-    const currentTime = now.getTime();
+  const now = new Date();
 
-    // Friday 5 PM
-    const nextFriday = new Date(now);
-    nextFriday.setDate(now.getDate() + ((4 - currentDay + 7) % 7));
-    nextFriday.setHours(17, 0, 0, 0); // 5 PM
+  // Auction starts tomorrow at 9:00 AM
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 9, 0, 0);
 
-    // Sunday 5 PM
-    const nextSunday = new Date(nextFriday);
-    nextSunday.setDate(nextFriday.getDate() + 2); // Sunday after Friday
-    nextSunday.setHours(17, 0, 0, 0);
+  // Auction ends same day at 6:00 PM
+  const end = new Date(start.getFullYear(), start.getMonth(), start.getDate(), 18, 0, 0);
 
-    let target, auctionMode;
+  let target, auctionMode;
 
-    if (currentTime < nextFriday.getTime()) {
-      // Before auction start
-      target = nextFriday;
-      auctionMode = "Auction starts in";
-      setAuctionLive(false);
-    } else if (
-      currentTime >= nextFriday.getTime() &&
-      currentTime < nextSunday.getTime()
-    ) {
-      // Auction ongoing
-      target = nextSunday;
-      auctionMode = "Auction ends in";
-      setAuctionLive(true);
-    } else {
-      // After Sunday 5 PM, next auction on next Friday
-      nextFriday.setDate(nextFriday.getDate() + 7);
-      target = nextFriday;
-      auctionMode = "Auction starts in";
-      setAuctionLive(false);
-    }
+  if (now < start) {
+    target = start;
+    auctionMode = "Auction starts in";
+    setAuctionLive(false);
+  } else if (now >= start && now < end) {
+    target = end;
+    auctionMode = "Auction ends in";
+    setAuctionLive(true);
+  } else {
+    // If current time is past today's auction, schedule for next day
+    const nextStart = new Date(start);
+    nextStart.setDate(start.getDate() + 1);
+    nextStart.setHours(9, 0, 0);
 
-    const diff = target - now;
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-    const seconds = Math.floor((diff / 1000) % 60);
-    setTimeLeft({ hours, minutes, seconds });
-    setMode(auctionMode);
-  };
+    target = nextStart;
+    auctionMode = "Auction starts in";
+    setAuctionLive(false);
+  }
+
+  const diff = target - now;
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+  setTimeLeft({ hours, minutes, seconds });
+  setMode(auctionMode);
+};
+
+
 
   useEffect(() => {
     calculateTime();
@@ -79,23 +74,18 @@ const BiddingFrontend = () => {
   }, []);
 
   const isAuctionLive = () => {
-    const now = new Date();
+  const now = new Date();
 
-    const day = now.getDay(); // 0 = Sunday, 5 = Friday
-    const hours = now.getHours();
+  const start = new Date(now);
+  start.setDate(now.getDate() + 1);
+  start.setHours(9, 0, 0, 0); // Tomorrow at 9:00 AM
 
-    // Auction starts Friday 5 PM (day 5, hour 17)
-    const auctionStart = new Date(now);
-    auctionStart.setDate(now.getDate() + ((5 - day + 7) % 7)); // Next Friday
-    auctionStart.setHours(17, 0, 0, 0); // 5 PM
+  const end = new Date(start);
+  end.setHours(18, 0, 0, 0); // Tomorrow at 6:00 PM
 
-    // Auction ends Sunday 5 PM
-    const auctionEnd = new Date(auctionStart);
-    auctionEnd.setDate(auctionStart.getDate() + 2); // Sunday
-    auctionEnd.setHours(17, 0, 0, 0); // 5 PM
+  return now >= start && now < end;
+};
 
-    return now >= auctionStart && now <= auctionEnd;
-  };
 
   // Fetch painting details
   useEffect(() => {
