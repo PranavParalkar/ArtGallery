@@ -22,10 +22,10 @@ public class PaymentServiceImpl implements PaymentService {
     private final UserRepo userRepo;
 
     @Override
-    public String initiatePayment(InitiatePaymentRequest request) {
+    public String initiatePayment(InitiatePaymentRequest request, long userId) {
         Transaction txn = Transaction.builder()
-                .userId(request.getUserId())
-                .amount(request.getAmount())
+                .userId(userId)
+                .amount(request.amount())
                 .status(TransactionStatus.PENDING)
                 .timestamp(LocalDateTime.now())
                 .build();

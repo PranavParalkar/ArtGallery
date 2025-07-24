@@ -223,28 +223,20 @@ const Shop = () => {
               <button
                 className="w-full py-2 bg-[#a0754f] text-white font-semibold rounded-full hover:bg-[#8c5e3d] transition"
                 onClick={() => {
-                  if (orderInfo.paymentMode === "Cash on Delivery") {
-                    setShowOrderModal(false);
-                    setOrderPlaced(true);
-                    setTimeout(() => setOrderPlaced(false), 3000);
-                  } else {
-                    alert(
-                      `Redirecting to ${orderInfo.paymentMode} payment gateway...`
-                    );
-                  }
-                  if (orderInfo.paymentMode === "UPI") {
-                    navigate(
-                      "http://127.0.0.1:5500/ArtGallery/ArtGalleryProject/src/main/resources/templates/orders.html"
-                    );
-                  } else {
-                    alert(
-                      `Redirecting to ${orderInfo.paymentMode} payment gateway...`
-                    );
-                  }
-                }}
+                    if (orderInfo.paymentMode === "Cash on Delivery") {
+                        setShowOrderModal(false);
+                        setOrderPlaced(true);
+                        setTimeout(() => setOrderPlaced(false), 3000);
+                      } else if (orderInfo.paymentMode === "UPI") {
+                        // ✅ Redirect to backend orders page
+                        window.location.href = "http://localhost:8085/orders";
+                      }
+
+                }
+              }
               >
                 Proceed To Pay
-              </button>
+              </button> 
             </div>
           </motion.div>
         )}
