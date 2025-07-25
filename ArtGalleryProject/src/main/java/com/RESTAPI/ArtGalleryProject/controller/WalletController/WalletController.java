@@ -67,8 +67,6 @@ public class WalletController {
     
     private final PaymentService paymentService = null;
 
-  
-
     @PostMapping("/update-status")
     public ResponseEntity<String> updatePaymentStatus(
             @RequestParam String txnId,
