@@ -25,6 +25,10 @@ public class WalletController {
 	@Autowired
 	private WalletService service;
 	
+    @Autowired
+    private PaymentService paymentService;
+
+	
     @GetMapping
     public ResponseEntity<?> getWallet() {
     	logger.info("getWallet started.");
@@ -64,10 +68,6 @@ public class WalletController {
         logger.info("updateWalletBalance finished.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    
-    private final PaymentService paymentService = null;
-
-  
 
     @PostMapping("/update-status")
     public ResponseEntity<String> updatePaymentStatus(
