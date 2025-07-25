@@ -162,83 +162,61 @@ const Shop = () => {
       </AnimatePresence>
       <AnimatePresence>
         {showOrderModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50"
-          >
-            <div
-              className="bg-white p-8 rounded-xl shadow-lg w-[90%] max-w-md font-serif"
-              onClick={(e) => e.stopPropagation()}
+          <div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 flex items-center justify-center backdrop-blur-2xl bg-opacity-40 z-50"
             >
-              <h2 className="text-2xl font-bold text-[#3e2e1e] mb-6 text-center">
-                Complete Your Order
-              </h2>
-
-              <label className="block mb-2 font-medium">Full Name</label>
-              <input
-                type="text"
-                value={orderInfo.name}
-                onChange={(e) =>
-                  setOrderInfo({ ...orderInfo, name: e.target.value })
-                }
-                placeholder="Enter your full name"
-                className="w-full border px-4 py-2 mb-4 rounded-lg"
-              />
-
-              <label className="block mb-2 font-medium">Email Address</label>
-              <input
-                type="email"
-                value={orderInfo.email}
-                onChange={(e) =>
-                  setOrderInfo({ ...orderInfo, email: e.target.value })
-                }
-                placeholder="Enter your email address"
-                className="w-full border px-4 py-2 mb-4 rounded-lg"
-              />
-
-              <label className="block mb-2 font-medium">Delivery Address</label>
-              <textarea
-                value={orderInfo.address}
-                onChange={(e) =>
-                  setOrderInfo({ ...orderInfo, address: e.target.value })
-                }
-                placeholder="Enter your address"
-                className="w-full border px-4 py-2 mb-4 rounded-lg"
-              />
-
-              <label className="block mb-2 font-medium">Payment Mode</label>
-              <select
-                value={orderInfo.paymentMode}
-                onChange={(e) =>
-                  setOrderInfo({ ...orderInfo, paymentMode: e.target.value })
-                }
-                className="w-full border px-4 py-2 mb-6 rounded-lg"
-              >
-                <option>Cash on Delivery</option>
-                <option>UPI</option>
-              </select>
-
-              <button
-                className="w-full py-2 bg-[#a0754f] text-white font-semibold rounded-full hover:bg-[#8c5e3d] transition"
-                onClick={() => {
-                    if (orderInfo.paymentMode === "Cash on Delivery") {
+              <div className="text-center space-y-6">
+                <h2 className="text-xl font-semibold text-[#5a3c28]">
+                  How do you want to sell your painting?
+                </h2>
+                <div className="flex justify-center gap-6 mt-4">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                    value={orderInfo.paymentMode}
+                    onClick={() => {
+                      if (orderInfo.paymentMode === "Cash on Delivery") {
                         setShowOrderModal(false);
                         setOrderPlaced(true);
                         setTimeout(() => setOrderPlaced(false), 3000);
-                      } else if (orderInfo.paymentMode === "UPI") {
-                        // ✅ Redirect to backend orders page
-                        window.location.href = "http://localhost:8085/orders";
+                      } else {
+                        alert(
+                          `Redirecting to ${orderInfo.paymentMode} payment gateway...`
+                        );
                       }
+                    }}
+                  >
+                    Cash on Delivery
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                    value={orderInfo.paymentMode}
+                    onClick={() => {
+                      if (orderInfo.paymentMode === "UPI") {
+                        navigate(
+                          "http://127.0.0.1:5500/ArtGallery/ArtGalleryProject/src/main/resources/templates/orders.html"
+                        );
+                      } else {
+                        alert(
+                          `Redirecting to ${orderInfo.paymentMode} payment gateway...`
+                        );
+                      }
+                    }}
+                  >
+                    UPI
+                  </motion.button>
+                </div>
+              </div>
 
-                }
-              }
-              >
-                Proceed To Pay
-              </button> 
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
       <AnimatePresence>
@@ -261,3 +239,4 @@ const Shop = () => {
 };
 
 export default Shop;
+  
