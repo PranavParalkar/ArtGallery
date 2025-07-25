@@ -13,6 +13,10 @@ import BiddingFrontend from "./pages/biddingFrontend";
 import Admin from "./pages/admin";
 import ProfilePage from "./components/ProfilePage";
 import { isTokenExpired, logoutUser } from './axiosInstance';
+import About from "./pages/about";
+import Terms from "./pages/terms";
+import Privacy from "./pages/privacy";
+import Contact from "./pages/contact";
 
 const router = createBrowserRouter([
   {
@@ -50,6 +54,22 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "/about",
+        element: <About />,
+      },
+      {
+        path: "/terms",
+        element: <Terms />,
+      },
+      {
+        path: "/privacy",
+        element: <Privacy />,
+      },
+      {
+        path: "/contact",
+        element: <Contact />,
       },
 
       {
