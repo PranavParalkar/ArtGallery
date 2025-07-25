@@ -1,20 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
-
-// 🔐 Authenticated Axios Instance
-const axiosInstance = axios.create({
-  baseURL: "http://localhost:8085",
-});
-
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
+import axiosInstance from "../axiosInstance";
 // -----------------------------
 // Deposit Modal Component
 // -----------------------------
@@ -128,12 +114,8 @@ const WalletModal = ({ isOpen, onClose }) => {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      axios
-        .get(`http://localhost:8085/wallet`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      axiosInstance
+        .get(`http://localhost:8085/wallet`)
         .then((res) => {
           const rawBalance = parseFloat(res.data.balance || 0);
           setBalance(`₹${rawBalance.toFixed(2)}`);

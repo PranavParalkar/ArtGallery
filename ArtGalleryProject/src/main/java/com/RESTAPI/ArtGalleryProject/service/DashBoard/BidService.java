@@ -8,4 +8,6 @@ public interface BidService {
     void placeBid(Long userId, Long paintingId, double amount);
 
     List<TopBidDTO> getTop3BidsWithRank(Long paintingId);
+    
+    String auctionEnds();
 }

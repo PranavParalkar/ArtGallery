@@ -47,4 +47,31 @@ public class BidController {
 
 	}
 
+//	@GetMapping("/not-live")
+//	public ResponseEntity<?> auctionEnded() {
+////		logger.info("auctionEnded called.");
+////		String response = 
+////		switch () {
+////		case value: {
+////			
+////			yield type;
+////		}
+////		default:
+////			throw new IllegalArgumentException("Unexpected value: " + );
+////		}
+//	}
+//	
+//	@GetMapping("/live")
+//	public ResponseEntity<?> auctionStarted() {
+////		logger.info("auctionEnded called.");
+////		String response = 
+////		switch () {
+////		case value: {
+////			
+////			yield type;
+////		}
+////		default:
+////			throw new IllegalArgumentException("Unexpected value: " + );
+////		}
+//	}
 }
