@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.updateBalanceRequest;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.Wallet.WalletService;
-import com.RESTAPI.ArtGalleryProject.DTO.Payment.InitiatePaymentRequest;
 import com.RESTAPI.ArtGalleryProject.service.PaymentService.PaymentService;
 
 @RestController
@@ -24,6 +23,10 @@ public class WalletController {
 
 	@Autowired
 	private WalletService service;
+	
+    @Autowired
+    private PaymentService paymentService;
+
 	
     @GetMapping
     public ResponseEntity<?> getWallet() {
@@ -64,8 +67,6 @@ public class WalletController {
         logger.info("updateWalletBalance finished.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    
-    private final PaymentService paymentService = null;
 
     @PostMapping("/update-status")
     public ResponseEntity<String> updatePaymentStatus(

@@ -171,7 +171,7 @@ const Shop = () => {
             >
               <div className="text-center space-y-6">
                 <h2 className="text-xl font-semibold text-[#5a3c28]">
-                  How do you want to sell your painting?
+                  Select the Mode of Payment
                 </h2>
                 <div className="flex justify-center gap-6 mt-4">
                   <motion.button
@@ -199,7 +199,7 @@ const Shop = () => {
                     className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
                     value={orderInfo.paymentMode}
                     onClick={() => {
-                      if (orderInfo.paymentMode === "UPI") {
+                      if (orderInfo.paymentMode === "Pay with Wallet") {
                         navigate(
                           "http://127.0.0.1:5500/ArtGallery/ArtGalleryProject/src/main/resources/templates/orders.html"
                         );
@@ -210,7 +210,7 @@ const Shop = () => {
                       }
                     }}
                   >
-                    UPI
+                  Pay with Wallet
                   </motion.button>
                 </div>
               </div>
@@ -239,4 +239,3 @@ const Shop = () => {
 };
 
 export default Shop;
-  
