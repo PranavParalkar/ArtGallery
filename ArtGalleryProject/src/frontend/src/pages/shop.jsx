@@ -184,6 +184,10 @@ const Shop = () => {
                         setShowOrderModal(false);
                         setOrderPlaced(true);
                         setTimeout(() => setOrderPlaced(false), 3000);
+                        const response = axiosInstance.post("/paymentCallbackCOD", {
+                          amount: selectedPainting.startingPrice,
+                          paintingId: selectedPainting.paintingId
+                        });
                       } else {
                         alert(
                           `Redirecting to ${orderInfo.paymentMode} payment gateway...`

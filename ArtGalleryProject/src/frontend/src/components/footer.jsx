@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#674d33] text-white">
+    <footer className="bg-[#674d33] text-white py-3">
       <div className="max-w-7xl mx-auto px-4 sm:flex sm:items-center sm:justify-between">
         <div className="mb-4 sm:mb-0">
           <h2 className="text-xl font-semibold tracking-wide">Art Fusion</h2>

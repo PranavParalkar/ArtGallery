@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axiosInstance from '../axiosInstance';
 
 const Timer = ({ setAuctionLive }) => {
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
@@ -35,7 +36,11 @@ const Timer = ({ setAuctionLive }) => {
       }
       
       setAuctionLive(isLive); 
-
+      if(isLive){
+        axiosInstance.post('/api/auctions/live');
+      } else {
+        axiosInstance.post('/api/auctions/not-live');
+      }
       const diff = target.getTime() - now.getTime();
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
