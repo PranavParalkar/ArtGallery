@@ -29,13 +29,10 @@ public class BidServiceImpl implements BidService {
 
 	@Autowired
 	private BidRepo bidrepo;
-
 	@Autowired
 	private UserRepo userrepo;
-
 	@Autowired
 	private PaintingRepo paintingrepo;
-
 	@Autowired
 	private WalletRepo walletrepo;
 
@@ -107,6 +104,12 @@ public class BidServiceImpl implements BidService {
 		}
 		logger.info("getTop3BidsWithRank finished.");
 		return result;
+	}
+
+	@Transactional
+	@Override
+	public String auctionEnds() {
+		return null;
 	}
 
 }

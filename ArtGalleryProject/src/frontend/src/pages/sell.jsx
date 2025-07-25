@@ -138,7 +138,7 @@ const Sell = () => {
                   Auction Time
                 </h2>
                 <p>
-                  Auction will be live for 2 days form Friday 5 PM to Sunday 5 PM in every week. 
+                  Auction will be live for 2 days form Thursday 5 PM to Saturday 5 PM in every week. 
                 </p>
               </motion.div>
             <div className="text-center mt-10">
