@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
-
+	
     private final TransactionRepo transactionRepo;
     private final WalletRepo walletRepo;
     private final UserRepo userRepo;
@@ -60,9 +60,4 @@ public class PaymentServiceImpl implements PaymentService {
         transactionRepo.save(txn);
     }
 
-    @Override
-    public String confirmPayment(String paymentGatewayTxnId) {
-        // You can implement a status check or polling confirmation here if needed
-        return null;
-    }
 }
