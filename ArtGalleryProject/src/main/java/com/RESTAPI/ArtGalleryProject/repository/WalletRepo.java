@@ -7,4 +7,5 @@ import com.RESTAPI.ArtGalleryProject.Entity.Wallet;
 
 @Repository
 public interface WalletRepo extends JpaRepository<Wallet, Long> {
+    Wallet findByEmail(String email);
 }

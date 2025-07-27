@@ -20,6 +20,7 @@ import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 
 import jakarta.annotation.PostConstruct;
+import com.RESTAPI.ArtGalleryProject.service.WalletService.WalletService;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -34,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
 	private PaintingRepo paintingRepo;
 	@Autowired
 	private UserRepo userRepo;
+	private WalletService walletService;
 
 	@Value("${razorpay.key.id}")
 	private String razorpayId;
@@ -74,14 +76,19 @@ public class OrderServiceImpl implements OrderService {
 		String razorpayId = map.get("razorpay_order_id");
 		Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
 		order.setOrderStatus("PAYMENT DONE");
-		Orders orders = ordersRepository.save(order);
+		Orders savedOrder = ordersRepository.save(order);
+
+		// Increment wallet balance
+		if (order.getEmail() != null) {
+			walletService.incrementBalanceByEmail(order.getEmail(), order.getAmount());
+		}
+
 		if (order.getEmail() != null) {
 			emailService.sendOrderConfirmationEmail(order.getEmail(), "Payment Successful - Art Gallery",
 					"Hi " + order.getName() + ",\n\nYour payment has been received successfully for Order ID: "
 							+ order.getOrderId() + ".\n\nThanks for shopping with us!");
 		}
-		logger.info("updateStatus finished.");
-		return orders;
+		return savedOrder;
 	}
 	
 	@Override

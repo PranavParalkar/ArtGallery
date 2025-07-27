@@ -82,6 +82,8 @@ const Login = () => {
       };
       const res = await axiosInstance.post("/auth/user-info", payload);
       if (res.data === "User info saved") {
+        // Store the username in localStorage
+        localStorage.setItem("username", userDetails.name);
         navigate("/"); // or set a state to show the profile modal
         window.location.reload(); // to update header/profile
       } else {
@@ -127,6 +129,18 @@ const Login = () => {
 
       if (data?.token) {
         localStorage.setItem("token", data.token);
+        
+        // For login, fetch and store the username
+        if (isLogin) {
+          try {
+            const profileRes = await axiosInstance.get("/user/profile");
+            if (profileRes.data?.name) {
+              localStorage.setItem("username", profileRes.data.name);
+            }
+          } catch (profileErr) {
+            console.error("Failed to fetch profile:", profileErr);
+          }
+        }
       } else {
         alert("Token missing in response");
         return;
