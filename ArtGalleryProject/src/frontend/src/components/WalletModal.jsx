@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-<<<<<<< Updated upstream
 import axios from "axios";
 
 // 🔐 Authenticated Axios Instance
@@ -15,9 +14,6 @@ axiosInstance.interceptors.request.use((config) => {
   }
   return config;
 });
-=======
-import axiosInstance from "../axiosInstance";
->>>>>>> Stashed changes
 
 // -----------------------------
 // Withdraw Modal Component
@@ -202,7 +198,6 @@ const WalletModal = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (isOpen) {
-<<<<<<< Updated upstream
       const token = localStorage.getItem("token");
       if (!token) return;
 
@@ -220,9 +215,6 @@ const WalletModal = ({ isOpen, onClose }) => {
           console.error("Failed to fetch wallet balance:", err);
           setBalance("₹0.00");
         });
-=======
-      fetchBalance();
->>>>>>> Stashed changes
     }
   }, [isOpen, fetchBalance]);
 
