@@ -37,8 +37,20 @@ public class OrdersController {
 
 	@PostMapping("/paymentCallback")
 	public String paymentCallback(@RequestParam Map<String, String> response) {
+<<<<<<< Updated upstream
 		orderService.updateStatus(response);
 		return "success";
 
+=======
+		logger.info("paymentCallback started with response: {}", response);
+		try {
+			orderService.updateStatus(response);
+			logger.info("paymentCallback finished successfully.");
+			return "success";
+		} catch (Exception e) {
+			logger.error("Error in paymentCallback: {}", e.getMessage(), e);
+			return "error";
+		}
+>>>>>>> Stashed changes
 	}
 }
