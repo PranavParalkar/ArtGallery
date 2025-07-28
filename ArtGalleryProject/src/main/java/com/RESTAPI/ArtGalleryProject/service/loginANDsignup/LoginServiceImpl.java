@@ -64,7 +64,7 @@ public class LoginServiceImpl implements LoginService {
 		walletrepo.save(wallet);
 
 		// save user in wallet entity
-		user.setWallet(null);
+		user.setWallet(wallet);
 		userrepo.save(user);
 
 		// save login credentials

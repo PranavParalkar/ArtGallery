@@ -9,17 +9,17 @@ const Timer = ({ setAuctionLive }) => {
     const calculateTime = () => {
       const now = new Date();
       const currentDay = now.getDay();
-      
+
       const auctionStart = new Date(now);
-      auctionStart.setDate(now.getDate() - currentDay + 4);
+      auctionStart.setDate(now.getDate() - currentDay + 1);
       auctionStart.setHours(17, 0, 0, 0);
 
       const auctionEndCheck = new Date(auctionStart);
       auctionEndCheck.setDate(auctionStart.getDate() + 2);
-      if(now.getTime() > auctionEndCheck.getTime()){
+      if (now.getTime() > auctionEndCheck.getTime()) {
         auctionStart.setDate(auctionStart.getDate() + 7);
       }
-      
+
       const auctionEnd = new Date(auctionStart);
       auctionEnd.setDate(auctionStart.getDate() + 2);
 
@@ -34,9 +34,9 @@ const Timer = ({ setAuctionLive }) => {
         mode = "Auction starts in";
         isLive = false;
       }
-      
-      setAuctionLive(isLive); 
-      if(isLive){
+
+      setAuctionLive(isLive);
+      if (isLive) {
         axiosInstance.post('/api/auctions/live');
       } else {
         axiosInstance.post('/api/auctions/not-live');

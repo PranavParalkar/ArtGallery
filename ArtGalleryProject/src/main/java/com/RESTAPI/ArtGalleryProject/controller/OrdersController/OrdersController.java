@@ -52,7 +52,6 @@ public class OrdersController {
 		orderService.updateStatus(response);
 		logger.info("paymentCallback finished.");
 		return "success";
-
 	}
 	
 	@PostMapping("/paymentCallbackCOD")

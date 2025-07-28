@@ -5,7 +5,7 @@ import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.TopBidDTO;
 import java.util.List;
 
 public interface BidService {
-    void placeBid(Long userId, Long paintingId, double amount);
+    void placeBid(long userId, long paintingId, double amount);
 
     List<TopBidDTO> getTop3BidsWithRank(Long paintingId);
     
