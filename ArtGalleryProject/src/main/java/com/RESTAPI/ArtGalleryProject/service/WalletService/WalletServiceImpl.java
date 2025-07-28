@@ -9,9 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.Entity.Wallet;
-import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -21,8 +19,6 @@ public class WalletServiceImpl implements WalletService {
 
 	private static final Logger logger = LoggerFactory.getLogger(WalletServiceImpl.class);
 
-	@Autowired
-	private UserRepo userRepo;
 	@Autowired
 	private WalletRepo walletRepo;
 

@@ -16,7 +16,5 @@ public class Wallet {
     private long walletId;
     
     private double balance;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    private User user;
+    private String email;
 }

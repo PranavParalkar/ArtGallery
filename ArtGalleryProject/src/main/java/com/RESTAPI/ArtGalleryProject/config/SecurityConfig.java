@@ -43,8 +43,6 @@ public class SecurityConfig {
 								"/auctions/bid/**",
 								"/user/profile",
 								"/licenses/**",
-//								"/createOrder",
-//								"/paymentCallback",
 								"/upload-painting")
 						.authenticated()
 						.anyRequest().permitAll())

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import com.RESTAPI.ArtGalleryProject.Enum.Role;
 
 @Component
-public class AuthHelper {
+public class AuthHelper extends JwtService{
     public String getCurrentEmail() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth != null ? auth.getName() : null;

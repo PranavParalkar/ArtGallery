@@ -48,25 +48,26 @@ public class LoginServiceImpl implements LoginService {
 			logger.info("register finished.");
 			return "Account already exists";
 		}
-		
-		//save new user
+
+		// save new user
 		var user = new User();
 		user.setAuthorizedSeller(false);
 		user.setCreatedAt(LocalDate.now());
 		user.setRole(Role.ROLE_USER);
+		user.setWallet(null);
 		userrepo.save(user);
-		
-		//save wallet with user foreign key
+
+		// save wallet with user foreign key
 		var wallet = new Wallet();
 		wallet.setBalance(0.0);
-		wallet.setUser(user);
+		wallet.setEmail(request.email());
 		walletrepo.save(wallet);
 
-		//save user in wallet entity
-		user.setWallet(wallet);
+		// save user in wallet entity
+		user.setWallet(null);
 		userrepo.save(user);
 
-		//save login credentials
+		// save login credentials
 		var logincred = new LoginCredentials();
 		logincred.setEmail(request.email());
 		logincred.setPassword(encoder.encode(request.password()));

@@ -205,7 +205,7 @@ const Discover = () => {
                 </p>
                 <button
                   onClick={() => handleReadMore(news.readMoreLink)}
-                  className="flex items-center gap-2 text-[#a17b5d] hover:text-[#8b6b4d] font-semibold text-sm transition-colors duration-200"
+                  className="flex items-center gap-2 text-[#a17b5d] hover:text-[#8b6b4d] cursor-pointer font-semibold text-sm transition-colors duration-200"
                 >
                   <span>Read More</span>
                   <FaExternalLinkAlt className="text-xs" />

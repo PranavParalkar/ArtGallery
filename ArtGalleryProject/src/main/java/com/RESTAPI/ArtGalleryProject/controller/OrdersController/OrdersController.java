@@ -1,5 +1,6 @@
 package com.RESTAPI.ArtGalleryProject.controller.OrdersController;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -40,8 +41,7 @@ public class OrdersController {
 	@ResponseBody
 	public ResponseEntity<?> createOrder(@RequestBody OrderRequest request) throws RazorpayException {
 		logger.info("createOrder started.");
-		long userId = authHelper.getCurrentUserId();
-		Orders razorpayOrder = orderService.createOrder(request, userId);
+		Orders razorpayOrder = orderService.createOrder(request);
 		logger.info("createOrder finished.");
 		return new ResponseEntity<>(razorpayOrder, HttpStatus.CREATED);
 	}
@@ -56,7 +56,7 @@ public class OrdersController {
 	}
 	
 	@PostMapping("/paymentCallbackCOD")
-	public ResponseEntity<?> paymentCallbackCOD(@RequestBody PaintingCodRequest request) {
+	public ResponseEntity<?> paymentCallbackCOD(@RequestBody PaintingCodRequest request) throws IOException {
 		logger.info("paymentCallbackCOD started.");
 		long userId = authHelper.getCurrentUserId();
 		String email = authHelper.getCurrentEmail();

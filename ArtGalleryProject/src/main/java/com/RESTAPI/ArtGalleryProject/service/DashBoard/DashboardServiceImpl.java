@@ -32,7 +32,7 @@ public class DashboardServiceImpl implements DashboardService{
 		logger.info("getPaintingsByPage started.");
 		
 		Pageable pageable = PageRequest.of(pageNo, size);
-		Page<Painting> paintingsPage = paintingrepo.findByIsForAuctionTrueAndIsAuctionLiveFalse(pageable);
+		Page<Painting> paintingsPage = paintingrepo.findByIsSoldFalseAndIsForAuctionTrueAndIsAuctionLiveFalse(pageable);
 
 		Page<PaintingResponse> pageResult = paintingsPage.map(p -> new PaintingResponse(
 		    p.getPaintingId(),
@@ -42,7 +42,6 @@ public class DashboardServiceImpl implements DashboardService{
 		    p.getLength(),
 		    p.getBreadth(),
 		    p.getStartingPrice(),
-		    p.getFinalPrice(),
 		    p.isForAuction(),
 		    p.isSold(),
 		    p.getSeller().getName()
@@ -74,7 +73,6 @@ logger.info("getPaintingsByPage started.");
 	        p.getLength(),
 	        p.getBreadth(),
 	        p.getStartingPrice(),
-	        p.getFinalPrice(),
 	        p.isForAuction(),
 	        p.isSold(),
 	        p.getSeller().getName()
@@ -108,7 +106,6 @@ logger.info("getPaintingsByPage started.");
 		        painting.getLength(),
 		        painting.getBreadth(),
 		        painting.getStartingPrice(),
-		        painting.getFinalPrice(),
 		        painting.isForAuction(),
 		        painting.isSold(),
 		        painting.getSeller().getName()

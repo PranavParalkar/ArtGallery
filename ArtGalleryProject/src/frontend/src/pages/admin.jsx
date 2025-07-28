@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { motion } from "framer-motion";
+import { getUserRole } from "../utils/auth";
 
 const Admin = () => {
   const [paintings, setPaintings] = useState([]);

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState, useMemo } from "react";
 import axiosInstance from '../axiosInstance';
+import { Navigate } from "react-router-dom";
 import {
   FaSignOutAlt,
   FaUserCircle,
@@ -257,8 +258,8 @@ const ProfilePage = () => {
                   {/* Logout */}
                   <button
                     onClick={() => {
-                      localStorage.clear();
-                      window.location.reload();
+                      localStorage.removeItem("token");
+                      window.location.href = "/";
                     }}
                     className="mt-6 w-full px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full shadow flex items-center justify-center gap-2"
                   >
