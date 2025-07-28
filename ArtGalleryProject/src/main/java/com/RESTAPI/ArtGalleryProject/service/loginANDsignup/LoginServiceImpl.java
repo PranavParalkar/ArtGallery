@@ -22,6 +22,8 @@ import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
 import com.RESTAPI.ArtGalleryProject.security.JwtService;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class LoginServiceImpl implements LoginService {
 
@@ -39,31 +41,38 @@ public class LoginServiceImpl implements LoginService {
 	private WalletRepo walletrepo;
 
 	@Override
+	@Transactional
 	public Object register(SignupRequest request) {
 		logger.info("register started.");
 		if (loginrepo.existsById(request.email())) {
 			logger.info("register finished.");
 			return "Account already exists";
 		}
-
-		var wallet = new Wallet();
-		wallet.setBalance(0.0);
-
+		
+		//save new user
 		var user = new User();
 		user.setAuthorizedSeller(false);
 		user.setCreatedAt(LocalDate.now());
 		user.setRole(Role.ROLE_USER);
-		user.setWallet(wallet);
+		userrepo.save(user);
+		
+		//save wallet with user foreign key
+		var wallet = new Wallet();
+		wallet.setBalance(0.0);
+		wallet.setUser(user);
+		walletrepo.save(wallet);
 
+		//save user in wallet entity
+		user.setWallet(wallet);
+		userrepo.save(user);
+
+		//save login credentials
 		var logincred = new LoginCredentials();
 		logincred.setEmail(request.email());
 		logincred.setPassword(encoder.encode(request.password()));
 		logincred.setSecurityQuestion(request.securityQuestion());
 		logincred.setSecurityAnswer(encoder.encode(request.securityAnswer()));
 		logincred.setUser(user);
-
-		walletrepo.save(wallet);
-		userrepo.save(user);
 		loginrepo.save(logincred);
 
 		long userId = logincred.getUser().getUserId();

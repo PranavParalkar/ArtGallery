@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -26,22 +27,34 @@ public class EmailServiceImpl implements EmailService {
 	private String emailFrom;
 
 	@Override
-	 public void sendOrderConfirmationEmail(String toEmail, String subject, String htmlBody, String localImagePath) throws MessagingException {
-        logger.info("sendOrderConfirmationEmail started.");
+	public void sendOrderConfirmationEmailCOD(String toEmail, String subject, String htmlBody, String localImagePath)
+			throws MessagingException {
+		logger.info("sendOrderConfirmationEmail started.");
 		MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        helper.setFrom(emailFrom);
-        helper.setTo(toEmail);
-        helper.setSubject(subject);
-        helper.setText(htmlBody, true);
+		helper.setFrom(emailFrom);
+		helper.setTo(toEmail);
+		helper.setSubject(subject);
+		helper.setText(htmlBody, true);
 
-        FileSystemResource res = new FileSystemResource(new File(localImagePath));
-        
-        helper.addInline("paintingImage", res);
+		FileSystemResource res = new FileSystemResource(new File(localImagePath));
 
-        logger.info("sendOrderConfirmationEmail finished.");
+		helper.addInline("paintingImage", res);
+
+		logger.info("sendOrderConfirmationEmail finished.");
+		mailSender.send(message);
+	}
+	
+	@Override
+	public void sendOrderConfirmationEmail(String emailTo, String subject, String body) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(emailTo);
+        message.setSubject(subject);
+        message.setText(body);
+        message.setFrom(emailFrom);
+
         mailSender.send(message);
     }
-
+	
 }

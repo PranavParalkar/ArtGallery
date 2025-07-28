@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 import com.RESTAPI.ArtGalleryProject.Embeddable.Address;
-import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 
 public record UserDetailsResponse(
 		Address address,

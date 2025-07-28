@@ -17,6 +17,6 @@ public class Wallet {
     
     private double balance;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+    @OneToOne(cascade = CascadeType.ALL)
+    private User user;
 }
