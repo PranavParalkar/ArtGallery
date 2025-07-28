@@ -5,10 +5,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.Entity.Wallet;
 
 @Repository
 public interface WalletRepo extends JpaRepository<Wallet, Long> {
-    Optional<Wallet> findByUser(User user);
+    Optional<Wallet> findByEmail(String email);
 }

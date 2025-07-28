@@ -2,6 +2,7 @@ package com.RESTAPI.ArtGalleryProject.service.WalletService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,25 +27,19 @@ public class WalletServiceImpl implements WalletService {
 	private WalletRepo walletRepo;
 
 	@Override
-	public void incrementBalanceByEmail(long userId, double amount) {
-		User user = userRepo.findById(userId)
-				.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-		Wallet wallet = walletRepo.findByUser(user)
-				.orElseThrow(() -> new EntityNotFoundException("Wallet not found for user with id: " + userId));
+	public void incrementBalanceByEmail(String email, double amount) {
+		Wallet wallet = walletRepo.findByEmail(email)
+				.orElseThrow(() -> new EntityNotFoundException("Wallet not found for user with email: " + email));
 		wallet.setBalance(wallet.getBalance() + amount);
 		walletRepo.save(wallet);
 	}
 
 	@Override
-	public Map<String, Object> getBalance(long userId) {
-		logger.info("Fetching wallet balance for User ID: {}", userId);
-		User user = userRepo.findById(userId)
-				.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-		Wallet wallet = walletRepo.findByUser(user)
-				.orElseThrow(() -> new EntityNotFoundException("Wallet not found for user with id: " + userId));
-
+	public Map<String, Object> getBalance(String email) {
+		logger.info("Fetching wallet balance for User Email: {}", email);
+		Optional<Wallet> wallet = walletRepo.findByEmail(email);
 		Map<String, Object> response = new HashMap<>();
-		response.put("balance", wallet.getBalance());
+		response.put("balance", wallet.get().getBalance());
 		return response;
 	}
 }

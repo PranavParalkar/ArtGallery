@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.PaintingCodRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
-import com.RESTAPI.ArtGalleryProject.Entity.PaintingOrders;
+import com.RESTAPI.ArtGalleryProject.Entity.Orders;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.OrderService.OrderService;
 import com.razorpay.RazorpayException;
@@ -41,7 +41,7 @@ public class OrdersController {
 	public ResponseEntity<?> createOrder(@RequestBody OrderRequest request) throws RazorpayException {
 		logger.info("createOrder started.");
 		long userId = authHelper.getCurrentUserId();
-		PaintingOrders razorpayOrder = orderService.createOrder(request, userId);
+		Orders razorpayOrder = orderService.createOrder(request, userId);
 		logger.info("createOrder finished.");
 		return new ResponseEntity<>(razorpayOrder, HttpStatus.CREATED);
 	}

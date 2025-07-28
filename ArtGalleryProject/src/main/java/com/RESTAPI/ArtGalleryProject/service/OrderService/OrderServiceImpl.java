@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
-import com.RESTAPI.ArtGalleryProject.Entity.PaintingOrders;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.repository.OrdersRepo;
 import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
@@ -62,11 +61,8 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional
-	public PaintingOrders createOrder(OrderRequest request, long userId) throws RazorpayException {
+	public Orders createOrder(OrderRequest request, long userId) throws RazorpayException {
 	    logger.info("createOrder started for User ID: {}", userId);
-
-	    User user = userRepo.findById(userId)
-	            .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
 	    Painting painting = paintingRepo.findById(request.paintingId())
 	            .orElseThrow(() -> new EntityNotFoundException("Painting not found with id: " + request.paintingId()));
@@ -81,14 +77,10 @@ public class OrderServiceImpl implements OrderService {
 	    options.put("receipt", request.email());
 	    Order razorpayOrder = razorpayCLient.orders.create(options);
 
-	    PaintingOrders order = new PaintingOrders();
+	    Orders order = new Orders();
 	    order.setName(request.name());
 	    order.setEmail(request.email());
 	    order.setAmount(request.amount());
-	    order.setUser(user);
-	    order.setPainting(painting);
-	    order.setAddress(user.getAddress());
-
 	    if (razorpayOrder != null) {
 	        order.setRazorpayOrderId(razorpayOrder.get("id"));
 	        order.setOrderStatus(razorpayOrder.get("status"));
@@ -130,15 +122,12 @@ public class OrderServiceImpl implements OrderService {
 	    User user = userRepo.findById(userId)
 	            .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-	    PaintingOrders order = new PaintingOrders();
-	    order.setUser(user);
+	    Orders order = new Orders();
 	    order.setName(user.getName());
-	    order.setPainting(painting);
 	    order.setAmount(amount);
 	    order.setEmail(email);
-	    order.setAddress(user.getAddress());
 	    order.setOrderStatus("PENDING_COD");
-	    PaintingOrders savedOrder = ordersRepository.save(order);
+	    Orders savedOrder = ordersRepository.save(order);
 
 	    painting.setSold(true);
 	    painting.setBuyer(user);

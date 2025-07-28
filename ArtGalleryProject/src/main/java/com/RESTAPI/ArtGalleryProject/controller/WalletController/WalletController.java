@@ -24,8 +24,8 @@ public class WalletController {
 
     @GetMapping("/wallet")
     public ResponseEntity<?> getWallet() {
-        long userId = authHelper.getCurrentUserId();
-        Map<String, Object> map = walletService.getBalance(userId);
+        String email = authHelper.getCurrentEmail();
+        Map<String, Object> map = walletService.getBalance(email);
         return ResponseEntity.ok().body(map);
     }
 }
