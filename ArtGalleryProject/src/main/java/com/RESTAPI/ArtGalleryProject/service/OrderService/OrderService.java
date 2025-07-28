@@ -8,6 +8,6 @@ import com.razorpay.RazorpayException;
 
 public interface OrderService {
 	public Orders updateStatus(Map<String, String> map);
-	public Orders createOrder(OrderRequest request) throws RazorpayException;
+	public Orders createOrder(OrderRequest request, long userId) throws RazorpayException;
 	public String updateStatusCOD(String email, long userId, double amount, long paintingId);
 }

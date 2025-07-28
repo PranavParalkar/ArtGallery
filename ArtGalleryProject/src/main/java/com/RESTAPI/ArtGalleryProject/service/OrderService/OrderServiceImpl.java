@@ -1,5 +1,9 @@
 package com.RESTAPI.ArtGalleryProject.service.OrderService;
 
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import org.json.JSONObject;
@@ -13,19 +17,22 @@ import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
-import com.RESTAPI.ArtGalleryProject.controller.PaintingController.UploadPaintingController;
-import com.RESTAPI.ArtGalleryProject.repository.*;
+import com.RESTAPI.ArtGalleryProject.repository.OrdersRepo;
+import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
+import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
 	private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
-	
+
 	@Autowired
 	private OrdersRepo ordersRepository;
 	@Autowired
@@ -39,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
 	private String razorpayId;
 	@Value("${razorpay.key.secret}")
 	private String razorpaySecret;
+	private String imageDirectory = "C:/Users/varad/OneDrive/Desktop/projects/Super30SpringProject/ArtGalleryProject";
 
 	private RazorpayClient razorpayCLient;
 
@@ -49,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Orders createOrder(OrderRequest request) throws RazorpayException {
+	public Orders createOrder(OrderRequest request, long userId) throws RazorpayException {
 		logger.info("createOrder started.");
 		JSONObject options = new JSONObject();
 		options.put("amount", request.amount() * 100); // amount in paise
@@ -57,9 +65,11 @@ public class OrderServiceImpl implements OrderService {
 		options.put("receipt", request.email());
 		Order razorpayOrder = razorpayCLient.orders.create(options);
 		Orders order = new Orders();
-		order.setAmount(request.amount());
-		order.setEmail(request.email());
 		order.setName(request.name());
+		order.setEmail(request.email());
+		order.setAmount(request.amount());
+		order.setUserId(userId);
+		order.setPainting(request.paintingId());
 		if (razorpayOrder != null) {
 			order.setRazorpayOrderId(razorpayOrder.get("id"));
 			order.setOrderStatus(razorpayOrder.get("status"));
@@ -75,50 +85,122 @@ public class OrderServiceImpl implements OrderService {
 		Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
 		order.setOrderStatus("PAYMENT DONE");
 		Orders orders = ordersRepository.save(order);
-		if (order.getEmail() != null) {
-			emailService.sendOrderConfirmationEmail(order.getEmail(), "Payment Successful - Art Gallery",
-					"Hi " + order.getName() + ",\n\nYour payment has been received successfully for Order ID: "
-							+ order.getOrderId() + ".\n\nThanks for shopping with us!");
-		}
+//		if (order.getEmail() != null) {
+//			emailService.sendOrderConfirmationEmail(order.getEmail(), "Payment Successful - Fusion Art",
+//					"Hi " + order.getName() + ",\n\nYour payment has been received successfully for Order ID: "
+//							+ order.getOrderId() + ".\n\nThanks for shopping with us!");
+//		}
 		logger.info("updateStatus finished.");
 		return orders;
 	}
-	
+
 	@Override
+	@Transactional
 	public String updateStatusCOD(String email, long userId, double amount, long paintingId) {
 		logger.info("updateStatusCOD started.");
 		Painting painting = paintingRepo.findById(paintingId).orElse(null);
-	    User user = userRepo.findById(userId).orElse(null);
+		User user = userRepo.findById(userId).orElse(null);
 
-	    if (painting != null && user != null) {
-	        // Prepare email details
-	        String to = email;
-	        String subject = "Order Confirmation - Cash on Delivery";
-	        String body = "Dear " + user.getName() + ",\n\n"
-	            + "Thank you for your order from the Art Gallery.\n\n"
-	            + "Here are your order details:\n"
-	            + "-------------------------------------\n"
-	            + "Painting Title   : " + painting.getTitle() + "\n"
-	            + "Description      : " + painting.getDescription() + "\n"
-	            + "Price            : ₹" + amount + "\n"
-	            + "Order Type       : Cash on Delivery\n"
-	            + "Delivery Address : " + user.getAddress().toString() + "\n"
-	            + "-------------------------------------\n\n"
-	            + "Your order will be processed shortly and shipped to your provided address.\n"
-	            + "You can track the status of your order in your profile.\n\n"
-	            + "If you have any questions, feel free to contact our support team.\n\n"
-	            + "Warm regards,\n"
-	            + "Art Gallery Team";
+		if (painting != null && user != null) {
+			// --- Create an Order record for this COD transaction ---
+			Orders order = new Orders();
+			order.setUserId(userId);
+			order.setPainting(paintingId);
+			order.setAmount(amount);
+			order.setEmail(email);
+			order.setOrderStatus("PENDING");
+			Orders savedOrder = ordersRepository.save(order);
 
-	        // Send email
-	        emailService.sendOrderConfirmationEmail(to, subject, body);
-//	        painting.setSold(true);
-//	        painting.setBuyer(user);
-//	        paintingRepo.save(painting);
-	        logger.info("updateStatusCOD finished.");
-	        return "Order confirmation email sent successfully.";
-	    }
-	    logger.info("updateStatusCOD finished.");
-	    return "Failed to send email. User or painting not found.";
+			String subject = "🎨 Your Fusion Art Order Confirmation (#" + savedOrder.getOrderId() + ")";
+			String imageAbsolutePath = Paths.get(imageDirectory, painting.getImageUrl()).toString();
+			String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
+
+			String htmlContent = """
+					<!DOCTYPE html>
+					<html lang="en">
+					<head>
+					    <meta charset="UTF-8">
+					    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+					    <style>
+					        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; background-color: #f4f7f6; margin: 0; padding: 15px; }
+					        .email-container { max-width: 680px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); overflow: hidden; }
+					        .header { background-color: #2c3e50; color: #ffffff; padding: 25px 40px; text-align: center; }
+					        .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
+					        .content { padding: 30px 40px; color: #333; }
+					        .order-info { display: flex; justify-content: space-between; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #dee2e6; }
+					        .order-info div { line-height: 1.5; }
+					        .order-info strong { color: #555; }
+					        .item-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+					        .item-table th, .item-table td { padding: 15px; text-align: left; border-bottom: 1px solid #dee2e6; }
+					        .item-table th { background-color: #f8f9fa; font-weight: 600; color: #555; }
+					        .item-table .item-image { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 15px; vertical-align: middle;}
+					        .item-table .item-title { font-weight: bold; }
+					        .shipping-info { padding: 20px; margin-top: 20px; background-color: #f8f9fa; border-radius: 8px; }
+					        .footer { text-align: center; padding: 25px 40px; font-size: 13px; color: #888; background-color: #f4f7f6;}
+					        .footer a { color: #2c3e50; text-decoration: none; }
+					    </style>
+					</head>
+					<body>
+					    <div class="email-container">
+					        <div class="header">
+					            <h1>Thank You For Your Order!</h1>
+					        </div>
+					        <div class="content">
+					            <div class="order-info">
+					                <div><strong>Order #:</strong> %d<br><strong>Date:</strong> %s</div>
+					                <div><strong>Billed To:</strong><br>%s</div>
+					            </div>
+
+					            <table class="item-table">
+					                <thead>
+					                    <tr>
+					                        <th colspan="2">Item</th>
+					                        <th>Price</th>
+					                    </tr>
+					                </thead>
+					                <tbody>
+					                    <tr>
+					                        <td><img src="cid:paintingImage" alt="%s" class="item-image"/></td>
+					                        <td class="item-title">%s</td>
+					                        <td>₹%,.2f</td>
+					                    </tr>
+					                </tbody>
+					            </table>
+
+					            <div class="shipping-info">
+					                <strong>Payment Method:</strong> %s<br>
+					                <strong>Shipping Address:</strong> %s
+					            </div>
+
+					            <p style="margin-top:30px;">We've received your order and will begin processing it right away. If you have any questions, please don't hesitate to contact our support team.</p>
+					        </div>
+					        <div class="footer">
+					            <p>&copy; %d Fusion Art. All Rights Reserved.<br>
+					            <a href="#">Visit Our Gallery</a> | <a href="#">Contact Us</a></p>
+					        </div>
+					    </div>
+					</body>
+					</html>
+					"""
+					.formatted(savedOrder.getOrderId(), formattedDate, user.getName(), painting.getTitle(),
+							painting.getTitle(), amount, amount, "Cash on Delivery", user.getAddress().toString(),
+							Year.now().getValue());
+
+			try {				
+				painting.setIsSold(true);
+				painting.setBuyer(user);
+				paintingRepo.save(painting);
+				emailService.sendOrderConfirmationEmail(email, subject, htmlContent, imageAbsolutePath);
+				logger.info("updateStatusCOD finished successfully.");
+				return "Order confirmation email sent successfully.";
+			} catch (MessagingException e) {
+				logger.error("Failed to send confirmation email", e);
+				return "Order placed, but failed to send confirmation email.";
+			}
+		}
+
+		logger.warn("updateStatusCOD finished with error: User or painting not found.");
+		return "Failed to send email. User or painting not found.";
 	}
+
 }
