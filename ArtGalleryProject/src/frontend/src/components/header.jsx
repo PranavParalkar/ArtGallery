@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { getUserRole } from "../utils/auth";
+import { useState, useEffect } from "react";
+import { getUserRole, getUsernameSync, getUsername } from "../utils/auth";
 // import WalletModal from "./WalletModal";
 
 const Header = ({ setIsWalletOpen }) => {
   const token = localStorage.getItem("token");
   const userRole = getUserRole();
+  const [username, setUsername] = useState(getUsernameSync());
   const navLinks = {
     auctions: "/auctions",
     sell: "/sell",
@@ -21,6 +22,24 @@ const Header = ({ setIsWalletOpen }) => {
   const isLoggedIn = !!token; // Use token for login check
   // Example usage: you can use userRole to conditionally render UI
   // e.g. const isAdmin = userRole === "ADMIN";
+
+  // Fetch username when component mounts and user is logged in
+  useEffect(() => {
+    const fetchUsername = async () => {
+      if (isLoggedIn && !username) {
+        try {
+          const fetchedUsername = await getUsername();
+          if (fetchedUsername) {
+            setUsername(fetchedUsername);
+          }
+        } catch (error) {
+          console.error("Failed to fetch username:", error);
+        }
+      }
+    };
+
+    fetchUsername();
+  }, [isLoggedIn, username]);
 
   return (
     <header className="fixed top-0 left-0 w-full backdrop-blur-xl  z-50 border-b-1 shadow-lg text-sm">
@@ -74,24 +93,31 @@ const Header = ({ setIsWalletOpen }) => {
 
           {/* ✅ Conditional route */}
           {isLoggedIn ? (
-            <Link to="/profile">
-              <button className="flex items-center cursor-pointer border-1 duration-300 rounded-full hover:scale-115 gap-1 text-sm text-gray-800">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5.121 17.804A13.937 13.937 0 0112 15c2.21 0 4.29.534 6.121 1.477M15 10a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-              </button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link to="/profile">
+                <button className="flex items-center cursor-pointer border-1 duration-300 rounded-full hover:scale-115 gap-1 text-sm text-gray-800">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5.121 17.804A13.937 13.937 0 0112 15c2.21 0 4.29.534 6.121 1.477M15 10a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </button>
+              </Link>
+              {username && (
+                <span className="text-base font-bold text-gray-700">
+                  Hi, {username}
+                </span>
+              )}
+            </div>
           ) : (
             <Link to="/login">
               <button className=" hover:shadow-lg hover:shadow-gray-300 border-1  cursor-pointer h-8 w-16 rounded-2xl px-2  text-sm text-gray-800">

@@ -1,79 +1,40 @@
 package com.RESTAPI.ArtGalleryProject.controller.WalletController;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
+import com.RESTAPI.ArtGalleryProject.Entity.Wallet;
+import com.RESTAPI.ArtGalleryProject.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.updateBalanceRequest;
-import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
-import com.RESTAPI.ArtGalleryProject.service.Wallet.WalletService;
-import com.RESTAPI.ArtGalleryProject.service.PaymentService.PaymentService;
-
 @RestController
-@RequestMapping("/wallet")
 public class WalletController {
 
-	private static final Logger logger = LoggerFactory.getLogger(WalletController.class);
-	
-	@Autowired
-	private AuthHelper authHelper;
-
-	@Autowired
-	private WalletService service;
-	
     @Autowired
-    private PaymentService paymentService;
+    private WalletRepo walletRepo;
 
-	
-    @GetMapping
-    public ResponseEntity<?> getWallet() {
-    	logger.info("getWallet started.");
-    	long userId = authHelper.getCurrentUserId();
-    	Object response = service.getBalance(userId);
-    	if(response instanceof String) {
-    		logger.info("getWallet finished.");
-    		switch ((String)response) {
-    		case "User doesn't exist":
-    			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    		case "wallet doesn't exist":
-    			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    		default:
-    			return new ResponseEntity<>("Unexpected error occured", HttpStatus.INTERNAL_SERVER_ERROR);    			
-    		}
-    	}
-    	logger.info("getWallet finished.");
-    	return new ResponseEntity<>(response, HttpStatus.OK);
+    @Autowired
+    private JwtService jwtService;
+
+    @GetMapping("/wallet")
+    public ResponseEntity<?> getWallet(@RequestHeader("Authorization") String authHeader) {
+        String email = extractEmailFromToken(authHeader);
+        if (email == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+        Wallet wallet = walletRepo.findByEmail(email);
+        double balance = (wallet != null) ? wallet.getBalance() : 0.0;
+        return ResponseEntity.ok().body(java.util.Collections.singletonMap("balance", balance));
     }
 
-    @PutMapping
-    public ResponseEntity<?> updateWalletBalance(@RequestBody updateBalanceRequest request) {
-    	logger.info("updateWalletBalance started.");
-    	long userId = authHelper.getCurrentUserId();
-    	Object response = service.updateBalance(userId, request.amount());
-    	if(response instanceof String) {
-    		logger.info("getWallet finished.");
-    		switch ((String)response) {
-    		case "User doesn't exist":
-    			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    		case "wallet doesn't exist":
-    			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    		default:
-    			return new ResponseEntity<>("Unexpected error occured", HttpStatus.INTERNAL_SERVER_ERROR);    			
-    		}
-    	}
-        logger.info("updateWalletBalance finished.");
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @PostMapping("/update-status")
-    public ResponseEntity<String> updatePaymentStatus(
-            @RequestParam String txnId,
-            @RequestParam boolean success) {
-
-        paymentService.updateTransactionStatus(txnId, success);
-        return ResponseEntity.ok("Updated");
+    private String extractEmailFromToken(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) return null;
+        String token = authHeader.substring(7);
+        try {
+            io.jsonwebtoken.Claims claims = jwtService.extractAllClaims(token);
+            return claims.get("email", String.class);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

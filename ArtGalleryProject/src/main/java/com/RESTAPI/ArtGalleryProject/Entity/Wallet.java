@@ -17,4 +17,6 @@ public class Wallet {
     
     private double balance;
 
+    @Column(nullable = false, unique = true)
+    private String email;
 }
