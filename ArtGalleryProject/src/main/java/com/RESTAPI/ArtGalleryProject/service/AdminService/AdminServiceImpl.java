@@ -139,7 +139,6 @@ public class AdminServiceImpl implements AdminService {
             return "Insufficient balance";
         }
 
-        // Process withdrawal
         try {
             walletService.decrementBalanceByEmail(request.getUserEmail(), request.getAmount());
             
