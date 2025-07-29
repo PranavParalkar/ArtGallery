@@ -91,22 +91,45 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	@Transactional
 	public Orders updateStatus(Map<String, String> map) {
-		logger.info("updateStatus started.");
 		String razorpayId = map.get("razorpay_order_id");
+		
+		if (razorpayId == null) {
+			logger.error("razorpay_order_id is null in payment callback");
+			throw new RuntimeException("Invalid payment callback - missing order ID");
+		}
+		
 		Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
+		if (order == null) {
+			logger.error("Order not found for razorpay ID: {}", razorpayId);
+			throw new RuntimeException("Order not found for payment callback");
+		}
+		
 		order.setOrderStatus("PAYMENT DONE");
 		Orders savedOrder = ordersRepository.save(order);
 
 		// Increment wallet balance
 		if (order.getEmail() != null) {
-			walletService.incrementBalanceByEmail(order.getEmail(), order.getAmount());
+			try {
+				walletService.incrementBalanceByEmail(order.getEmail(), order.getAmount());
+				logger.info("Wallet balance incremented for email: {}", order.getEmail());
+			} catch (Exception e) {
+				logger.error("Error incrementing wallet balance: {}", e.getMessage());
+			}
 		}
 
+		// Send email confirmation
 		if (order.getEmail() != null) {
-			emailService.sendOrderConfirmationEmail(order.getEmail(), "Payment Successful - Art Gallery",
-					"Hi " + order.getName() + ",\n\nYour payment has been received successfully for Order ID: "
-							+ order.getOrderId() + ".\n\nThanks for shopping with us!");
+			try {
+				emailService.sendOrderConfirmationEmail(order.getEmail(), "Payment Successful - Art Gallery",
+						"Hi " + order.getName() + ",\n\nYour payment has been received successfully for Order ID: "
+								+ order.getOrderId() + ".\n\nThanks for shopping with us!");
+				logger.info("Order confirmation email sent to: {}", order.getEmail());
+			} catch (Exception e) {
+				logger.error("Error sending email confirmation: {}", e.getMessage());
+			}
 		}
+		
+		logger.info("updateStatus finished successfully for order ID: {}", savedOrder.getOrderId());
 		return savedOrder;
 	}
 

@@ -38,4 +38,19 @@ public class WalletServiceImpl implements WalletService {
 		response.put("balance", wallet.get().getBalance());
 		return response;
 	}
+
+    @Override
+    public void decrementBalanceByEmail(String email, double amount) {
+        Wallet wallet = walletRepo.findByEmail(email);
+        if (wallet != null) {
+            if (wallet.getBalance() >= amount) {
+                wallet.setBalance(wallet.getBalance() - amount);
+                walletRepo.save(wallet);
+            } else {
+                throw new RuntimeException("Insufficient balance");
+            }
+        } else {
+            throw new RuntimeException("Wallet not found");
+        }
+    }
 }

@@ -248,7 +248,7 @@ const Discover = () => {
               </motion.div>
             ))}
           </div>
-        </div>
+          image.png        </div>
       </motion.div>
     </div>
   );
