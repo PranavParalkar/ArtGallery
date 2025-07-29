@@ -26,7 +26,6 @@ public class BidController {
 
 	@PostMapping("/bid/{paintingId}")
 	public ResponseEntity<?> placeBidcont(@PathVariable long paintingId, @RequestBody PlaceBidRequest request) {
-		logger.info("placeBidcont started.");
 		try {
 			long userId = authHelper.getCurrentUserId();
 			service.placeBid(userId, paintingId, request.bidAmount());

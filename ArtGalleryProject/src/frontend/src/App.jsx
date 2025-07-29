@@ -82,6 +82,10 @@ const router = createBrowserRouter([
 
 // Check token on app load
 const token = localStorage.getItem('token');
+
+// Uncomment the line below to clear token on app load (for testing purposes)
+// localStorage.removeItem('token');
+
 if (token && isTokenExpired(token)) {
   logoutUser();
 }

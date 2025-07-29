@@ -43,10 +43,10 @@ public class SecurityConfig {
 								"/auctions/bid/**",
 								"/user/profile",
 								"/licenses/**",
-//								"/createOrder",
-//								"/paymentCallback",
+								"/wallet/**",
 								"/upload-painting")
 						.authenticated()
+						.requestMatchers("/createOrder", "/paymentCallback").permitAll()
 						.anyRequest().permitAll())
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -1,6 +1,5 @@
 package com.RESTAPI.ArtGalleryProject.Entity;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -36,10 +35,8 @@ public class Painting {
 	private double length;
 	private double breadth;
 	private double startingPrice;
-	private double finalPrice;
 	private boolean isForAuction;
 	private boolean isAuctionLive = false;
-    private LocalDateTime auctionEndTime;
 	private boolean isSold;
 
 	// --Relation tables

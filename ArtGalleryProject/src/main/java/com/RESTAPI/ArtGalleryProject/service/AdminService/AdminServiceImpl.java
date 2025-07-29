@@ -2,10 +2,13 @@ package com.RESTAPI.ArtGalleryProject.service.AdminService;
 
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.UnverifiedPainting;
+import com.RESTAPI.ArtGalleryProject.Entity.WithdrawalRequest;
 import com.RESTAPI.ArtGalleryProject.Enum.PaintingStatus;
 import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UnverifiedPaintingRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
+import com.RESTAPI.ArtGalleryProject.repository.WithdrawalRequestRepo;
+import com.RESTAPI.ArtGalleryProject.service.WalletService.WalletService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,6 +32,12 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private WithdrawalRequestRepo withdrawalRequestRepo;
+
+    @Autowired
+    private WalletService walletService;
 
     @Override
     public List<UnverifiedPainting> getPendingPaintings() {
@@ -87,5 +97,76 @@ public class AdminServiceImpl implements AdminService {
         unverifiedRepo.deleteById(id);
         logger.info("Painting with ID {} successfully rejected and deleted.", id);
         return "Painting rejected and deleted.";
+    }
+
+    // Withdrawal Request methods
+    @Override
+    public List<WithdrawalRequest> getPendingWithdrawalRequests() {
+        logger.info("getPendingWithdrawalRequests started.");
+        List<WithdrawalRequest> allRequests = withdrawalRequestRepo.findAll();
+        logger.info("getPendingWithdrawalRequests finished. {} total requests found.", allRequests.size());
+        
+        // Log each request for debugging
+        for (WithdrawalRequest request : allRequests) {
+            logger.info("Request ID: {}, Email: {}, Amount: {}, Status: {}", 
+                request.getId(), request.getUserEmail(), request.getAmount(), request.getStatus());
+        }
+        
+        return allRequests;
+    }
+
+    @Override
+    public String approveWithdrawalRequest(Long id) {
+        logger.info("approveWithdrawalRequest started for request ID: {}", id);
+
+        var optional = withdrawalRequestRepo.findById(id);
+        if (optional.isEmpty()) {
+            logger.warn("Withdrawal request with ID {} not found.", id);
+            return "Withdrawal request not found";
+        }
+
+        var request = optional.get();
+        
+        // Check if user has sufficient balance
+        var user = userRepo.findById(request.getUserId()).orElse(null);
+        if (user == null) {
+            logger.warn("User with ID {} not found for withdrawal request ID {}.", request.getUserId(), id);
+            return "User not found";
+        }
+
+        if (user.getWallet().getBalance() < request.getAmount()) {
+            logger.warn("Insufficient balance for user ID {} in withdrawal request ID {}.", request.getUserId(), id);
+            return "Insufficient balance";
+        }
+
+        try {
+            walletService.decrementBalanceByEmail(request.getUserEmail(), request.getAmount());
+            
+            // Delete the request after processing
+            withdrawalRequestRepo.deleteById(id);
+
+            logger.info("Withdrawal request with ID {} approved and deleted successfully.", id);
+            return "Withdrawal request approved and processed.";
+        } catch (Exception e) {
+            logger.error("Error processing withdrawal request ID {}: {}", id, e.getMessage());
+            return "Error processing withdrawal request";
+        }
+    }
+
+    @Override
+    public String rejectWithdrawalRequest(Long id) {
+        logger.info("rejectWithdrawalRequest started for request ID: {}", id);
+
+        var optional = withdrawalRequestRepo.findById(id);
+        if (optional.isEmpty()) {
+            logger.warn("Withdrawal request with ID {} not found during rejection.", id);
+            return "Withdrawal request not found";
+        }
+
+        // Delete the request after rejection
+        withdrawalRequestRepo.deleteById(id);
+
+        logger.info("Withdrawal request with ID {} successfully rejected and deleted.", id);
+        return "Withdrawal request rejected.";
     }
 }

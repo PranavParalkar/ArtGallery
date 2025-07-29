@@ -1,6 +1,7 @@
 package com.RESTAPI.ArtGalleryProject.controller.AdminPanel;
 
 import com.RESTAPI.ArtGalleryProject.Entity.UnverifiedPainting;
+import com.RESTAPI.ArtGalleryProject.Entity.WithdrawalRequest;
 import com.RESTAPI.ArtGalleryProject.service.AdminService.AdminService;
 
 import org.slf4j.Logger;
@@ -41,6 +42,31 @@ public class AdminController {
     public ResponseEntity<String> rejectPainting(@PathVariable Long id) {
         logger.info("rejectPainting called for id {}", id);
         String result = adminService.rejectPainting(id);
+        return result.contains("not") ? ResponseEntity.badRequest().body(result) : ResponseEntity.ok(result);
+    }
+
+    // 4. View all pending withdrawal requests
+    @GetMapping("/withdrawals/pending")
+    public List<WithdrawalRequest> getPendingWithdrawalRequests() {
+        logger.info("getPendingWithdrawalRequests called.");
+        List<WithdrawalRequest> requests = adminService.getPendingWithdrawalRequests();
+        logger.info("Returning {} withdrawal requests to admin.", requests.size());
+        return requests;
+    }
+
+    // 5. Approve a withdrawal request
+    @PostMapping("/withdrawals/approve/{id}")
+    public ResponseEntity<String> approveWithdrawalRequest(@PathVariable Long id) {
+        logger.info("approveWithdrawalRequest called for id {}", id);
+        String result = adminService.approveWithdrawalRequest(id);
+        return result.contains("not") || result.contains("Error") ? ResponseEntity.badRequest().body(result) : ResponseEntity.ok(result);
+    }
+
+    // 6. Reject a withdrawal request
+    @PostMapping("/withdrawals/reject/{id}")
+    public ResponseEntity<String> rejectWithdrawalRequest(@PathVariable Long id) {
+        logger.info("rejectWithdrawalRequest called for id {}", id);
+        String result = adminService.rejectWithdrawalRequest(id);
         return result.contains("not") ? ResponseEntity.badRequest().body(result) : ResponseEntity.ok(result);
     }
 }

@@ -38,15 +38,16 @@ public class BidServiceImpl implements BidService {
 
 	@Override
 	@Transactional
-	public void placeBid(Long userId, Long paintingId, double newBidAmount) {
+	public void placeBid(long userId, long paintingId, double newBidAmount) {
 		logger.info("placeBid started.");
-		User buyer = userrepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
+		User buyer = userrepo.findById(userId)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+		
 		Painting painting = paintingrepo.findById(paintingId)
 				.orElseThrow(() -> new RuntimeException("Painting not found"));
 
 		Wallet buyerWallet = buyer.getWallet();
-
 		Optional<Bid> currentHighestBidOpt = bidrepo.findTopByPaintingOrderByBidAmountDescTimeStampAsc(painting);
 
 		if (currentHighestBidOpt.isPresent()) {
@@ -64,30 +65,44 @@ public class BidServiceImpl implements BidService {
 			}
 		}
 
-		if (buyerWallet.getBalance() < newBidAmount) {
-			logger.info("placeBid finished.");
-			throw new RuntimeException("Insufficient wallet balance.");
+		// Find if the buyer already placed a bid on this painting
+		Optional<Bid> existingUserBidOpt = bidrepo.findByPaintingAndBuyer(painting, buyer);
+
+		if (existingUserBidOpt.isPresent()) {
+			Bid existingBid = existingUserBidOpt.get();
+			if (buyerWallet.getBalance() + existingBid.getBidAmount() < newBidAmount) {
+				logger.info("placeBid finished.");
+				throw new RuntimeException("Insufficient wallet balance.");
+			}
+			buyerWallet.setBalance(buyerWallet.getBalance() + existingBid.getBidAmount());
+			buyerWallet.setBalance(buyerWallet.getBalance() - newBidAmount);
+
+			existingBid.setBidAmount(newBidAmount);
+			existingBid.setTimeStamp(LocalTime.now());
+
+			walletrepo.save(buyerWallet);
+			bidrepo.save(existingBid);
+		} else {
+			if (currentHighestBidOpt.isPresent()) {
+				Bid prevBid = currentHighestBidOpt.get();
+				Wallet prevWallet = prevBid.getBuyer().getWallet();
+				prevWallet.setBalance(prevWallet.getBalance() + prevBid.getBidAmount());
+				walletrepo.save(prevWallet);
+			}
+
+			// Deduct from current buyer
+			buyerWallet.setBalance(buyerWallet.getBalance() - newBidAmount);
+
+			Bid newBid = new Bid();
+			newBid.setBidAmount(newBidAmount);
+			newBid.setBuyer(buyer);
+			newBid.setPainting(painting);
+			newBid.setTimeStamp(LocalTime.now());
+
+			walletrepo.save(buyerWallet);
+			bidrepo.save(newBid);
 		}
 
-		// Refund previous highest bidder
-		if (currentHighestBidOpt.isPresent()) {
-			Bid prevBid = currentHighestBidOpt.get();
-			Wallet prevWallet = prevBid.getBuyer().getWallet();
-			prevWallet.setBalance(prevWallet.getBalance() + prevBid.getBidAmount());
-			walletrepo.save(prevWallet);
-		}
-
-		// Deduct from current buyer
-		buyerWallet.setBalance(buyerWallet.getBalance() - newBidAmount);
-		walletrepo.save(buyerWallet);
-
-		Bid newBid = new Bid();
-		newBid.setBidAmount(newBidAmount);
-		newBid.setBuyer(buyer);
-		newBid.setPainting(painting);
-		newBid.setTimeStamp(LocalTime.now());
-
-		bidrepo.save(newBid);
 		logger.info("placeBid finished.");
 	}
 

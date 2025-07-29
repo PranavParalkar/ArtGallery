@@ -1,7 +1,7 @@
 package com.RESTAPI.ArtGalleryProject.security;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import java.io.IOException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +14,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.Claims;
-
-import java.io.IOException;
-import java.util.List;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class JwtAuthFilter extends OncePerRequestFilter  {
-	
-	private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
-	
-	@Autowired
+public class JwtAuthFilter extends OncePerRequestFilter {
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
+
+    @Autowired
     private JwtService jwtService;
 
     @Override
@@ -31,7 +32,9 @@ public class JwtAuthFilter extends OncePerRequestFilter  {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-    	logger.info("doFilterInternal started.");
+
+        logger.info("doFilterInternal started.");
+
         String authHeader = request.getHeader("Authorization");
         String token = null;
 
@@ -40,25 +43,27 @@ public class JwtAuthFilter extends OncePerRequestFilter  {
         }
 
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            Claims claims = jwtService.extractAllClaims(token);
-            String email = claims.get("email", String.class);
-            Long userId = claims.get("userId", Long.class);
-            String role = claims.get("role", String.class);
-            
-            // Create custom authentication token with claims
-            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+            try {
+                Claims claims = jwtService.extractAllClaims(token);
+                String email = claims.get("email", String.class);
+                Long userId = claims.get("userId", Long.class);
+                String role = claims.get("role", String.class);
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    email, null, authorities);
+                List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
-            // Store additional details (optional)
-            authentication.setDetails(userId);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(email, null, authorities);
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                authentication.setDetails(userId);
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (Exception e) {
+                logger.error("Invalid JWT token: {}", e.getMessage());
+                SecurityContextHolder.clearContext();
+            }
         }
 
         filterChain.doFilter(request, response);
         logger.info("doFilterInternal finished.");
     }
-
 }

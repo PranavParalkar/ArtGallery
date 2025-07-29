@@ -16,7 +16,5 @@ public class Wallet {
     private long walletId;
     
     private double balance;
-
-    @Column(nullable = false, unique = true)
     private String email;
 }
