@@ -2,13 +2,19 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../utils/auth";
 
 const Shop = () => {
   const [paintings, setPaintings] = useState([]);
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [pageNo, setPageNo] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(true);
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [selectedPainting, setSelectedPainting] = useState(null);
+  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [paymentResult, setPaymentResult] = useState(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchPaintings(pageNo);
@@ -28,15 +34,12 @@ const Shop = () => {
       setHasNextPage(false);
     }
   };
-  const [showOrderModal, setShowOrderModal] = useState(false);
-  const [selectedPainting, setSelectedPainting] = useState(null);
   const [orderInfo, setOrderInfo] = useState({
     name: "",
     email: "",
     address: "",
     paymentMode: "Cash on Delivery",
   });
-  const [orderPlaced, setOrderPlaced] = useState(false);
 
   return (
     <div className="px-20 py-10 font-serif relative">
@@ -179,19 +182,44 @@ const Shop = () => {
                     whileTap={{ scale: 0.95 }}
                     className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
                     value={orderInfo.paymentMode}
-                    onClick={() => {
-                      if (orderInfo.paymentMode === "Cash on Delivery") {
-                        setShowOrderModal(false);
-                        setOrderPlaced(true);
-                        setTimeout(() => setOrderPlaced(false), 3000);
-                        const response = axiosInstance.post("/paymentCallbackCOD", {
+                    onClick={async () => {
+                      if (!user) {
+                        alert("Please login to place an order");
+                        return;
+                      }
+                      
+                      try {
+                        console.log("Sending COD order request:", {
                           amount: selectedPainting.startingPrice,
-                          paintingId: selectedPainting.paintingId
+                          paintingId: selectedPainting.paintingId,
+                          userEmail: user.email
                         });
-                      } else {
-                        alert(
-                          `Redirecting to ${orderInfo.paymentMode} payment gateway...`
-                        );
+                        
+                        const response = await axiosInstance.post("/paymentCallbackCOD", {
+                          amount: selectedPainting.startingPrice,
+                          paintingId: selectedPainting.paintingId,
+                          userEmail: user.email
+                        });
+                        
+                        console.log("COD order response:", response.data);
+                        
+                        if (response.data.includes("successfully") || response.data.includes("sent successfully")) {
+                          setShowOrderModal(false);
+                          setOrderPlaced(true);
+                          // Remove the painting from the list
+                          setPaintings(paintings.filter(p => p.paintingId !== selectedPainting.paintingId));
+                          setTimeout(() => setOrderPlaced(false), 3000);
+                        } else {
+                          alert(response.data);
+                        }
+                      } catch (error) {
+                        console.error("COD order error:", error);
+                        console.error("Error response:", error.response);
+                        const errorMessage = error.response?.data?.message || 
+                                           error.response?.data || 
+                                           error.message || 
+                                           "Order placement failed";
+                        alert(errorMessage);
                       }
                     }}
                   >
@@ -202,15 +230,47 @@ const Shop = () => {
                     whileTap={{ scale: 0.95 }}
                     className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
                     value={orderInfo.paymentMode}
-                    onClick={() => {
-                      if (orderInfo.paymentMode === "Pay with Wallet") {
-                        navigate(
-                          "http://127.0.0.1:5500/ArtGallery/ArtGalleryProject/src/main/resources/templates/orders.html"
-                        );
-                      } else {
-                        alert(
-                          `Redirecting to ${orderInfo.paymentMode} payment gateway...`
-                        );
+                    onClick={async () => {
+                      if (!user) {
+                        alert("Please login to use wallet payment");
+                        return;
+                      }
+                      
+                      if (!user.email) {
+                        alert("User email not found. Please login again.");
+                        return;
+                      }
+                      
+                      try {
+                        console.log("Sending wallet payment request:", {
+                          paintingId: selectedPainting.paintingId,
+                          userEmail: user.email
+                        });
+                        
+                        const response = await axiosInstance.post("/wallet-payment", {
+                          paintingId: selectedPainting.paintingId,
+                          userEmail: user.email
+                        });
+                        
+                        console.log("Wallet payment response:", response.data);
+                        
+                        if (response.data.message === "Payment successful") {
+                          setShowOrderModal(false);
+                          setPaymentResult("success");
+                          // Remove the painting from the list
+                          setPaintings(paintings.filter(p => p.paintingId !== selectedPainting.paintingId));
+                          setTimeout(() => setPaymentResult(null), 3000);
+                        } else {
+                          alert(response.data.message);
+                        }
+                      } catch (error) {
+                        console.error("Wallet payment error:", error);
+                        console.error("Error response:", error.response);
+                        const errorMessage = error.response?.data?.message || 
+                                           error.response?.data || 
+                                           error.message || 
+                                           "Payment failed";
+                        alert(errorMessage);
                       }
                     }}
                   >
@@ -235,6 +295,20 @@ const Shop = () => {
           >
             ✅ You have placed an order successfully for "
             {selectedPainting?.title}".
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {paymentResult === "success" && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 text-4xl text-[#3e2e1e] font-serif flex items-center justify-center z-50 backdrop-blur-3xl cursor-pointer"
+            onClick={() => setPaymentResult(null)}
+          >
+            ✅ Payment successful! "{selectedPainting?.title}" has been purchased.
           </motion.div>
         )}
       </AnimatePresence>

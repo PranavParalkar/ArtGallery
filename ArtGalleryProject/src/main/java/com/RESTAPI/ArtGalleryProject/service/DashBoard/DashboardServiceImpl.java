@@ -42,6 +42,7 @@ public class DashboardServiceImpl implements DashboardService{
 		    p.getLength(),
 		    p.getBreadth(),
 		    p.getStartingPrice(),
+		    p.getFinalPrice(),
 		    p.isForAuction(),
 		    p.isSold(),
 		    p.getSeller().getName()
@@ -73,6 +74,7 @@ logger.info("getPaintingsByPage started.");
 	        p.getLength(),
 	        p.getBreadth(),
 	        p.getStartingPrice(),
+	        p.getFinalPrice(),
 	        p.isForAuction(),
 	        p.isSold(),
 	        p.getSeller().getName()
@@ -106,6 +108,7 @@ logger.info("getPaintingsByPage started.");
 		        painting.getLength(),
 		        painting.getBreadth(),
 		        painting.getStartingPrice(),
+		        painting.getFinalPrice(),
 		        painting.isForAuction(),
 		        painting.isSold(),
 		        painting.getSeller().getName()

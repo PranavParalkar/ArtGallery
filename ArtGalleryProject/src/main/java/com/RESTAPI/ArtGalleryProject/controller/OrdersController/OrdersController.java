@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
+import com.RESTAPI.ArtGalleryProject.DTO.Order.WalletPaymentRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.OrderService.OrderService;
@@ -50,5 +51,41 @@ public class OrdersController {
 		logger.info("paymentCallback finished.");
 		return "success";
 
+	}
+
+	@PostMapping("/wallet-payment")
+	@ResponseBody
+	public ResponseEntity<?> processWalletPayment(@RequestBody WalletPaymentRequest request) {
+		logger.info("processWalletPayment started for Painting ID: {}", request.paintingId());
+		String result = orderService.processWalletPayment(request);
+		logger.info("processWalletPayment finished with result: {}", result);
+		
+		if (result.equals("Payment successful")) {
+			return new ResponseEntity<>(Map.of("message", result), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(Map.of("message", result), HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PostMapping("/paymentCallbackCOD")
+	@ResponseBody
+	public ResponseEntity<?> processCODOrder(@RequestBody Map<String, Object> request) {
+		logger.info("processCODOrder started for Painting ID: {}", request.get("paintingId"));
+		try {
+			String email = (String) request.get("userEmail");
+			double amount = ((Number) request.get("amount")).doubleValue();
+			long paintingId = ((Number) request.get("paintingId")).longValue();
+			
+			// Get user ID from email
+			long userId = authHelper.getCurrentUserId();
+			
+			String result = orderService.updateStatusCOD(email, userId, amount, paintingId);
+			logger.info("processCODOrder finished with result: {}", result);
+			
+			return new ResponseEntity<>(result, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error in processCODOrder: {}", e.getMessage(), e);
+			return new ResponseEntity<>("Order placement failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 	}
 }
