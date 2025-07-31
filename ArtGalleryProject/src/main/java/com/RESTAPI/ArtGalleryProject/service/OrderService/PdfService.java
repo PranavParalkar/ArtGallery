@@ -8,5 +8,6 @@ import com.lowagie.text.DocumentException;
 import io.jsonwebtoken.io.IOException;
 
 public interface PdfService {
-	public byte[] generateReceiptPdf(Orders order, User user, Painting painting, String imageDirectory) throws DocumentException, IOException, java.io.IOException;
+	public byte[] generateReceiptPdf(Orders order, User user, Painting painting, String imageDirectory, 
+    		String paymentMode, String name, String contactNumber, String address) throws DocumentException, IOException, java.io.IOException;
 }

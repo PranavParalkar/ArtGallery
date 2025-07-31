@@ -9,6 +9,7 @@ const Shop = () => {
   const [pageNo, setPageNo] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(true);
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     fetchPaintings(pageNo);
@@ -94,8 +95,13 @@ const Shop = () => {
                 <button
                   className="mt-4 block text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-[#6b4c35] hover:bg-[#776354] text-white font-semibold transition"
                   onClick={() => {
-                    setSelectedPainting(painting);
-                    setShowOrderModal(true);
+                    if (token) {
+                      setSelectedPainting(painting);
+                      setShowOrderModal(true);
+                    } else {
+                      alert("Please login to place an order.");
+                      navigate("/login");
+                    }
                   }}
                 >
                   Buy Now
@@ -184,7 +190,7 @@ const Shop = () => {
                         setShowOrderModal(false);
                         setOrderPlaced(true);
                         setTimeout(() => setOrderPlaced(false), 3000);
-                        const response = axiosInstance.post("/paymentCallbackCOD", {
+                        axiosInstance.post("/paymentCallbackCOD", {
                           amount: selectedPainting.startingPrice,
                           paintingId: selectedPainting.paintingId
                         });
@@ -214,7 +220,7 @@ const Shop = () => {
                       }
                     }}
                   >
-                  Pay with Wallet
+                    Pay with Wallet
                   </motion.button>
                 </div>
               </div>

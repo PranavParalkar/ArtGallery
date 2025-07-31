@@ -3,6 +3,8 @@ package com.RESTAPI.ArtGalleryProject.controller.DashBoard;
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 import com.RESTAPI.ArtGalleryProject.service.DashBoard.DashboardService;
 
+import jakarta.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ public class DashboardController {
 
 	private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
 
+	private boolean isAuctionLive = false;
 	@Autowired
 	private DashboardService service;
 
@@ -46,6 +49,38 @@ public class DashboardController {
 	    logger.info("getStorePaintings finished.");
 	    return new ResponseEntity<>(allPaintings, HttpStatus.OK);
 	}
-
+	
+	@GetMapping("/auctions/live")
+	@Transactional
+	public ResponseEntity<?> auctionIsLive(){
+		try {
+			if(isAuctionLive) {
+				return new ResponseEntity<>("Auction is already live.", HttpStatus.OK);
+			} else {
+				isAuctionLive = true;
+				return new ResponseEntity<>("Auction is now live.", HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@GetMapping("/auctions/upcoming")
+	@Transactional
+	public ResponseEntity<?> auctionIsNotLive(){
+		try {
+			if(!isAuctionLive) {
+				return new ResponseEntity<>("Auction is already upcoming.", HttpStatus.OK);
+			} else {
+				isAuctionLive = false;
+				
+				return new ResponseEntity<>("Auction has now ended.", HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 }

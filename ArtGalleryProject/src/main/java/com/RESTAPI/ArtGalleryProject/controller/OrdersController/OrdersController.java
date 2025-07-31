@@ -1,5 +1,6 @@
 package com.RESTAPI.ArtGalleryProject.controller.OrdersController;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.PaintingCodRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
@@ -22,9 +24,9 @@ import com.razorpay.RazorpayException;
 
 @Controller
 public class OrdersController {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(OrdersController.class);
-	
+
 	@Autowired
 	private AuthHelper authHelper;
 	@Autowired
@@ -49,6 +51,15 @@ public class OrdersController {
 		orderService.updateStatus(response);
 		logger.info("paymentCallback finished.");
 		return "success";
-
 	}
+
+	@PostMapping("/paymentCallbackCOD")
+	public String paymentCallbackCOD(@RequestBody PaintingCodRequest request) throws IOException {
+		long userId = authHelper.getCurrentUserId();
+		String email = authHelper.getCurrentEmail();
+		orderService.updateStatusCOD(email, userId, request.amount(), request.paintingId(), request.mobile(), request.address(), request.paymentMode(), request.name());
+		logger.info("paymentCallback finished.");
+		return "success";
+	}
+
 }

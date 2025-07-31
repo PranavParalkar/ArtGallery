@@ -135,7 +135,8 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional
-	public String updateStatusCOD(String email, long userId, double amount, long paintingId) throws java.io.IOException {
+	public String updateStatusCOD(String email, long userId, double amount, long paintingId,
+			String mobileNumber, String address, String paymentMethod, String name) throws java.io.IOException {
 		logger.info("updateStatusCOD started for User ID: {} and Painting ID: {}", userId, paintingId);
 
 		Painting painting = paintingRepo.findById(paintingId)
@@ -296,12 +297,12 @@ public class OrderServiceImpl implements OrderService {
 				            <div class="content">
 				                <div class="order-info">
 				                    <div>
-				                        <strong>Order #:</strong> %d
+				                        <strong>Order ID:</strong> #%d
 				                        <strong>Date:</strong> %s
 				                    </div>
 				                    <div>
-				                        <strong>Billed To:</strong>
-				                        %s
+				                        <strong>Billed To:</strong> %s
+				                    	<strong>Contact Number:</strong> %s
 				                    </div>
 				                </div>
 
@@ -315,9 +316,9 @@ public class OrderServiceImpl implements OrderService {
 									</thead>
 									<tbody>
 										<tr>
-													<td><img src="cid:paintingImage" alt="%s" class="item-image" /></td>
-													<td class="item-title">%s</td>
-													<td class="item-price">₹%.2f</td>
+											<td><img src="cid:paintingImage" alt="%s" class="item-image" /></td>
+											<td class="item-title">%s</td>
+											<td class="item-price">₹%.2f</td>
 										</tr>
 									</tbody>
 								</table>
@@ -340,14 +341,23 @@ public class OrderServiceImpl implements OrderService {
 				    </body>
 				    </html>
 				"""
-				.formatted(savedOrder.getOrderId(), formattedDate, user.getName(), painting.getTitle(),
-						painting.getTitle(), amount, "Cash on Delivery", user.getAddress().toString(),
-						Year.now().getValue());
+				.formatted(
+					savedOrder.getOrderId(),
+					formattedDate,
+					name,
+					mobileNumber,
+					painting.getTitle(),
+					painting.getTitle(),
+					amount,
+					paymentMethod,
+					address,
+					Year.now().getValue()
+				);
 
 		try {
 		    logger.info("Generating PDF receipt for Order ID: {}", savedOrder.getOrderId());
 
-		    byte[] pdfReceipt = pdfService.generateReceiptPdf(savedOrder, user, painting, imageDirectory);
+		    byte[] pdfReceipt = pdfService.generateReceiptPdf(savedOrder, user, painting, imageDirectory, paymentMethod, name, mobileNumber, address);
 		    String pdfFilename = "FusionArt-Receipt-" + savedOrder.getOrderId() + ".pdf";
 
 		    logger.info("Sending confirmation email with PDF attachment to: {}", email);

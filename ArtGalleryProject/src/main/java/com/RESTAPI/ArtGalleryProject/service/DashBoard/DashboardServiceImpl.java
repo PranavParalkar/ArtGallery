@@ -1,5 +1,6 @@
 package com.RESTAPI.ArtGalleryProject.service.DashBoard;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -12,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PagePaintingResponse;
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
+import com.RESTAPI.ArtGalleryProject.Entity.Bid;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
+import com.RESTAPI.ArtGalleryProject.repository.BidRepo;
 import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 
@@ -23,16 +26,18 @@ public class DashboardServiceImpl implements DashboardService{
 	private static final Logger logger = LoggerFactory.getLogger(DashboardServiceImpl.class);
 	
 	@Autowired
-	private PaintingRepo paintingrepo;
+	private PaintingRepo paintingRepo;
 	@Autowired
-	private UserRepo userrepo;
+	private UserRepo userRepo;
+	@Autowired
+	private BidRepo bidRepo;
 
 	@Override
 	public PagePaintingResponse<PaintingResponse> getUpcomingPaintingsByPageAuction(int pageNo, int size) {
 		logger.info("getPaintingsByPage started.");
 		
 		Pageable pageable = PageRequest.of(pageNo, size);
-		Page<Painting> paintingsPage = paintingrepo.findByIsSoldFalseAndIsForAuctionTrueAndIsAuctionLiveFalse(pageable);
+		Page<Painting> paintingsPage = paintingRepo.findByIsSoldFalseAndIsForAuctionTrue(pageable);
 
 		Page<PaintingResponse> pageResult = paintingsPage.map(p -> new PaintingResponse(
 		    p.getPaintingId(),
@@ -63,7 +68,7 @@ public class DashboardServiceImpl implements DashboardService{
 logger.info("getPaintingsByPage started.");
 		
 		Pageable pageable = PageRequest.of(pageNo, size);
-		Page<Painting> paintingsPage = paintingrepo.findByIsSoldFalseAndIsForAuctionFalse(pageable);
+		Page<Painting> paintingsPage = paintingRepo.findByIsSoldFalseAndIsForAuctionFalse(pageable);
 
 		Page<PaintingResponse> pageResult = paintingsPage.map(p -> new PaintingResponse(
 	        p.getPaintingId(),
@@ -92,7 +97,7 @@ logger.info("getPaintingsByPage started.");
 	@Override
 	public PaintingResponse getPaintingById(long id) {
 		logger.info("getPaintingById started.");
-		Painting painting = paintingrepo.findById(id).orElse(null);
+		Painting painting = paintingRepo.findById(id).orElse(null);
 		if(painting==null) {
 			logger.info("getPaintingById finished.");
 			return null;
@@ -115,7 +120,7 @@ logger.info("getPaintingsByPage started.");
 	@Override
 	public Object walletBalance(long id) {
 		logger.info("walletBalance started.");
-		Optional<User> userOptional = userrepo.findById(id);
+		Optional<User> userOptional = userRepo.findById(id);
 		if(userOptional.isEmpty()) {
 			logger.info("walletBalance finished.");
 			return "user not found";
@@ -124,5 +129,16 @@ logger.info("getPaintingsByPage started.");
 		logger.info("walletBalance finished.");
 		return user.getWallet().getBalance();
 	}
+
+	@Override
+	public Object updateAuctionEndStatus() {
+		List<Painting> auctionPaintings = paintingRepo.findByIsSoldFalseAndIsForAuctionTrue();
+		for(Painting thisPainting : auctionPaintings) {
+			List<Bid> bids = bidRepo.findByPainting(thisPainting);
+			
+		}
+	}
+	
+	
 	
 }
