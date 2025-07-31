@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.PaintingCodRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
+import com.RESTAPI.ArtGalleryProject.DTO.Order.WalletPaymentRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.OrderService.OrderService;
@@ -62,4 +63,17 @@ public class OrdersController {
 		return "success";
 	}
 
+	@PostMapping("/wallet-payment")
+	@ResponseBody
+	public ResponseEntity<?> processWalletPayment(@RequestBody WalletPaymentRequest request) {
+		logger.info("processWalletPayment started for Painting ID: {}", request.paintingId());
+		String result = orderService.processWalletPayment(request);
+		logger.info("processWalletPayment finished with result: {}", result);
+		
+		if (result.equals("Payment successful")) {
+			return new ResponseEntity<>(Map.of("message", result), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(Map.of("message", result), HttpStatus.BAD_REQUEST);
+		}
+	}
 }

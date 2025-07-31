@@ -2,7 +2,57 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import axiosInstance from "../axiosInstance";
-
+import {
+  FaUserAlt,
+  FaFireAlt,
+  FaRegLightbulb,
+  FaGavel,
+  FaNewspaper,
+  FaExternalLinkAlt,
+  FaGlobe,
+  FaPalette,
+  FaCamera,
+  FaVideo,
+} from "react-icons/fa";
+const artNews = [
+  {
+    type: "Breaking News",
+    title: "NFT Art Market Surges 300% in Q1 2024",
+    detail:
+      "Digital art and NFTs continue to dominate the contemporary art scene with unprecedented growth in sales and collector interest.",
+    image:
+      "https://d7hftxdivxxvm.cloudfront.net/?quality=80&resize_to=width&src=https%3A%2F%2Fartsy-media-uploads.s3.amazonaws.com%2FpiVxgtRPE_r4QPWVcBqtGQ%252FSquares_Dan2%2B%25281%2529.JPG&width=1820",
+    readMoreLink:
+      "https://www.artsy.net/article/artsy-editorial-digital-art-fared-nft-boom",
+    category: "Digital Art",
+    icon: <FaPalette className="text-xl text-[#a17b5d]" />,
+  },
+  {
+    type: "Exhibition Alert",
+    title: "Van Gogh Immersive Experience Coming to Mumbai",
+    detail:
+      "The world-famous Van Gogh immersive exhibition will make its Indian debut at the National Museum of Modern Art.",
+    image:
+      "https://imgmediagumlet.lbb.in/media/2022/11/636ba9c5d775304d3669a5a6_1668000197625.jpg",
+    readMoreLink:
+      "https://lbb.in/mumbai/vincent-van-gogh-immersive-art-exhibit/",
+    category: "Exhibition",
+    icon: <FaCamera className="text-xl text-[#a17b5d]" />,
+  },
+  {
+    type: "Artist Spotlight",
+    title: "Amrita Sher-Gil's Lost Masterpiece Found",
+    detail:
+      "A previously unknown painting by the iconic Indian artist has been discovered in a private collection in Paris.",
+    image:
+      "https://media.cnn.com/api/v1/images/stellar/prod/210304083900-amrita-sher-gil-portrait-of-denyse.jpg?q=w_2000,c_fill/f_webp",
+    readMoreLink:
+      "https://edition.cnn.com/style/article/amrita-sher-gil-auction",
+    category: "Heritage",
+    icon: <FaUserAlt className="text-xl text-[#a17b5d]" />,
+  },
+ 
+];
 const newsItems = [
   {
     title: "Record-Breaking Sale: Monet’s Water Lilies",
@@ -37,6 +87,9 @@ const newsItems = [
 ];
 
 const Dashboard = () => {
+  const handleReadMore = (url) => {
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
   const [index, setIndex] = useState(0);
   const [paintings, setPaintings] = useState([]);
   const [carouselItems, setCarouselItems] = useState([]);
@@ -86,14 +139,7 @@ const Dashboard = () => {
         <p className="text-lg text-gray-700 mb-6">
           {data.description || "Art at its finest"}
         </p>
-        <div className="flex items-center gap-4 text-sm text-gray-600 mb-6">
-          <div className="flex items-center gap-1">
-            📅 {data.date || "Coming Soon"}
-          </div>
-          <div className="flex items-center gap-1">
-            📍 {data.location || "Online"}
-          </div>
-        </div>
+        <div className="flex items-center gap-4 text-sm text-gray-600 mb-6"></div>
 
         <div className="flex mt-10 gap-2">
           {carouselItems.map((_, i) => (
@@ -185,7 +231,10 @@ const Dashboard = () => {
                   </div>
                   <p className="text-sm text-gray-600 mt-2">
                     Click on{" "}
-                    <Link to="/auctions" className=" text-sm text-blue-800 font-medium ">
+                    <Link
+                      to="/auctions"
+                      className=" text-sm text-blue-800 font-medium "
+                    >
                       View All
                     </Link>{" "}
                     to see more details
@@ -202,7 +251,7 @@ const Dashboard = () => {
       </div>
 
       {/* 🔹 Auction News */}
-      <div className="px-10 py-16 font-serif">
+      {/* <div className="px-10 py-16 font-serif">
         <h2 className="text-4xl font-serif mb-10">Auction News & Highlights</h2>
         <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-8">
           {newsItems.map((item, i) => (
@@ -228,7 +277,62 @@ const Dashboard = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="mt-16 mx-10 "
+      >
+        <h2 className="text-3xl font-bold font-serif text-[#6b4c35] mb-8 text-center">
+          Auction News & Highlights
+        </h2>
+
+        {/* Trending News Grid */}
+        <div className="grid grid-cols-1 font-serif md:grid-cols-2 lg:grid-cols-3 gap-12 mb-12">
+          {artNews.map((news, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 + i * 0.1 }}
+              className="shadow-2xl rounded overflow-hidden bg-[#f8f5f0] duration-400 hover:shadow-2xl hover:shadow-black cursor-pointer"
+            >
+              <div className="relative">
+                <img
+                  src={news.image}
+                  alt={news.title}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="absolute top-3 left-3">
+                  <span className="bg-[#a17b5d] text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    {news.category}
+                  </span>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                  {news.icon}
+                  <span className="font-medium">{news.type}</span>
+                </div>
+                <h3 className="font-bold text-[#5a3c28] text-xl mb-3 leading-tight">
+                  {news.title}
+                </h3>
+                <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                  {news.detail}
+                </p>
+                <button
+                  onClick={() => handleReadMore(news.readMoreLink)}
+                  className="flex items-center gap-2 text-[#a17b5d] hover:text-[#8b6b4d] cursor-pointer font-semibold text-sm transition-colors duration-200"
+                >
+                  <span>Read More</span>
+                  <FaExternalLinkAlt className="text-xs" />
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
     </>
   );
 };

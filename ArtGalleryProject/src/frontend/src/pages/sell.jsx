@@ -105,11 +105,11 @@ const Sell = () => {
                 className="bg-[#fffaf3] p-6 rounded-xl border border-[#e0d7cb]"
               >
                 <h2 className="text-xl font-semibold mb-2">
-                  3. Receive Expert Guidance
+                  3. Collect Your Payment
                 </h2>
                 <p>
-                  Our experts will assist you throughout the entire process,
-                  from initial submission to the final sale.
+                  Once your artwork is sold, you will receive your payment
+                  promptly.
                 </p>
               </motion.div>
 
@@ -119,28 +119,14 @@ const Sell = () => {
                 transition={{ duration: 0.4, delay: 0.3 }}
                 className="bg-[#fffaf3] p-6 rounded-xl border border-[#e0d7cb]"
               >
-                <h2 className="text-xl font-semibold mb-2">
-                  4. Collect Your Payment
-                </h2>
+                <h2 className="text-xl font-semibold mb-2">4. Auction Time</h2>
                 <p>
-                  Once your artwork is sold, you will receive your payment
-                  promptly.
+                  Auction will be live for 2 days form Thursday 5 PM to Saturday
+                  5 PM in every week.
                 </p>
               </motion.div>
             </div>
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: 0.3 }}
-                className="bg-[#fffaf3] p-6 rounded-xl border mt-10 text-center border-[#e0d7cb]"
-              >
-                <h2 className="text-xl font-semibold mb-2">
-                  Auction Time
-                </h2>
-                <p>
-                  Auction will be live for 2 days form Thursday 5 PM to Saturday 5 PM in every week. 
-                </p>
-              </motion.div>
+  
             <div className="text-center mt-10">
               <button
                 onClick={() => setStep(2)}
@@ -288,9 +274,7 @@ const Sell = () => {
                 </div>
               ) : (
                 <div>
-                  <label className="block font-medium mb-1">
-                    Price (₹):
-                  </label>
+                  <label className="block font-medium mb-1">Price (₹):</label>
                   <input
                     type="number"
                     name="price"

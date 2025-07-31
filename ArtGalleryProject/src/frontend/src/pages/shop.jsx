@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const Shop = () => {
+  const [profile, setProfile] = useState(null);
   const [paintings, setPaintings] = useState([]);
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [pageNo, setPageNo] = useState(0);
@@ -11,6 +12,18 @@ const Shop = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
+  useEffect(() => {
+    axiosInstance
+      .get("/user/profile")
+      .then((res) => {
+        console.dir(res.data, { depth: null });
+        setProfile(res.data);
+      })
+      .catch((err) => {
+        console.error("Failed to load profile:", err);
+        setProfile(null);
+      });
+  }, [axiosInstance, token]);
   useEffect(() => {
     fetchPaintings(pageNo);
   }, [pageNo]);
@@ -34,10 +47,13 @@ const Shop = () => {
   const [orderInfo, setOrderInfo] = useState({
     name: "",
     email: "",
-    address: "",
+    address: "123, Default Street, Pune",
+    mobile: "",
     paymentMode: "Cash on Delivery",
   });
+
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
 
   return (
     <div className="px-20 py-10 font-serif relative">
@@ -167,6 +183,107 @@ const Shop = () => {
         )}
       </AnimatePresence>
       <AnimatePresence>
+        {showAddressModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center backdrop-blur-2xl bg-opacity-40 z-50"
+          >
+            <div
+              className="bg-[#f8f1ea] p-8 rounded-lg shadow-xl w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-bold text-[#3e2e1e] mb-4 text-center">
+                Confirm Address & Mobile
+              </h2>
+              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">
+                Name
+              </label>
+              <input
+                type="text"
+                className="w-full mb-4 px-4 py-2 border rounded-md"
+                placeholder="Enter Name"
+                value={orderInfo.name}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, name: e.target.value })
+                }
+              />
+
+              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">
+                Mobile Number
+              </label>
+              <input
+                type="tel"
+                className="w-full mb-4 px-4 py-2 border rounded-md"
+                placeholder="Enter mobile number"
+                value={orderInfo.mobile}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, mobile: e.target.value })
+                }
+              />
+
+              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">
+                Delivery Address
+              </label>
+              <textarea
+                rows="3"
+                className="w-full mb-4 px-4 py-2 border rounded-md"
+                value={orderInfo.address}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, address: e.target.value })
+                }
+              />
+              <button
+                className="bg-[#6b4c35] cursor-pointer text-white px-4 py-2 rounded hover:bg-[#5a3c28]"
+                onClick={() => {
+                  const fullAddress =
+                    [
+                      profile.address?.building,
+                      profile.address?.landmark,
+                      profile.address?.street,
+                      profile.address?.city,
+                      profile.address?.region,
+                      profile.address?.country,
+                    ]
+                      .filter(Boolean)
+                      .join(", ") +
+                    (profile.address?.pincode
+                      ? `. Pincode - ${profile.address.pincode}`
+                      : "");
+
+                  setOrderInfo({
+                    ...orderInfo,
+                    address: fullAddress,
+                  });
+                }}
+              >
+                Continue with Profile Address
+              </button>
+
+              <div className="flex justify-between mt-6">
+                <button
+                  className="bg-gray-300 px-4 py-2 rounded cursor-pointer hover:bg-gray-400"
+                  onClick={() => setShowAddressModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-[#6b4c35] text-white px-4 cursor-pointer py-2 rounded hover:bg-[#5a3c28]"
+                  onClick={() => {
+                    setShowAddressModal(false);
+                    setShowOrderModal(true); // Proceed to payment step
+                  }}
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
         {showOrderModal && (
           <div>
             <motion.div
@@ -192,7 +309,7 @@ const Shop = () => {
                         setTimeout(() => setOrderPlaced(false), 3000);
                         axiosInstance.post("/paymentCallbackCOD", {
                           amount: selectedPainting.startingPrice,
-                          paintingId: selectedPainting.paintingId
+                          paintingId: selectedPainting.paintingId,
                         });
                       } else {
                         alert(
@@ -208,23 +325,17 @@ const Shop = () => {
                     whileTap={{ scale: 0.95 }}
                     className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
                     value={orderInfo.paymentMode}
-                    onClick={() => {
-                      if (orderInfo.paymentMode === "Pay with Wallet") {
-                        navigate(
-                          "http://127.0.0.1:5500/ArtGallery/ArtGalleryProject/src/main/resources/templates/orders.html"
-                        );
-                      } else {
-                        alert(
-                          `Redirecting to ${orderInfo.paymentMode} payment gateway...`
-                        );
-                      }
-                    }}
                   >
                     Pay with Wallet
                   </motion.button>
                 </div>
               </div>
-
+              <button
+                onClick={() => setShowOrderModal(null)}
+                className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black"
+              >
+                ✕ Close
+              </button>
             </motion.div>
           </div>
         )}

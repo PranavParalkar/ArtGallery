@@ -68,6 +68,7 @@ public class AdminServiceImpl implements AdminService {
         painting.setLength(unverified.getLength());
         painting.setBreadth(unverified.getBreadth());
         painting.setStartingPrice(unverified.getStartingPrice());
+        painting.setFinalPrice(0.0); // Set default final price
         painting.setImageUrl(unverified.getImageUrl());
         painting.setForAuction(unverified.isForAuction());
         painting.setSeller(seller);
