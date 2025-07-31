@@ -94,7 +94,7 @@ const Header = ({ setIsWalletOpen }) => {
           {/* ✅ Conditional route */}
           {isLoggedIn ? (
             <div className="flex items-center gap-2">
-              <Link to="/profile">
+              <Link className="flex flex-row gap-3" to="/profile">
                 <button className="flex items-center cursor-pointer border-1 duration-300 rounded-full hover:scale-115 gap-1 text-sm text-gray-800">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -111,12 +111,12 @@ const Header = ({ setIsWalletOpen }) => {
                     />
                   </svg>
                 </button>
+                {username && (
+                  <span className="text-base font-bold text-gray-700">
+                    Hi, {username}
+                  </span>
+                )}
               </Link>
-              {username && (
-                <span className="text-base font-bold text-gray-700">
-                  Hi, {username}
-                </span>
-              )}
             </div>
           ) : (
             <Link to="/login">

@@ -2,20 +2,28 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../utils/auth";
 
 const Shop = () => {
+  const [profile, setProfile] = useState(null);
   const [paintings, setPaintings] = useState([]);
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [pageNo, setPageNo] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const [showOrderModal, setShowOrderModal] = useState(false);
-  const [selectedPainting, setSelectedPainting] = useState(null);
-  const [orderPlaced, setOrderPlaced] = useState(false);
-  const [paymentResult, setPaymentResult] = useState(null);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const token = localStorage.getItem("token");
 
+  useEffect(() => {
+    axiosInstance
+      .get("/user/profile")
+      .then((res) => {
+        console.dir(res.data, { depth: null });
+        setProfile(res.data);
+      })
+      .catch((err) => {
+        console.error("Failed to load profile:", err);
+        setProfile(null);
+      });
+  }, [axiosInstance, token]);
   useEffect(() => {
     fetchPaintings(pageNo);
   }, [pageNo]);
@@ -34,12 +42,18 @@ const Shop = () => {
       setHasNextPage(false);
     }
   };
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [selectedPainting, setSelectedPainting] = useState(null);
   const [orderInfo, setOrderInfo] = useState({
     name: "",
     email: "",
-    address: "",
+    address: "123, Default Street, Pune",
+    mobile: "",
     paymentMode: "Cash on Delivery",
   });
+
+  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
 
   return (
     <div className="px-20 py-10 font-serif relative">
@@ -98,7 +112,7 @@ const Shop = () => {
                   className="mt-4 block text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-[#6b4c35] hover:bg-[#776354] text-white font-semibold transition"
                   onClick={() => {
                     setSelectedPainting(painting);
-                    setShowOrderModal(true);
+                    setShowAddressModal(true);
                   }}
                 >
                   Buy Now
@@ -164,6 +178,107 @@ const Shop = () => {
         )}
       </AnimatePresence>
       <AnimatePresence>
+        {showAddressModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center backdrop-blur-2xl bg-opacity-40 z-50"
+          >
+            <div
+              className="bg-[#f8f1ea] p-8 rounded-lg shadow-xl w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-bold text-[#3e2e1e] mb-4 text-center">
+                Confirm Address & Mobile
+              </h2>
+              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">
+                Name
+              </label>
+              <input
+                type="text"
+                className="w-full mb-4 px-4 py-2 border rounded-md"
+                placeholder="Enter Name"
+                value={orderInfo.name}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, name: e.target.value })
+                }
+              />
+
+              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">
+                Mobile Number
+              </label>
+              <input
+                type="tel"
+                className="w-full mb-4 px-4 py-2 border rounded-md"
+                placeholder="Enter mobile number"
+                value={orderInfo.mobile}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, mobile: e.target.value })
+                }
+              />
+
+              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">
+                Delivery Address
+              </label>
+              <textarea
+                rows="3"
+                className="w-full mb-4 px-4 py-2 border rounded-md"
+                value={orderInfo.address}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, address: e.target.value })
+                }
+              />
+              <button
+                className="bg-[#6b4c35] cursor-pointer text-white px-4 py-2 rounded hover:bg-[#5a3c28]"
+                onClick={() => {
+                  const fullAddress =
+                    [
+                      profile.address?.building,
+                      profile.address?.landmark,
+                      profile.address?.street,
+                      profile.address?.city,
+                      profile.address?.region,
+                      profile.address?.country,
+                    ]
+                      .filter(Boolean)
+                      .join(", ") +
+                    (profile.address?.pincode
+                      ? `. Pincode - ${profile.address.pincode}`
+                      : "");
+
+                  setOrderInfo({
+                    ...orderInfo,
+                    address: fullAddress,
+                  });
+                }}
+              >
+                Continue with Profile Address
+              </button>
+
+              <div className="flex justify-between mt-6">
+                <button
+                  className="bg-gray-300 px-4 py-2 rounded cursor-pointer hover:bg-gray-400"
+                  onClick={() => setShowAddressModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-[#6b4c35] text-white px-4 cursor-pointer py-2 rounded hover:bg-[#5a3c28]"
+                  onClick={() => {
+                    setShowAddressModal(false);
+                    setShowOrderModal(true); // Proceed to payment step
+                  }}
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
         {showOrderModal && (
           <div>
             <motion.div
@@ -182,44 +297,19 @@ const Shop = () => {
                     whileTap={{ scale: 0.95 }}
                     className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
                     value={orderInfo.paymentMode}
-                    onClick={async () => {
-                      if (!user) {
-                        alert("Please login to place an order");
-                        return;
-                      }
-                      
-                      try {
-                        console.log("Sending COD order request:", {
+                    onClick={() => {
+                      if (orderInfo.paymentMode === "Cash on Delivery") {
+                        setShowOrderModal(false);
+                        setOrderPlaced(true);
+                        setTimeout(() => setOrderPlaced(false), 3000);
+                        axiosInstance.post("/paymentCallbackCOD", {
                           amount: selectedPainting.startingPrice,
                           paintingId: selectedPainting.paintingId,
-                          userEmail: user.email
                         });
-                        
-                        const response = await axiosInstance.post("/paymentCallbackCOD", {
-                          amount: selectedPainting.startingPrice,
-                          paintingId: selectedPainting.paintingId,
-                          userEmail: user.email
-                        });
-                        
-                        console.log("COD order response:", response.data);
-                        
-                        if (response.data.includes("successfully") || response.data.includes("sent successfully")) {
-                          setShowOrderModal(false);
-                          setOrderPlaced(true);
-                          // Remove the painting from the list
-                          setPaintings(paintings.filter(p => p.paintingId !== selectedPainting.paintingId));
-                          setTimeout(() => setOrderPlaced(false), 3000);
-                        } else {
-                          alert(response.data);
-                        }
-                      } catch (error) {
-                        console.error("COD order error:", error);
-                        console.error("Error response:", error.response);
-                        const errorMessage = error.response?.data?.message || 
-                                           error.response?.data || 
-                                           error.message || 
-                                           "Order placement failed";
-                        alert(errorMessage);
+                      } else {
+                        alert(
+                          `Redirecting to ${orderInfo.paymentMode} payment gateway...`
+                        );
                       }
                     }}
                   >
@@ -230,55 +320,17 @@ const Shop = () => {
                     whileTap={{ scale: 0.95 }}
                     className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
                     value={orderInfo.paymentMode}
-                    onClick={async () => {
-                      if (!user) {
-                        alert("Please login to use wallet payment");
-                        return;
-                      }
-                      
-                      if (!user.email) {
-                        alert("User email not found. Please login again.");
-                        return;
-                      }
-                      
-                      try {
-                        console.log("Sending wallet payment request:", {
-                          paintingId: selectedPainting.paintingId,
-                          userEmail: user.email
-                        });
-                        
-                        const response = await axiosInstance.post("/wallet-payment", {
-                          paintingId: selectedPainting.paintingId,
-                          userEmail: user.email
-                        });
-                        
-                        console.log("Wallet payment response:", response.data);
-                        
-                        if (response.data.message === "Payment successful") {
-                          setShowOrderModal(false);
-                          setPaymentResult("success");
-                          // Remove the painting from the list
-                          setPaintings(paintings.filter(p => p.paintingId !== selectedPainting.paintingId));
-                          setTimeout(() => setPaymentResult(null), 3000);
-                        } else {
-                          alert(response.data.message);
-                        }
-                      } catch (error) {
-                        console.error("Wallet payment error:", error);
-                        console.error("Error response:", error.response);
-                        const errorMessage = error.response?.data?.message || 
-                                           error.response?.data || 
-                                           error.message || 
-                                           "Payment failed";
-                        alert(errorMessage);
-                      }
-                    }}
                   >
-                  Pay with Wallet
+                    Pay with Wallet
                   </motion.button>
                 </div>
               </div>
-
+              <button
+                onClick={() => setShowOrderModal(null)}
+                className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black"
+              >
+                ✕ Close
+              </button>
             </motion.div>
           </div>
         )}
@@ -295,20 +347,6 @@ const Shop = () => {
           >
             ✅ You have placed an order successfully for "
             {selectedPainting?.title}".
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {paymentResult === "success" && (
-          <motion.div
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 text-4xl text-[#3e2e1e] font-serif flex items-center justify-center z-50 backdrop-blur-3xl cursor-pointer"
-            onClick={() => setPaymentResult(null)}
-          >
-            ✅ Payment successful! "{selectedPainting?.title}" has been purchased.
           </motion.div>
         )}
       </AnimatePresence>
