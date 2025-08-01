@@ -1,20 +1,48 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 
 const Shop = () => {
+  const [profile, setProfile] = useState(null);
   const [paintings, setPaintings] = useState([]);
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [pageNo, setPageNo] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const navigate = useNavigate();
+  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [selectedPainting, setSelectedPainting] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // Manages all loading states
+  const [orderInfo, setOrderInfo] = useState({
+    name: "",
+    address: "",
+    mobile: "",
+    paymentMode: "Cash on Delivery",
+  });
+  const token = localStorage.getItem("token");
 
+  // Fetch user profile
+  useEffect(() => {
+    axiosInstance
+      .get("/user/profile")
+      .then((res) => {
+        setProfile(res.data);
+      })
+      .catch((err) => {
+        console.error("Failed to load profile:", err);
+        setProfile(null);
+      });
+  }, [token]);
+
+  // Fetch paintings whenever pageNo changes
   useEffect(() => {
     fetchPaintings(pageNo);
   }, [pageNo]);
 
+  // Fetches paintings and manages loading state
   const fetchPaintings = async (page = 0) => {
+    setIsLoading(true);
     try {
       const res = await axiosInstance.get(`/store?pageNo=${page}`);
       const data = res.data.content || res.data;
@@ -24,20 +52,84 @@ const Shop = () => {
       const nextData = nextRes.data.content || nextRes.data;
       setHasNextPage(Array.isArray(nextData) ? nextData.length > 0 : false);
     } catch (err) {
+      console.error("Failed to fetch paintings:", err);
       setPaintings([]);
       setHasNextPage(false);
+    } finally {
+      setIsLoading(false);
     }
   };
-  const [showOrderModal, setShowOrderModal] = useState(false);
-  const [selectedPainting, setSelectedPainting] = useState(null);
-  const [orderInfo, setOrderInfo] = useState({
-    name: "",
-    email: "",
-    address: "",
-    paymentMode: "Cash on Delivery",
-  });
-  const [orderPlaced, setOrderPlaced] = useState(false);
 
+  // Places the order and manages loading state
+  const handlePlaceOrder = async () => {
+    if (!selectedPainting || !orderInfo) return;
+
+    const orderPayload = {
+      paintingId: selectedPainting.paintingId,
+      amount: selectedPainting.startingPrice,
+      name: orderInfo.name,
+      address: orderInfo.address,
+      mobile: orderInfo.mobile,
+      paymentMode: orderInfo.paymentMode,
+    };
+
+    setShowConfirmationModal(false); // Close modal
+    setIsLoading(true); // Start loading
+    try {
+        await axiosInstance.post("/paymentCallbackCodOrWallet", orderPayload);
+        setOrderPlaced(true);
+        setTimeout(() => setOrderPlaced(false), 3000);
+    } catch (err) {
+      console.error("Failed to place order:", err);
+
+      let errorMessage = "An unexpected error occurred. Please try again.";
+
+      if (err.response?.data) {
+        if (typeof err.response.data === 'string') {
+          errorMessage = err.response.data;
+        }
+        else if (err.response.data.message) {
+          errorMessage = err.response.data.message;
+        }
+      }
+
+      console.log("Error message to display:", errorMessage);
+      alert(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Loading Screen UI
+  if (isLoading) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen font-serif text-[#3e2e1e]">
+        <svg
+          className="animate-spin h-10 w-10 mb-4 text-[#6b4c35]"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+        <p className="text-2xl">Please wait...</p>
+      </div>
+    );
+  }
+
+  // Main Component UI
   return (
     <div className="px-20 py-10 font-serif relative">
       <h1 className="text-4xl font-bold text-center text-[#3e2e1e] mb-12">
@@ -52,7 +144,7 @@ const Shop = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75 }}
-              className="rounded-2xl bg-[#f0e2d2] h-[500px] transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition"
+              className="rounded-2xl bg-[#f0e2d2] h-[500px] transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition flex flex-col"
             >
               {painting.imageUrl && (
                 <div className="overflow-hidden h-1/2 rounded-t-2xl">
@@ -68,7 +160,7 @@ const Shop = () => {
                   />
                 </div>
               )}
-              <div className="p-6 flex flex-col justify-between">
+              <div className="p-6 flex flex-col justify-between flex-grow">
                 <div>
                   <h2 className="text-xl font-bold text-[#5a3c28] mb-1">
                     {painting.title}
@@ -77,7 +169,7 @@ const Shop = () => {
                     {painting.description}
                   </p>
                   <p className="text-md text-[#6b4c35] mb-1">
-                    <span className="font-bold">Dimensions</span>{" "}
+                    <span className="font-bold">Dimensions:</span>{" "}
                     {painting.length}cm x {painting.breadth}cm
                   </p>
                   <p className="text-md text-[#6b4c35] mb-1">
@@ -92,10 +184,10 @@ const Shop = () => {
                   </p>
                 </div>
                 <button
-                  className="mt-4 block text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-[#6b4c35] hover:bg-[#776354] text-white font-semibold transition"
+                  className="mt-4 w-full text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-[#6b4c35] hover:bg-[#776354] text-white font-semibold transition"
                   onClick={() => {
                     setSelectedPainting(painting);
-                    setShowOrderModal(true);
+                    setShowAddressModal(true);
                   }}
                 >
                   Buy Now
@@ -139,90 +231,218 @@ const Shop = () => {
             className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
             onClick={() => setFullscreenImage(null)}
           >
-            <motion.div
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.8 }}
-              className="relative max-w-4xl w-full"
+            <img
+              src={fullscreenImage}
+              alt="Fullscreen Preview"
+              className="w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            />
+            <button
+              onClick={() => setFullscreenImage(null)}
+              className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black"
             >
-              <img
-                src={fullscreenImage}
-                alt="Fullscreen Preview"
-                className="w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-              />
-              <button
-                onClick={() => setFullscreenImage(null)}
-                className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black"
-              >
-                ✕ Close
-              </button>
-            </motion.div>
+              ✕ Close
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
-      <AnimatePresence>
-        {showOrderModal && (
-          <div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 flex items-center justify-center backdrop-blur-2xl bg-opacity-40 z-50"
-            >
-              <div className="text-center space-y-6">
-                <h2 className="text-xl font-semibold text-[#5a3c28]">
-                  Select the Mode of Payment
-                </h2>
-                <div className="flex justify-center gap-6 mt-4">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
-                    value={orderInfo.paymentMode}
-                    onClick={() => {
-                      if (orderInfo.paymentMode === "Cash on Delivery") {
-                        setShowOrderModal(false);
-                        setOrderPlaced(true);
-                        setTimeout(() => setOrderPlaced(false), 3000);
-                        const response = axiosInstance.post("/paymentCallbackCOD", {
-                          amount: selectedPainting.startingPrice,
-                          paintingId: selectedPainting.paintingId
-                        });
-                      } else {
-                        alert(
-                          `Redirecting to ${orderInfo.paymentMode} payment gateway...`
-                        );
-                      }
-                    }}
-                  >
-                    Cash on Delivery
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
-                    value={orderInfo.paymentMode}
-                    onClick={() => {
-                      if (orderInfo.paymentMode === "Pay with Wallet") {
-                        navigate(
-                          "http://127.0.0.1:5500/ArtGallery/ArtGalleryProject/src/main/resources/templates/orders.html"
-                        );
-                      } else {
-                        alert(
-                          `Redirecting to ${orderInfo.paymentMode} payment gateway...`
-                        );
-                      }
-                    }}
-                  >
-                  Pay with Wallet
-                  </motion.button>
-                </div>
-              </div>
 
-            </motion.div>
-          </div>
+      {/* Address & Mobile Modal */}
+      <AnimatePresence>
+        {showAddressModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center backdrop-blur-2xl bg-opacity-40 z-50"
+          >
+            <div
+              className="bg-[#f8f1ea] p-8 rounded-lg shadow-xl w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-bold text-[#3e2e1e] mb-4 text-center">
+                Confirm Address & Mobile
+              </h2>
+              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Name</label>
+              <input
+                type="text"
+                className="w-full mb-4 px-4 py-2 border rounded-md"
+                placeholder="Enter Name"
+                value={orderInfo.name}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, name: e.target.value })
+                }
+              />
+
+              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Mobile Number</label>
+              <input
+                type="tel"
+                className="w-full mb-4 px-4 py-2 border rounded-md"
+                placeholder="Enter mobile number"
+                value={orderInfo.mobile}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, mobile: e.target.value })
+                }
+              />
+
+              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Delivery Address</label>
+              <textarea
+                rows="3"
+                className="w-full mb-4 px-4 py-2 border rounded-md"
+                placeholder="Enter delivery address"
+                value={orderInfo.address}
+                onChange={(e) =>
+                  setOrderInfo({ ...orderInfo, address: e.target.value })
+                }
+              />
+              <button
+                className="bg-[#6b4c35] cursor-pointer text-white px-4 py-2 rounded hover:bg-[#5a3c28]"
+                onClick={() => {
+                  const fullAddress =
+                    [
+                      profile.address?.building,
+                      profile.address?.landmark,
+                      profile.address?.street,
+                      profile.address?.city,
+                      profile.address?.region,
+                      profile.address?.country,
+                    ]
+                      .filter(Boolean)
+                      .join(", ") +
+                    (profile.address?.pincode
+                      ? `. Pincode - ${profile.address.pincode}`
+                      : "");
+
+                  setOrderInfo({
+                    ...orderInfo,
+                    name: profile.name || "",
+                    mobile: profile.phoneNumber || "",
+                    address: fullAddress || "",
+                  });
+                }}
+              >
+                Continue with Profile Info
+              </button>
+
+              <div className="flex justify-between mt-6">
+                <button
+                  className="bg-gray-300 px-4 py-2 rounded cursor-pointer hover:bg-gray-400"
+                  onClick={() => setShowAddressModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-[#6b4c35] text-white px-4 cursor-pointer py-2 rounded hover:bg-[#5a3c28]"
+                  onClick={() => {
+                    setShowAddressModal(false);
+                    setShowOrderModal(true);
+                  }}
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Payment Method Modal */}
+      <AnimatePresence>
+        {showOrderModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center backdrop-blur-2xl bg-opacity-40 z-50"
+          >
+            <div
+              className="bg-[#f8f1ea] p-8 rounded-lg shadow-xl w-full max-w-md text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-semibold text-[#5a3c28] mb-6">Select Payment Method</h2>
+              <div className="flex justify-center gap-6">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                  onClick={() => {
+                    setOrderInfo((prev) => ({ ...prev, paymentMode: "Cash on Delivery" }));
+                    setShowOrderModal(false);
+                    setShowConfirmationModal(true);
+                  }}
+                >
+                  Cash on Delivery
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                  onClick={() => {
+                    setOrderInfo((prev) => ({ ...prev, paymentMode: "Pay with Wallet" }));
+                    setShowOrderModal(false);
+                    setShowConfirmationModal(true);
+                  }}
+                >
+                  Pay with Wallet
+                </motion.button>
+              </div>
+              <button
+                onClick={() => setShowOrderModal(false)}
+                className="mt-6 text-sm text-gray-500 hover:text-black"
+              >
+                Cancel
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Order Confirmation Modal */}
+      <AnimatePresence>
+        {showConfirmationModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center backdrop-blur-2xl bg-opacity-40 z-50"
+          >
+            <div
+              className="bg-[#f8f1ea] p-8 rounded-lg shadow-xl w-full max-w-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-2xl font-bold text-[#3e2e1e] mb-6 text-center">Confirm Your Order</h2>
+              <div className="space-y-3 text-md text-[#5a3c28]">
+                <p><span className="font-bold">Painting:</span> {selectedPainting?.title}</p>
+                <p><span className="font-bold">Price:</span> ₹{selectedPainting?.startingPrice}</p>
+                <hr className="my-2 border-t border-[#d3c1b3]" />
+                <p><span className="font-bold">Name:</span> {orderInfo.name}</p>
+                <p><span className="font-bold">Mobile:</span> {orderInfo.mobile}</p>
+                <p><span className="font-bold">Delivery Address:</span> {orderInfo.address}</p>
+                <hr className="my-2 border-t border-[#d3c1b3]" />
+                <p><span className="font-bold">Payment Method:</span> <b><i>{orderInfo.paymentMode}</i></b></p>
+              </div>
+              <div className="flex justify-between mt-8">
+                <button
+                  className="bg-gray-300 px-6 py-2 rounded cursor-pointer hover:bg-gray-400"
+                  onClick={() => {
+                    setShowConfirmationModal(false);
+                    setShowOrderModal(true);
+                  }}
+                >
+                  Go Back
+                </button>
+                <button
+                  className="bg-[#6b4c35] text-white px-6 cursor-pointer py-2 rounded hover:bg-[#5a3c28]"
+                  onClick={handlePlaceOrder}
+                >
+                  Confirm & Place Order
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Order Placed Success Message */}
       <AnimatePresence>
         {orderPlaced && (
           <motion.div
@@ -230,11 +450,10 @@ const Shop = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 text-4xl text-[#3e2e1e] font-serif flex items-center justify-center z-50 backdrop-blur-3xl cursor-pointer"
+            className="fixed inset-0 text-2xl md:text-4xl text-center p-4 text-[#3e2e1e] font-serif flex items-center justify-center z-50 backdrop-blur-3xl cursor-pointer"
             onClick={() => setOrderPlaced(false)}
           >
-            ✅ You have placed an order successfully for "
-            {selectedPainting?.title}".
+            ✅ Order placed successfully for "{selectedPainting?.title}"!
           </motion.div>
         )}
       </AnimatePresence>

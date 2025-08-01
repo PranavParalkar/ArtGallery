@@ -5,6 +5,19 @@ import axiosInstance from "../axiosInstance";
 // Withdraw Modal Component
 // -----------------------------
 const WithdrawModal = ({ onClose, currentBalance }) => {
+  const [profile, setProfile] = useState(null);
+  // Fetch user profile
+  useEffect(() => {
+    axiosInstance
+      .get("/user/profile")
+      .then((res) => {
+        setProfile(res.data);
+      })
+      .catch((err) => {
+        console.error("Failed to load profile:", err);
+        setProfile(null);
+      });
+  }, [token]);
   const [formData, setFormData] = useState({
     amount: "",
     bankAccount: "",
@@ -29,14 +42,20 @@ const WithdrawModal = ({ onClose, currentBalance }) => {
     setError("");
 
     try {
-      const response = await axiosInstance.post("/wallet/withdraw", formData);
-      
-      if (response.data.message) {
-        setSuccess(true);
-        setTimeout(() => {
-          onClose();
-          window.location.reload();
-        }, 2000);
+      if (amount > profile.balance) {
+        alert("Insufficient amount in wallet");
+        setIsWalletOpen(true);
+        setShowWithdrawModal(false);
+      } else {
+        const response = await axiosInstance.post("/wallet/withdraw", formData);
+
+        if (response.data.message) {
+          setSuccess(true);
+          setTimeout(() => {
+            onClose();
+            window.location.reload();
+          }, 2000);
+        }
       }
     } catch (err) {
       console.error("Withdrawal error:", err);
@@ -81,7 +100,7 @@ const WithdrawModal = ({ onClose, currentBalance }) => {
               <div className="text-green-500 text-6xl mb-4">✓</div>
               <h3 className="text-lg font-semibold mb-2">Withdrawal Request Submitted!</h3>
               <p className="text-sm text-gray-600">
-                Your withdrawal request has been submitted successfully and is awaiting admin approval. 
+                Your withdrawal request has been submitted successfully and is awaiting admin approval.
                 You will be notified once the request is processed.
               </p>
             </div>
@@ -164,7 +183,7 @@ const WalletModal = ({ isOpen, onClose }) => {
   const [balance, setBalance] = useState("₹0.00");
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [rawBalance, setRawBalance] = useState(0);
-  
+
   const token = localStorage.getItem("token");
 
   const fetchBalance = useCallback(async () => {
@@ -209,7 +228,7 @@ const WalletModal = ({ isOpen, onClose }) => {
   }, []);
 
   const tabs = [{ id: "overview", label: "Overview" }];
-  
+
   if (!isOpen) return null;
 
   return (
@@ -233,9 +252,9 @@ const WalletModal = ({ isOpen, onClose }) => {
             <h2 className="text-2xl font-bold text-[#5a3c28]">Wallet</h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              className="text-gray-500 hover:text-gray-700 text-2xl font-bold cursor-pointer"
             >
-              ×
+              x
             </button>
           </div>
 
@@ -245,11 +264,10 @@ const WalletModal = ({ isOpen, onClose }) => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 py-4 px-6 text-sm font-semibold transition-colors ${
-                  activeTab === tab.id
-                    ? "text-[#a17b5d] border-b-2 border-[#a17b5d]"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`flex-1 py-4 px-6 text-sm font-semibold transition-colors ${activeTab === tab.id
+                  ? "text-[#a17b5d] border-b-2 border-[#a17b5d]"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 {tab.label}
               </button>
@@ -291,17 +309,18 @@ const WalletModal = ({ isOpen, onClose }) => {
                 <div className="space-y-3">
                   <button
                     onClick={handleSetAmount}
-                    className="w-full bg-[#a17b5d] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#8c6448] transition-colors"
+                    className="w-full bg-[#a17b5d] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#8c6448] transition-colors duration-300 ease-in-out cursor-pointer"
                   >
                     Add Funds
                   </button>
-                  
+
                   <button
                     onClick={handleWithdraw}
-                    className="w-full bg-white border-2 border-[#a17b5d] text-[#a17b5d] py-3 px-6 rounded-lg font-semibold hover:bg-[#a17b5d] hover:text-white transition-colors"
+                    className="w-full bg-white border-2 border-[#a17b5d] text-[#a17b5d] py-3 px-6 rounded-lg font-semibold hover:bg-[#a17b5d] hover:text-white transition-colors duration-300 ease-in-out cursor-pointer"
                   >
                     Withdraw Funds
                   </button>
+
                 </div>
               </div>
             )}
@@ -310,8 +329,8 @@ const WalletModal = ({ isOpen, onClose }) => {
 
         {/* Withdraw Modal */}
         {showWithdrawModal && (
-          <WithdrawModal 
-            onClose={() => setShowWithdrawModal(false)} 
+          <WithdrawModal
+            onClose={() => setShowWithdrawModal(false)}
             currentBalance={balance}
           />
         )}

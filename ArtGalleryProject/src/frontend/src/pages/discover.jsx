@@ -33,56 +33,38 @@ const trends = [
 
 const artNews = [
   {
-    type: "Breaking News",
-    title: "NFT Art Market Surges 300% in Q1 2024",
-    detail: "Digital art and NFTs continue to dominate the contemporary art scene with unprecedented growth in sales and collector interest.",
-    image: "https://d7hftxdivxxvm.cloudfront.net/?quality=80&resize_to=width&src=https%3A%2F%2Fartsy-media-uploads.s3.amazonaws.com%2FpiVxgtRPE_r4QPWVcBqtGQ%252FSquares_Dan2%2B%25281%2529.JPG&width=1820",
-    readMoreLink: "https://www.artsy.net/article/artsy-editorial-digital-art-fared-nft-boom",
-    category: "Digital Art",
-    icon: <FaPalette className="text-xl text-[#a17b5d]" />,
-  },
-  {
-    type: "Exhibition Alert",
-    title: "Van Gogh Immersive Experience Coming to Mumbai",
-    detail: "The world-famous Van Gogh immersive exhibition will make its Indian debut at the National Museum of Modern Art.",
-    image: "https://imgmediagumlet.lbb.in/media/2022/11/636ba9c5d775304d3669a5a6_1668000197625.jpg",
-    readMoreLink: "https://lbb.in/mumbai/vincent-van-gogh-immersive-art-exhibit/",
-    category: "Exhibition",
-    icon: <FaCamera className="text-xl text-[#a17b5d]" />,
-  },
-  {
-    type: "Artist Spotlight",
-    title: "Amrita Sher-Gil's Lost Masterpiece Found",
-    detail: "A previously unknown painting by the iconic Indian artist has been discovered in a private collection in Paris.",
-    image: "https://media.cnn.com/api/v1/images/stellar/prod/210304083900-amrita-sher-gil-portrait-of-denyse.jpg?q=w_2000,c_fill/f_webp",
-    readMoreLink: "https://edition.cnn.com/style/article/amrita-sher-gil-auction",
-    category: "Heritage",
-    icon: <FaUserAlt className="text-xl text-[#a17b5d]" />,
-  },
-  {
     type: "Market Update",
     title: "Contemporary Indian Art Sales Hit Record High",
-    detail: "Auction houses report 45% increase in sales of contemporary Indian artworks, signaling growing global interest.",
-    image: "https://auroraathena.com/app/uploads/2024/10/Kumar-Front-without-frame-1449x2048.jpg  ",
-    readMoreLink: "https://auroraathena.com/journal/trends/indian-art-market-2024/",
+    detail:
+      "Auction houses report 45% increase in sales of contemporary Indian artworks, signaling growing global interest.",
+    image:
+      "https://auroraathena.com/app/uploads/2024/10/Kumar-Front-without-frame-1449x2048.jpg  ",
+    readMoreLink:
+      "https://auroraathena.com/journal/trends/indian-art-market-2024/",
     category: "Market",
     icon: <FaGavel className="text-xl text-[#a17b5d]" />,
   },
   {
     type: "Technology",
     title: "AI-Generated Art Wins Prestigious Award",
-    detail: "An AI-created artwork has won the Digital Art Innovation Award, sparking debate about creativity and technology.",
-    image: "https://media.cnn.com/api/v1/images/stellar/prod/220902164241-02-thtre-dopra-spatial-ai-generated-art.jpg?q=w_1160,c_fill/f_webp",
-    readMoreLink: "https://edition.cnn.com/2022/09/03/tech/ai-art-fair-winner-controversy",
+    detail:
+      "An AI-created artwork has won the Digital Art Innovation Award, sparking debate about creativity and technology.",
+    image:
+      "https://media.cnn.com/api/v1/images/stellar/prod/220902164241-02-thtre-dopra-spatial-ai-generated-art.jpg?q=w_1160,c_fill/f_webp",
+    readMoreLink:
+      "https://edition.cnn.com/2022/09/03/tech/ai-art-fair-winner-controversy",
     category: "Technology",
     icon: <FaVideo className="text-xl text-[#a17b5d]" />,
   },
   {
     type: "Conservation",
     title: "Ancient Cave Paintings Discovered in Western Ghats",
-    detail: "Archaeologists have uncovered 10,000-year-old cave paintings in the Western Ghats, revealing India's rich artistic heritage.",
-    image: "https://akm-img-a-in.tosshub.com/indiatoday/images/story/202506/ancient-cave-paintings-232723832-16x9_0.jpeg?VersionId=S1KauCBSCZ7XQE2jDv7dv.Tjjhfo2nDd&size=690:388",
-    readMoreLink: "https://www.indiatoday.in/science/story/ancient-cave-paintings-discovered-in-tamil-nadu-could-be-over-9000-years-old-2744969-2025-06-23",
+    detail:
+      "Archaeologists have uncovered 10,000-year-old cave paintings in the Western Ghats, revealing India's rich artistic heritage.",
+    image:
+      "https://akm-img-a-in.tosshub.com/indiatoday/images/story/202506/ancient-cave-paintings-232723832-16x9_0.jpeg?VersionId=S1KauCBSCZ7XQE2jDv7dv.Tjjhfo2nDd&size=690:388",
+    readMoreLink:
+      "https://www.indiatoday.in/science/story/ancient-cave-paintings-discovered-in-tamil-nadu-could-be-over-9000-years-old-2744969-2025-06-23",
     category: "Archaeology",
     icon: <FaGlobe className="text-xl text-[#a17b5d]" />,
   },
@@ -95,7 +77,10 @@ const highlights = [
     detail: "Known for surreal watercolors reflecting Indian mythology.",
     icon: <FaUserAlt className="text-xl text-[#a17b5d]" />,
     onclick: () => {
-      window.open("https://www.instagram.com/anchor_ishikarana/?hl=en", "_blank");
+      window.open(
+        "https://www.instagram.com/anchor_ishikarana/?hl=en",
+        "_blank"
+      );
     },
     image:
       "https://images.unsplash.com/photo-1680506660555-1c225f5da953?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8SXNoaWthJTIwUmFuYXxlbnwwfHwwfHx8MA%3D%3Dg",
@@ -103,7 +88,8 @@ const highlights = [
   {
     type: "Gallery Opening",
     title: "Tate Modern Mumbai",
-    detail: "First international branch of Tate Modern opening in Mumbai's art district.",
+    detail:
+      "First international branch of Tate Modern opening in Mumbai's art district.",
     icon: <FaCamera className="text-xl text-[#a17b5d]" />,
     onclick: () => {
       window.open("https://www.tate.org.uk/visit/tate-modern", "_blank");
@@ -114,10 +100,14 @@ const highlights = [
   {
     type: "Art Award",
     title: "Young Artist of the Year 2025",
-    detail: "Neha Patel wins prestigious award for her innovative textile art installations.",
+    detail:
+      "Neha Patel wins prestigious award for her innovative textile art installations.",
     icon: <FaPalette className="text-xl text-[#a17b5d]" />,
     onclick: () => {
-      window.open("https://www.artsy.net/show/artspace-warehouse-emerging-artists-to-watch-in-2025-top-trends-and-must-have-affordable-original-black-white-and-green-art-paintings-for-collectors", "_blank");
+      window.open(
+        "https://www.artsy.net/show/artspace-warehouse-emerging-artists-to-watch-in-2025-top-trends-and-must-have-affordable-original-black-white-and-green-art-paintings-for-collectors",
+        "_blank"
+      );
     },
     image:
       "https://d7hftxdivxxvm.cloudfront.net/?height=1798&quality=85&resize_to=fit&src=https%3A%2F%2Fd32dm0rphc51dk.cloudfront.net%2Fv-KSTiYrF9CVJbtXZgwNkg%2Fnormalized.jpg&width=1798",
@@ -126,7 +116,7 @@ const highlights = [
 
 const Discover = () => {
   const handleReadMore = (url) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -169,7 +159,7 @@ const Discover = () => {
         <h2 className="text-3xl font-bold text-[#6b4c35] mb-8 text-center">
           What's Hot in the Art World
         </h2>
-        
+
         {/* Trending News Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {artNews.map((news, i) => (
@@ -248,7 +238,7 @@ const Discover = () => {
               </motion.div>
             ))}
           </div>
-          image.png        </div>
+        </div>
       </motion.div>
     </div>
   );

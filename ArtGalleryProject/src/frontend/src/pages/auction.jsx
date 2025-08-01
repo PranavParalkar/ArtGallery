@@ -2,13 +2,24 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from '../axiosInstance';
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import Timer from "../utils/Timer";
 
 const Auction = () => {
   const [paintings, setPaintings] = useState([]);
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [pageNo, setPageNo] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const navigate = useNavigate(); // Add this
+  const navigate = useNavigate(); 
+  const [auctionLive, setAuctionLive] = useState(false);
+  const [bidButton, setBidButton] = useState("Place Bid");
+
+  useEffect(() => {
+    if (auctionLive) {
+      setBidButton("Place Bid");
+    } else {
+      setBidButton("Upcoming...");
+    }
+  }, [auctionLive]);
 
   useEffect(() => {
     fetchPaintings(pageNo);
@@ -35,11 +46,11 @@ const Auction = () => {
 
   return (
     <div className="  px-20 py-10 font-serif relative">
-      <h1 className="text-4xl font-bold text-center text-[#3e2e1e] mb-12">
+      <h1 className="text-4xl font-bold text-center text-[#3e2e1e] mb-3">
         Auction Paintings
       </h1>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-[1300px] mx-auto">
+      <Timer setAuctionLive={setAuctionLive} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-5 gap-8 max-w-[1300px] mx-auto">
         {paintings.length > 0 ? (
           paintings.map((painting) => (
             <motion.div
@@ -86,19 +97,18 @@ const Auction = () => {
                       {painting.seller || "Unknown"}
                     </span>
                   </p>
-                  <p className="text-sm text-center text-green-700 mt-3 mb-1">
-                    {painting.isSold
-                      ? "Auction was Done"
-                      : "Auction is Live, You can bid now!"}
-                  </p>
                 </div>
                 <button
+                  disabled={!auctionLive}
+                  className={`mt-10 block text-center bottom-0 cursor-pointer py-2 rounded-lg font-semibold transition duration-300 ease-in-out
+                  ${auctionLive ? 
+                    'bg-[#7c5c3d] hover:bg-[#847464] hover:scale-95 active:scale-90 text-white' 
+                  : 'bg-gray-400 text-gray-200 cursor-not-allowed'}`}
                   onClick={() =>
                     navigate(`/biddingFrontend/${painting.paintingId}`)
                   }
-                  className="mt-4 block text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-[#7c5c3d] hover:bg-[#847464] text-white font-semibold transition"
                 >
-                  Place Bid
+                  {bidButton}
                 </button>
               </div>
             </motion.div>

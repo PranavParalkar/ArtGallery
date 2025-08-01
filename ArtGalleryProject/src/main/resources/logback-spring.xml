@@ -8,14 +8,14 @@
 
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-			<fileNamePattern>logs/artgallery.log.%i</fileNamePattern>
+			<fileNamePattern>logs/artgallery.%i.log</fileNamePattern>
 			<minIndex>1</minIndex>
-			<maxIndex>10</maxIndex> <!-- Keep 10 old logs -->
+			<maxIndex>5</maxIndex> <!-- Keep 10 old logs -->
 		</rollingPolicy>
 
 		<triggeringPolicy
 			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-			<maxFileSize>10MB</maxFileSize> <!-- Rotate after 10 MB -->
+			<maxFileSize>1MB</maxFileSize> <!-- Rotate after 10 MB -->
 		</triggeringPolicy>
 
 		<encoder>

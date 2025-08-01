@@ -17,4 +17,6 @@ public interface BidRepo extends JpaRepository<Bid, Long> {
 	List<Bid> findTop3ByPaintingOrderByBidAmountDesc(Painting painting);
 	
 	Optional<Bid> findByPaintingAndBuyer(Painting painting, User buyer);
+	
+	List<Bid> findByPainting(Painting painting);
 }

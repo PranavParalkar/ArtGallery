@@ -23,16 +23,16 @@ public class DashboardServiceImpl implements DashboardService{
 	private static final Logger logger = LoggerFactory.getLogger(DashboardServiceImpl.class);
 	
 	@Autowired
-	private PaintingRepo paintingrepo;
+	private PaintingRepo paintingRepo;
 	@Autowired
-	private UserRepo userrepo;
+	private UserRepo userRepo;
 
 	@Override
 	public PagePaintingResponse<PaintingResponse> getUpcomingPaintingsByPageAuction(int pageNo, int size) {
 		logger.info("getPaintingsByPage started.");
 		
 		Pageable pageable = PageRequest.of(pageNo, size);
-		Page<Painting> paintingsPage = paintingrepo.findByIsSoldFalseAndIsForAuctionTrueAndIsAuctionLiveFalse(pageable);
+		Page<Painting> paintingsPage = paintingRepo.findByIsSoldFalseAndIsForAuctionTrueOrderByPaintingIdDesc(pageable);
 
 		Page<PaintingResponse> pageResult = paintingsPage.map(p -> new PaintingResponse(
 		    p.getPaintingId(),
@@ -42,6 +42,7 @@ public class DashboardServiceImpl implements DashboardService{
 		    p.getLength(),
 		    p.getBreadth(),
 		    p.getStartingPrice(),
+		    p.getFinalPrice(),
 		    p.isForAuction(),
 		    p.isSold(),
 		    p.getSeller().getName()
@@ -63,7 +64,7 @@ public class DashboardServiceImpl implements DashboardService{
 logger.info("getPaintingsByPage started.");
 		
 		Pageable pageable = PageRequest.of(pageNo, size);
-		Page<Painting> paintingsPage = paintingrepo.findByIsSoldFalseAndIsForAuctionFalse(pageable);
+		Page<Painting> paintingsPage = paintingRepo.findByIsSoldFalseAndIsForAuctionFalseOrderByPaintingIdDesc(pageable);
 
 		Page<PaintingResponse> pageResult = paintingsPage.map(p -> new PaintingResponse(
 	        p.getPaintingId(),
@@ -73,6 +74,7 @@ logger.info("getPaintingsByPage started.");
 	        p.getLength(),
 	        p.getBreadth(),
 	        p.getStartingPrice(),
+	        p.getFinalPrice(),
 	        p.isForAuction(),
 	        p.isSold(),
 	        p.getSeller().getName()
@@ -92,7 +94,7 @@ logger.info("getPaintingsByPage started.");
 	@Override
 	public PaintingResponse getPaintingById(long id) {
 		logger.info("getPaintingById started.");
-		Painting painting = paintingrepo.findById(id).orElse(null);
+		Painting painting = paintingRepo.findById(id).orElse(null);
 		if(painting==null) {
 			logger.info("getPaintingById finished.");
 			return null;
@@ -106,6 +108,7 @@ logger.info("getPaintingsByPage started.");
 		        painting.getLength(),
 		        painting.getBreadth(),
 		        painting.getStartingPrice(),
+		        painting.getFinalPrice(),
 		        painting.isForAuction(),
 		        painting.isSold(),
 		        painting.getSeller().getName()
@@ -115,7 +118,7 @@ logger.info("getPaintingsByPage started.");
 	@Override
 	public Object walletBalance(long id) {
 		logger.info("walletBalance started.");
-		Optional<User> userOptional = userrepo.findById(id);
+		Optional<User> userOptional = userRepo.findById(id);
 		if(userOptional.isEmpty()) {
 			logger.info("walletBalance finished.");
 			return "user not found";

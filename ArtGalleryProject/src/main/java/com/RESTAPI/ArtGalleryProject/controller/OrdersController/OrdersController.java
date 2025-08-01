@@ -1,6 +1,9 @@
 package com.RESTAPI.ArtGalleryProject.controller.OrdersController;
 
+import java.io.IOException;
 import java.util.Map;
+
+import javax.naming.directory.InvalidAttributeValueException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.PaintingCodOrWalletRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
@@ -22,9 +26,9 @@ import com.razorpay.RazorpayException;
 
 @Controller
 public class OrdersController {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(OrdersController.class);
-	
+
 	@Autowired
 	private AuthHelper authHelper;
 	@Autowired
@@ -49,6 +53,36 @@ public class OrdersController {
 		orderService.updateStatus(response);
 		logger.info("paymentCallback finished.");
 		return "success";
+	}
+
+	@PostMapping("/paymentCallbackCodOrWallet")
+	public ResponseEntity<?> paymentCallbackCOD(@RequestBody PaintingCodOrWalletRequest request) {
+		try {
+			long userId = authHelper.getCurrentUserId();
+			String email = authHelper.getCurrentEmail();
+
+			String result = orderService.updateStatusCOD(email, userId, request.amount(), request.paintingId(),
+					request.mobile(), request.address(), request.paymentMode(), request.name());
+
+			// Check for specific business logic messages from the service
+			if ("Painting is already sold".equals(result)) {
+				// Return a specific error for this known case
+				return new ResponseEntity<>(result, HttpStatus.CONFLICT); // 409
+			}
+
+			logger.info("paymentCallback finished successfully.");
+			return new ResponseEntity<>("success", HttpStatus.OK);
+
+		} catch (InvalidAttributeValueException e) {
+			// Handle specific, known exceptions with a clear error code
+			logger.error("Validation error: {}", e.getMessage());
+			return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.BAD_REQUEST); // 400
+		} catch (IOException e) {
+			// Handle unexpected internal errors
+			logger.error("Internal error during order processing:", e);
+			return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR); // 500
+		}
 
 	}
+
 }

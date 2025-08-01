@@ -21,7 +21,8 @@ import io.jsonwebtoken.io.IOException;
 public class PdfServiceImpl implements PdfService{
 
 	@Override
-    public byte[] generateReceiptPdf(Orders order, User user, Painting painting, String imageDirectory)
+    public byte[] generateReceiptPdf(Orders order, User user, Painting painting, String imageDirectory, 
+    		String paymentMode, String name, String contactNumber, String address)
             throws DocumentException, IOException, java.io.IOException {
 
         String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"));
@@ -112,11 +113,14 @@ public class PdfServiceImpl implements PdfService{
                         </tr>
                         <tr>
                             <td><strong>Billed To:</strong> %s</td>
-                            <td><strong>Payment Mode:</strong> Cash on Delivery</td>
+                            <td><strong>Payment Mode:</strong> %s</td>
                         </tr>
                         <tr>
                             <td colspan="2"><strong>Address:</strong> %s</td>
                         </tr>
+                        <tr>
+        		            <td><strong>Contact Number:</strong> %s</td>
+        		        </tr>
                     </table>
 
                     <table class="item-table">
@@ -147,8 +151,10 @@ public class PdfServiceImpl implements PdfService{
         """.formatted(
             order.getOrderId(),
             formattedDate,
-            user.getName(),
-            user.getAddress(),
+            name,
+            paymentMode,
+            address,
+            contactNumber,
             imageUri,
             painting.getTitle(),
             painting.getTitle(),

@@ -8,6 +8,7 @@ public record PaintingResponse (
 		double length,
 		double breadth,
 		double startingPrice,
+		double finalPrice,
 		boolean isForAuction,
 		boolean isSold,
 		String seller

@@ -2,6 +2,8 @@ import { useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ const Login = () => {
   const [forgotConfirmPassword, setForgotConfirmPassword] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotError, setForgotError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [userDetails, setUserDetails] = useState({
@@ -129,7 +132,7 @@ const Login = () => {
 
       if (data?.token) {
         localStorage.setItem("token", data.token);
-        
+
         // For login, fetch and store the username
         if (isLogin) {
           try {
@@ -149,9 +152,13 @@ const Login = () => {
       if (!isLogin) {
         setShowUserDetails(true); // For signup: show form to collect additional details
       } else {
-        alert(data.message || "Login successful");
-        navigate("/");
-        window.location.reload();
+        toast.success(data.message || "Login successful");
+
+        // Wait for toast to show before navigating (optional)
+        setTimeout(() => {
+          navigate("/");
+          window.location.reload(); // Use only if absolutely needed
+        }, 1200);
       }
     } catch (err) {
       alert(
@@ -240,6 +247,8 @@ const Login = () => {
 
   return (
     <div className="h-[790px] w-screen bg-gradient-to-tr from-[#f9f9f8] via-[#f9f4ed] to-[#f5ebde] flex items-center justify-center px-4">
+      <ToastContainer position="top-right" autoClose={5000} />
+
       <div>
         <img
           src="https://paperplanedesign.in/cdn/shop/files/collage-wallpaper-featuring-famous-van-gogh-paintings-251088.jpg?v=1715591219&width=1080"
@@ -261,10 +270,10 @@ const Login = () => {
               setShowForgot(false);
               setShowUserDetails(false);
             }}
-            className={`px-6 py-2 rounded-full font-semibold ${
+            className={`px-6 py-2 rounded-full font-semibold cursor-pointer ${
               isLogin && !showForgot && !showUserDetails
-                ? "bg-purple-500 text-white hover:cursor-pointer"
-                : "bg-white/60 text-gray-800 hover:cursor-pointer"
+                ? "bg-purple-500 text-white"
+                : "bg-white/60 text-gray-800"
             }`}
           >
             Login
@@ -275,10 +284,10 @@ const Login = () => {
               setShowForgot(false);
               setShowUserDetails(false);
             }}
-            className={`px-6 py-2 rounded-full font-semibold ${
+            className={`px-6 py-2 rounded-full font-semibold cursor-pointer ${
               !isLogin && !showForgot && !showUserDetails
-                ? "bg-purple-500 text-white hover:cursor-pointer"
-                : "bg-white/60 text-gray-800 hover:cursor-pointer"
+                ? "bg-purple-500 text-white"
+                : "bg-white/60 text-gray-800"
             }`}
           >
             Sign Up
@@ -482,7 +491,7 @@ const Login = () => {
               </form>
             )}
             <button
-              className="mt-4 w-full text-blue-600 hover:underline font-medium"
+              className="mt-4 w-full text-blue-600 hover:underline font-medium cursor-pointer"
               onClick={() => {
                 setShowForgot(false);
                 setForgotStep(1);
@@ -509,20 +518,67 @@ const Login = () => {
                 value={formData.email}
                 className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
               />
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                required
-                onChange={handleChange}
-                value={formData.password}
-                className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Password"
+                  required
+                  onChange={handleChange}
+                  value={formData.password}
+                  className="w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
+                />
+                <div
+                  className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    // Eye Off Icon
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.15.195-2.253.55-3.275m5.025-1.725A10.05 10.05 0 0112 5c5.523 0 10 4.477 10 10 0 1.15-.195 2.253-.55 3.275M15 12a3 3 0 11-6 0 3 3 0 016 0zM3 3l18 18"
+                      />
+                    </svg>
+                  ) : (
+                    // Eye Icon
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.522 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  )}
+                </div>
+              </div>
+
               {/* Forgot Password Button */}
               {isLogin && (
                 <button
                   type="button"
-                  className="text-blue-600 hover:underline font-medium text-sm float-right mb-2 hover:cursor-pointer"
+                  className="text-blue-600 hover:underline font-medium text-sm float-right mb-2 cursor-pointer"
                   onClick={() => setShowForgot(true)}
                 >
                   Forgot Password?
@@ -530,15 +586,61 @@ const Login = () => {
               )}
               {!isLogin && (
                 <>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="Confirm Password"
-                    required
-                    onChange={handleChange}
-                    value={formData.confirmPassword}
-                    className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      placeholder="Confirm Password"
+                      required
+                      onChange={handleChange}
+                      value={formData.confirmPassword}
+                      className="w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
+                    />
+                    <div
+                      className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        // Eye Off Icon
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5 text-gray-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.15.195-2.253.55-3.275m5.025-1.725A10.05 10.05 0 0112 5c5.523 0 10 4.477 10 10 0 1.15-.195 2.253-.55 3.275M15 12a3 3 0 11-6 0 3 3 0 016 0zM3 3l18 18"
+                          />
+                        </svg>
+                      ) : (
+                        // Eye Icon
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5 text-gray-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M2.458 12C3.732 7.943 7.522 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
                   <select
                     name="securityQuestion"
                     required
@@ -592,7 +694,7 @@ const Login = () => {
             <p className="mt-4 text-center text-sm">
               <button
                 onClick={toggleForm}
-                className="text-blue-600 hover:underline font-medium hover:cursor-pointer"
+                className="text-blue-600 hover:underline font-medium cursor-pointer"
               >
                 {isLogin
                   ? "Need an account? Sign Up"

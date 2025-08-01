@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService{
 		        painting.getLength(),
 		        painting.getBreadth(),
 		        painting.getStartingPrice(),
+		        painting.getFinalPrice(),
 		        painting.isForAuction(),
 		        painting.isSold(),
 		        painting.getSeller().getName()
@@ -55,6 +56,7 @@ public class UserServiceImpl implements UserService{
 		        painting.getLength(),
 		        painting.getBreadth(),
 		        painting.getStartingPrice(),
+		        painting.getFinalPrice(),
 		        painting.isForAuction(),
 		        painting.isSold(),
 		        painting.getSeller().getName()
