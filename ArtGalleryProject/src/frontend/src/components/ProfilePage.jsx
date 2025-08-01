@@ -61,6 +61,13 @@ const ProfilePage = () => {
     }
   };
 
+  const handleEditToggle = () => {
+    if (!editMode) {
+      setForm(profile);
+    }
+    setEditMode((prev) => !prev);
+  };
+
   const handleClose = () => {
     setIsVisible(false);
   };
@@ -75,11 +82,10 @@ const ProfilePage = () => {
   const tabButton = (label) => (
     <button
       onClick={() => setActiveTab(label)}
-      className={`px-6 py-2 rounded-full font-semibold transition-all ${
-        activeTab === label
-          ? "bg-[#3e2e1e] text-white"
-          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-      }`}
+      className={`px-6 py-2 rounded-full font-semibold transition-all ${activeTab === label
+        ? "bg-[#3e2e1e] text-white"
+        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+        }`}
     >
       {label === "profile" ? "Profile" : "My Paintings"}
     </button>
@@ -147,7 +153,7 @@ const ProfilePage = () => {
                     <FaUserCircle className="text-4xl" />
                     <h1 className="text-3xl font-bold">My Profile</h1>
                     <button
-                      onClick={() => setEditMode((prev) => !prev)}
+                      onClick={handleEditToggle}
                       className="ml-auto px-4 py-1 bg-[#94520f] text-white rounded-full"
                     >
                       {editMode ? "Cancel" : "Edit"}
