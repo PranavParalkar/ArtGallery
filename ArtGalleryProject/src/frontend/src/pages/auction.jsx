@@ -9,9 +9,17 @@ const Auction = () => {
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [pageNo, setPageNo] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const navigate = useNavigate(); // Add this
-// This state is now controlled by the Timer component via a prop
+  const navigate = useNavigate(); 
   const [auctionLive, setAuctionLive] = useState(false);
+  const [bidButton, setBidButton] = useState("Place Bid");
+
+  useEffect(() => {
+    if (auctionLive) {
+      setBidButton("Place Bid");
+    } else {
+      setBidButton("Upcoming...");
+    }
+  }, [auctionLive]);
 
   useEffect(() => {
     fetchPaintings(pageNo);
@@ -91,12 +99,16 @@ const Auction = () => {
                   </p>
                 </div>
                 <button
+                  disabled={!auctionLive}
+                  className={`mt-10 block text-center bottom-0 cursor-pointer py-2 rounded-lg font-semibold transition duration-300 ease-in-out
+                  ${auctionLive ? 
+                    'bg-[#7c5c3d] hover:bg-[#847464] hover:scale-95 active:scale-90 text-white' 
+                  : 'bg-gray-400 text-gray-200 cursor-not-allowed'}`}
                   onClick={() =>
                     navigate(`/biddingFrontend/${painting.paintingId}`)
                   }
-                  className="mt-10 block text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-[#7c5c3d] hover:bg-[#847464] text-white font-semibold transition"
                 >
-                  Place Bid
+                  {bidButton}
                 </button>
               </div>
             </motion.div>

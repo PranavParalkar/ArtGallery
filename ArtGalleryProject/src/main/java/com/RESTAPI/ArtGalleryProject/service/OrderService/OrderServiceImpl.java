@@ -6,6 +6,8 @@ import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import javax.naming.directory.InvalidAttributeValueException;
+
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
-import com.RESTAPI.ArtGalleryProject.DTO.Order.WalletPaymentRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
-import com.RESTAPI.ArtGalleryProject.repository.LoginCredRepo;
 import com.RESTAPI.ArtGalleryProject.repository.OrdersRepo;
 import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
@@ -47,8 +47,6 @@ public class OrderServiceImpl implements OrderService {
 	private PaintingRepo paintingRepo;
 	@Autowired
 	private UserRepo userRepo;
-	@Autowired
-	private LoginCredRepo loginCredRepo;
 	@Autowired
 	private PdfService pdfService;
 	@Autowired
@@ -96,18 +94,18 @@ public class OrderServiceImpl implements OrderService {
 	@Transactional
 	public Orders updateStatus(Map<String, String> map) {
 		String razorpayId = map.get("razorpay_order_id");
-		
+
 		if (razorpayId == null) {
 			logger.error("razorpay_order_id is null in payment callback");
 			throw new RuntimeException("Invalid payment callback - missing order ID");
 		}
-		
+
 		Orders order = ordersRepository.findByRazorpayOrderId(razorpayId);
 		if (order == null) {
 			logger.error("Order not found for razorpay ID: {}", razorpayId);
 			throw new RuntimeException("Order not found for payment callback");
 		}
-		
+
 		order.setOrderStatus("PAYMENT DONE");
 		Orders savedOrder = ordersRepository.save(order);
 
@@ -132,39 +130,63 @@ public class OrderServiceImpl implements OrderService {
 				logger.error("Error sending email confirmation: {}", e.getMessage());
 			}
 		}
-		
+
 		logger.info("updateStatus finished successfully for order ID: {}", savedOrder.getOrderId());
 		return savedOrder;
 	}
 
 	@Override
 	@Transactional
-	public String updateStatusCOD(String email, long userId, double amount, long paintingId,
-			String mobileNumber, String address, String paymentMethod, String name) throws java.io.IOException {
+	public String updateStatusCOD(String email, long userId, double amount, long paintingId, String mobileNumber,
+			String address, String paymentMethod, String name)
+			throws java.io.IOException, InvalidAttributeValueException {
 		logger.info("updateStatusCOD started for User ID: {} and Painting ID: {}", userId, paintingId);
 
 		Painting painting = paintingRepo.findById(paintingId)
 				.orElseThrow(() -> new EntityNotFoundException("Painting not found with id: " + paintingId));
-		
+
 		// Check if painting is already sold
 		if (painting.isSold()) {
 			logger.warn("Painting {} is already sold", paintingId);
 			return "Painting is already sold";
 		}
-		
+
 		User user = userRepo.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-		Orders order = new Orders();
-		order.setName(user.getName());
-		order.setAmount(amount);
-		order.setEmail(email);
-		order.setOrderStatus("PENDING_COD");
-		Orders savedOrder = ordersRepository.save(order);
+		Orders savedOrder;
+		if (paymentMethod.equals("Pay with Wallet")) {
+			double paintingPrice = painting.getStartingPrice();
+			double currentBalance = user.getWallet().getBalance();
 
+			if (currentBalance < paintingPrice) {
+				logger.warn("Insufficient wallet balance for user {}. Required: {}, Available: {}", email,
+						paintingPrice, currentBalance);
+				throw new InvalidAttributeValueException("Insufficient wallet balance, can't purchase the item.");
+			}
+
+			// Decrement wallet balance
+			walletService.decrementBalanceByEmail(email, paintingPrice);
+
+			// Create order record
+			Orders order = new Orders();
+			order.setName(user.getName());
+			order.setEmail(email);
+			order.setAmount(paintingPrice);
+			order.setOrderStatus("PAID");
+			savedOrder = ordersRepository.save(order);
+		} else {
+			Orders order = new Orders();
+			order.setName(user.getName());
+			order.setAmount(amount);
+			order.setEmail(email);
+			order.setOrderStatus("PENDING_COD");
+			savedOrder = ordersRepository.save(order);
+		}
 		// Mark painting as sold and set buyer
 //		painting.setSold(true);
 //		painting.setBuyer(user);
+//		painting.setFinalPrice(painting.getStartingPrice());
 //		paintingRepo.save(painting);
 
 		String subject = "🎨 Your Fusion Art Order Confirmation (#" + savedOrder.getOrderId() + ")";
@@ -367,115 +389,40 @@ public class OrderServiceImpl implements OrderService {
 				);
 
 		try {
-		    logger.info("Generating PDF receipt for Order ID: {}", savedOrder.getOrderId());
+			logger.info("Generating PDF receipt for Order ID: {}", savedOrder.getOrderId());
 
-		    byte[] pdfReceipt = pdfService.generateReceiptPdf(savedOrder, user, painting, imageDirectory, paymentMethod, name, mobileNumber, address);
-		    String pdfFilename = "FusionArt-Receipt-" + savedOrder.getOrderId() + ".pdf";
+			byte[] pdfReceipt = pdfService.generateReceiptPdf(savedOrder, user, painting, imageDirectory, paymentMethod,
+					name, mobileNumber, address);
+			String pdfFilename = "FusionArt-Receipt-" + savedOrder.getOrderId() + ".pdf";
 
-		    logger.info("Sending confirmation email with PDF attachment to: {}", email);
+			logger.info("Sending confirmation email with PDF attachment to: {}", email);
 
-		    emailService.sendOrderConfirmationEmailCOD(
-		        email,
-		        subject,
-		        htmlContent,
-		        imageAbsolutePath,
-		        pdfReceipt,
-		        pdfFilename
-		    );
+			emailService.sendOrderConfirmationEmailCOD(email, subject, htmlContent, imageAbsolutePath, pdfReceipt,
+					pdfFilename);
 
-		    logger.info("Order confirmation email sent successfully for Order ID: {}", savedOrder.getOrderId());
-		    return "Order confirmation email with PDF receipt sent successfully.";
+			logger.info("Order confirmation email sent successfully for Order ID: {}", savedOrder.getOrderId());
+			return "Order confirmation email with PDF receipt sent successfully.";
 
 		} catch (DocumentException | IOException e) {
-		    logger.error("PDF generation failed for Order ID: {}", savedOrder.getOrderId(), e);
+			logger.error("PDF generation failed for Order ID: {}", savedOrder.getOrderId(), e);
 
-		    // Optionally still try to send the email without attachment
-		    try {
-		        emailService.sendOrderConfirmationEmailCOD(
-		            email,
-		            subject,
-		            htmlContent,
-		            imageAbsolutePath,
-		            null,
-		            null
-		        );
-		        logger.warn("PDF was not attached, but email sent without PDF for Order ID: {}", savedOrder.getOrderId());
-		        return "Order placed. PDF receipt failed, but confirmation email sent without attachment.";
-		    } catch (MessagingException ex) {
-		        logger.error("Failed to send confirmation email without PDF for Order ID: {}", savedOrder.getOrderId(), ex);
-		        return "Order placed, but failed to generate PDF and send confirmation email.";
-		    }
+			// Optionally still try to send the email without attachment
+			try {
+				emailService.sendOrderConfirmationEmailCOD(email, subject, htmlContent, imageAbsolutePath, null, null);
+				logger.warn("PDF was not attached, but email sent without PDF for Order ID: {}",
+						savedOrder.getOrderId());
+				return "Order placed. PDF receipt failed, but confirmation email sent without attachment.";
+			} catch (MessagingException ex) {
+				logger.error("Failed to send confirmation email without PDF for Order ID: {}", savedOrder.getOrderId(),
+						ex);
+				return "Order placed, but failed to generate PDF and send confirmation email.";
+			}
 
 		} catch (MessagingException e) {
-		    logger.error("Email sending failed for Order ID: {}", savedOrder.getOrderId(), e);
-		    return "Order placed, but failed to send confirmation email with PDF receipt.";
+			logger.error("Email sending failed for Order ID: {}", savedOrder.getOrderId(), e);
+			return "Order placed, but failed to send confirmation email with PDF receipt.";
 		}
 
-	}
-
-	@Override
-	@Transactional
-	public String processWalletPayment(WalletPaymentRequest request, String email) {
-		logger.info("processWalletPayment started for Painting ID: {} and User Email: {}", request.paintingId(), email);
-
-		try {
-			// Find the painting
-			Painting painting = paintingRepo.findById(request.paintingId()).orElseThrow(
-					() -> new EntityNotFoundException("Painting not found with id: " + request.paintingId()));
-
-			// Check if painting is already sold
-			if (painting.isSold()) {
-				logger.warn("Painting {} is already sold", request.paintingId());
-				return "Painting is already sold";
-			}
-
-			// Find the user by email through LoginCredentials
-			User user = loginCredRepo.findById(email)
-					.orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email)).getUser();
-
-			// Check wallet balance
-			double paintingPrice = painting.getStartingPrice();
-			double currentBalance = user.getWallet().getBalance();
-
-			if (currentBalance < paintingPrice) {
-				logger.warn("Insufficient wallet balance for user {}. Required: {}, Available: {}", email,
-						paintingPrice, currentBalance);
-				return "Insufficient wallet balance";
-			}
-
-			// Decrement wallet balance
-			walletService.decrementBalanceByEmail(email, paintingPrice);
-
-			// Mark painting as sold and set buyer
-//			painting.setSold(true);
-//			painting.setBuyer(user);
-//			paintingRepo.save(painting);
-
-			// Create order record
-			Orders order = new Orders();
-			order.setName(user.getName());
-			order.setEmail(email);
-			order.setAmount(paintingPrice);
-			order.setOrderStatus("PAID");
-			ordersRepository.save(order);
-
-			// Send confirmation email
-			try {
-				emailService.sendOrderConfirmationEmail(email, "Payment Successful - Art Gallery", "Hi "
-						+ user.getName() + ",\n\nYour wallet payment has been processed successfully for painting: "
-						+ painting.getTitle() + ".\n\nAmount: ₹" + paintingPrice + "\n\nThanks for shopping with us!");
-				logger.info("Order confirmation email sent to: {}", email);
-			} catch (Exception e) {
-				logger.error("Error sending email confirmation: {}", e.getMessage());
-			}
-
-			logger.info("processWalletPayment finished successfully for Painting ID: {}", request.paintingId());
-			return "Payment successful";
-
-		} catch (Exception e) {
-			logger.error("Error in processWalletPayment: {}", e.getMessage(), e);
-			return "Payment failed: " + e.getMessage();
-		}
 	}
 
 }

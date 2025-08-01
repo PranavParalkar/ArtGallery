@@ -1,4 +1,4 @@
-package com.RESTAPI.ArtGalleryProject.service.DashBoard;
+package com.RESTAPI.ArtGalleryProject.service.Auction;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -28,27 +28,26 @@ public class BidServiceImpl implements BidService {
 	private static final Logger logger = LoggerFactory.getLogger(BidServiceImpl.class);
 
 	@Autowired
-	private BidRepo bidrepo;
+	private BidRepo bidRepo;
 	@Autowired
-	private UserRepo userrepo;
+	private UserRepo userRepo;
 	@Autowired
-	private PaintingRepo paintingrepo;
+	private PaintingRepo paintingRepo;
 	@Autowired
-	private WalletRepo walletrepo;
+	private WalletRepo walletRepo;
 
 	@Override
 	@Transactional
 	public void placeBid(long userId, long paintingId, double newBidAmount) {
 		logger.info("placeBid started.");
 
-		User buyer = userrepo.findById(userId)
-				.orElseThrow(() -> new RuntimeException("User not found"));
-		
-		Painting painting = paintingrepo.findById(paintingId)
+		User buyer = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+		Painting painting = paintingRepo.findById(paintingId)
 				.orElseThrow(() -> new RuntimeException("Painting not found"));
 
 		Wallet buyerWallet = buyer.getWallet();
-		Optional<Bid> currentHighestBidOpt = bidrepo.findTopByPaintingOrderByBidAmountDescTimeStampAsc(painting);
+		Optional<Bid> currentHighestBidOpt = bidRepo.findTopByPaintingOrderByBidAmountDescTimeStampAsc(painting);
 
 		if (currentHighestBidOpt.isPresent()) {
 			double currentHighest = currentHighestBidOpt.get().getBidAmount();
@@ -61,12 +60,13 @@ public class BidServiceImpl implements BidService {
 			double startingPrice = painting.getStartingPrice();
 			if (newBidAmount < startingPrice) {
 				logger.info("placeBid finished.");
-				throw new RuntimeException("First bid must be at least the starting price: " + startingPrice);
+				throw new RuntimeException(
+						"First bid must be at least the starting price: " + startingPrice);
 			}
 		}
 
 		// Find if the buyer already placed a bid on this painting
-		Optional<Bid> existingUserBidOpt = bidrepo.findByPaintingAndBuyer(painting, buyer);
+		Optional<Bid> existingUserBidOpt = bidRepo.findByPaintingAndBuyer(painting, buyer);
 
 		if (existingUserBidOpt.isPresent()) {
 			Bid existingBid = existingUserBidOpt.get();
@@ -80,14 +80,14 @@ public class BidServiceImpl implements BidService {
 			existingBid.setBidAmount(newBidAmount);
 			existingBid.setTimeStamp(LocalTime.now());
 
-			walletrepo.save(buyerWallet);
-			bidrepo.save(existingBid);
+			walletRepo.save(buyerWallet);
+			bidRepo.save(existingBid);
 		} else {
 			if (currentHighestBidOpt.isPresent()) {
 				Bid prevBid = currentHighestBidOpt.get();
 				Wallet prevWallet = prevBid.getBuyer().getWallet();
 				prevWallet.setBalance(prevWallet.getBalance() + prevBid.getBidAmount());
-				walletrepo.save(prevWallet);
+				walletRepo.save(prevWallet);
 			}
 
 			// Deduct from current buyer
@@ -99,8 +99,8 @@ public class BidServiceImpl implements BidService {
 			newBid.setPainting(painting);
 			newBid.setTimeStamp(LocalTime.now());
 
-			walletrepo.save(buyerWallet);
-			bidrepo.save(newBid);
+			walletRepo.save(buyerWallet);
+			bidRepo.save(newBid);
 		}
 
 		logger.info("placeBid finished.");
@@ -109,9 +109,9 @@ public class BidServiceImpl implements BidService {
 	@Override
 	public List<TopBidDTO> getTop3BidsWithRank(Long paintingId) {
 		logger.info("getTop3BidsWithRank started.");
-		Painting painting = paintingrepo.findById(paintingId)
+		Painting painting = paintingRepo.findById(paintingId)
 				.orElseThrow(() -> new RuntimeException("Painting not found"));
-		List<Bid> topBids = bidrepo.findTop3ByPaintingOrderByBidAmountDesc(painting);
+		List<Bid> topBids = bidRepo.findTop3ByPaintingOrderByBidAmountDesc(painting);
 		List<TopBidDTO> result = new ArrayList<>();
 		int rank = 1;
 		for (Bid bid : topBids) {
@@ -124,7 +124,28 @@ public class BidServiceImpl implements BidService {
 	@Transactional
 	@Override
 	public String auctionEnds() {
-		return null;
+		logger.info("auctionEnds started.");
+		List<Painting> livePaintings = paintingRepo.findByIsSoldFalseAndIsForAuctionTrue();
+		for (Painting painting : livePaintings) {
+			Optional<Bid> highestBidderOpt = bidRepo.findTopByPaintingOrderByBidAmountDescTimeStampAsc(painting);
+			if(highestBidderOpt.isEmpty()) {
+				continue;
+			}
+			
+			Bid highestBidder = highestBidderOpt.get();
+			List<Bid> allBids = bidRepo.findByPainting(painting);
+			for(Bid bid : allBids) {
+				if(bid.getBidAmount() == highestBidder.getBidAmount()) {
+					
+				} else {
+					
+				}
+			}
+			painting.setSold(true);
+			painting.setFinalPrice(highestBidder.getBidAmount());
+			painting.setBuyer(highestBidder.getBuyer());
+			paintingRepo.save(painting);
+		}
 	}
 
 }

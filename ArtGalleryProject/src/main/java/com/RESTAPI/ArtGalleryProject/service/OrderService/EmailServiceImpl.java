@@ -27,42 +27,44 @@ public class EmailServiceImpl implements EmailService {
 	@Value("${spring.mail.username}")
 	private String emailFrom;
 
-	 @Override
-	    public void sendOrderConfirmationEmailCOD(String to, String subject, String htmlContent, String inlineImageAbsolutePath, byte[] pdfBytes, String attachmentFilename)
-	            throws MessagingException {
-	        logger.info("Preparing MIME email to: {}", to);
-	        MimeMessage message = mailSender.createMimeMessage();
+	@Override
+	public void sendOrderConfirmationEmailCOD(String to, String subject, String htmlContent,
+			String inlineImageAbsolutePath, byte[] pdfBytes, String attachmentFilename) throws MessagingException {
+		logger.info("Preparing MIME email to: {}", to);
+		MimeMessage message = mailSender.createMimeMessage();
 
-	        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-	        helper.setFrom(emailFrom);
-	        helper.setTo(to);
-	        helper.setSubject(subject);
-	        helper.setText(htmlContent, true);
+		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+		helper.setFrom(emailFrom);
+		helper.setTo(to);
+		helper.setSubject(subject);
+		helper.setText(htmlContent, true);
 
-	        // Inline painting image
-	        File imageFile = new File(inlineImageAbsolutePath);
-	        if (imageFile.exists()) {
-	            FileSystemResource imageResource = new FileSystemResource(imageFile);
-	            helper.addInline("paintingImage", imageResource);
-	        } else {
-	            logger.warn("Inline image not found at path: {}", inlineImageAbsolutePath);
-	        }
+		// Inline painting image
+		File imageFile = new File(inlineImageAbsolutePath);
+		if (imageFile.exists()) {
+			FileSystemResource imageResource = new FileSystemResource(imageFile);
+			helper.addInline("paintingImage", imageResource);
+		} else {
+			logger.warn("Inline image not found at path: {}", inlineImageAbsolutePath);
+		}
 
-	        // Attach PDF
-	        helper.addAttachment(attachmentFilename, new ByteArrayResource(pdfBytes));
-	        mailSender.send(message);
-	        logger.info("Email with PDF attachment successfully sent to: {}", to);
-	    }
-	
+		// Attach PDF
+		helper.addAttachment(attachmentFilename, new ByteArrayResource(pdfBytes));
+		mailSender.send(message);
+		logger.info("Email with PDF attachment successfully sent to: {}", to);
+	}
+
 	@Override
 	public void sendOrderConfirmationEmail(String emailTo, String subject, String body) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(emailTo);
-        message.setSubject(subject);
-        message.setText(body);
-        message.setFrom(emailFrom);
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(emailTo);
+		message.setSubject(subject);
+		message.setText(body);
+		message.setFrom(emailFrom);
 
-        mailSender.send(message);
-    }
+		mailSender.send(message);
+	}
 	
+	
+
 }

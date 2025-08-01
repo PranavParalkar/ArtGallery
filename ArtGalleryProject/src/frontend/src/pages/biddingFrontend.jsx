@@ -197,7 +197,7 @@ const BiddingFrontend = () => {
                 className={`${auctionLive
                     ? "bg-gradient-to-r from-[#6b4c35] to-[#ca6b22] hover:from-[#d0732c] hover:to-[#6b4c35]"
                     : "bg-gray-400 cursor-not-allowed"
-                  } text-white px-8 py-3 rounded-lg font-bold text-lg transition shadow-lg`}
+                  } text-white px-8 py-3 rounded-lg font-bold text-lg transition shadow-lg cursor-pointer`}
               >
                 {console.log(auctionLive)}
                 Place Bid

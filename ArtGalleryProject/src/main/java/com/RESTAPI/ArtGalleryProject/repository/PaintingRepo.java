@@ -11,7 +11,7 @@ import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 
 @Repository
 public interface PaintingRepo extends JpaRepository<Painting, Long> {
-    Page<Painting> findByIsSoldFalseAndIsForAuctionTrue(Pageable pageable);    // for Auctions
-	Page<Painting> findByIsSoldFalseAndIsForAuctionFalse(Pageable pageable);
-	List<Painting> findByIsSoldFalseAndIsForAuctionTrue(); 					   // for shop paintings
+    Page<Painting> findByIsSoldFalseAndIsForAuctionTrueOrderByPaintingIdDesc(Pageable pageable);    // for Auctions
+	Page<Painting> findByIsSoldFalseAndIsForAuctionFalseOrderByPaintingIdDesc(Pageable pageable);
+	List<Painting> findByIsSoldFalseAndIsForAuctionTrue(); // for end auction
 }

@@ -158,7 +158,7 @@ const Login = () => {
         setTimeout(() => {
           navigate("/");
           window.location.reload(); // Use only if absolutely needed
-        }, 900);
+        }, 1200);
       }
     } catch (err) {
       alert(
@@ -270,10 +270,10 @@ const Login = () => {
               setShowForgot(false);
               setShowUserDetails(false);
             }}
-            className={`px-6 py-2 rounded-full font-semibold ${
+            className={`px-6 py-2 rounded-full font-semibold cursor-pointer ${
               isLogin && !showForgot && !showUserDetails
-                ? "bg-purple-500 text-white hover:cursor-pointer"
-                : "bg-white/60 text-gray-800 hover:cursor-pointer"
+                ? "bg-purple-500 text-white"
+                : "bg-white/60 text-gray-800"
             }`}
           >
             Login
@@ -284,10 +284,10 @@ const Login = () => {
               setShowForgot(false);
               setShowUserDetails(false);
             }}
-            className={`px-6 py-2 rounded-full font-semibold ${
+            className={`px-6 py-2 rounded-full font-semibold cursor-pointer ${
               !isLogin && !showForgot && !showUserDetails
-                ? "bg-purple-500 text-white hover:cursor-pointer"
-                : "bg-white/60 text-gray-800 hover:cursor-pointer"
+                ? "bg-purple-500 text-white"
+                : "bg-white/60 text-gray-800"
             }`}
           >
             Sign Up
@@ -491,7 +491,7 @@ const Login = () => {
               </form>
             )}
             <button
-              className="mt-4 w-full text-blue-600 hover:underline font-medium"
+              className="mt-4 w-full text-blue-600 hover:underline font-medium cursor-pointer"
               onClick={() => {
                 setShowForgot(false);
                 setForgotStep(1);
@@ -578,7 +578,7 @@ const Login = () => {
               {isLogin && (
                 <button
                   type="button"
-                  className="text-blue-600 hover:underline font-medium text-sm float-right mb-2 hover:cursor-pointer"
+                  className="text-blue-600 hover:underline font-medium text-sm float-right mb-2 cursor-pointer"
                   onClick={() => setShowForgot(true)}
                 >
                   Forgot Password?
@@ -694,7 +694,7 @@ const Login = () => {
             <p className="mt-4 text-center text-sm">
               <button
                 onClick={toggleForm}
-                className="text-blue-600 hover:underline font-medium hover:cursor-pointer"
+                className="text-blue-600 hover:underline font-medium cursor-pointer"
               >
                 {isLogin
                   ? "Need an account? Sign Up"

@@ -3,7 +3,7 @@ package com.RESTAPI.ArtGalleryProject.controller.PaintingController;
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.PlaceBidRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.TopBidDTO;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
-import com.RESTAPI.ArtGalleryProject.service.DashBoard.BidService;
+import com.RESTAPI.ArtGalleryProject.service.Auction.BidService;
 
 import jakarta.transaction.Transactional;
 
@@ -71,11 +71,13 @@ public class AuctionsController {
 	@Transactional
 	public ResponseEntity<?> auctionIsNotLive() {
 		try {
+			logger.info("auctionIsNotLive started.");
 			if (!isAuctionLive) {
+				logger.info("auctionIsNotLive finished.");
 				return new ResponseEntity<>("Auction is already upcoming.", HttpStatus.OK);
 			} else {
 				isAuctionLive = false;
-				
+
 				return new ResponseEntity<>("Auction has now ended.", HttpStatus.OK);
 			}
 		} catch (Exception e) {

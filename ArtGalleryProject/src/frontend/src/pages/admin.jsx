@@ -110,7 +110,7 @@ const Admin = () => {
         <div className="flex bg-gray-100 rounded-lg p-1">
           <button
             onClick={() => setActiveTab("paintings")}
-            className={`px-6 py-2 rounded-md font-semibold transition-colors ${
+            className={`px-6 py-2 rounded-md font-semibold transition-colors cursor-pointer ${
               activeTab === "paintings"
                 ? "bg-[#a17b5d] text-white"
                 : "text-gray-600 hover:text-gray-800"
@@ -120,7 +120,7 @@ const Admin = () => {
           </button>
           <button
             onClick={() => setActiveTab("withdrawals")}
-            className={`px-6 py-2 rounded-md font-semibold transition-colors ${
+            className={`px-6 py-2 rounded-md font-semibold transition-colors cursor-pointer ${
               activeTab === "withdrawals"
                 ? "bg-[#a17b5d] text-white"
                 : "text-gray-600 hover:text-gray-800"
@@ -184,13 +184,13 @@ const Admin = () => {
                     <div className="flex justify-between mt-4 space-x-2">
                       <button
                         onClick={() => approvePainting(p.id)}
-                        className="w-full bg-green-500 hover:bg-green-600 text-white text-sm py-2 rounded-xl transition-colors"
+                        className="w-full bg-green-500 hover:bg-green-600 text-white text-sm py-2 rounded-xl transition-colors cursor-pointer"
                       >
                         Approve
                       </button>
                       <button
                         onClick={() => rejectPainting(p.id)}
-                        className="w-full bg-red-500 hover:bg-red-600 text-white text-sm py-2 rounded-xl transition-colors"
+                        className="w-full bg-red-500 hover:bg-red-600 text-white text-sm py-2 rounded-xl transition-colors cursor-pointer"
                       >
                         Reject
                       </button>
@@ -263,13 +263,13 @@ const Admin = () => {
                     <div className="flex justify-between mt-6 space-x-2">
                       <button
                         onClick={() => approveWithdrawal(request.id)}
-                        className="w-full bg-green-500 hover:bg-green-600 text-white text-sm py-2 rounded-xl transition-colors"
+                        className="w-full bg-green-500 hover:bg-green-600 text-white text-sm py-2 rounded-xl transition-colors cursor-pointer"
                       >
                         Approve
                       </button>
                       <button
                         onClick={() => rejectWithdrawal(request.id)}
-                        className="w-full bg-red-500 hover:bg-red-600 text-white text-sm py-2 rounded-xl transition-colors"
+                        className="w-full bg-red-500 hover:bg-red-600 text-white text-sm py-2 rounded-xl transition-colors cursor-pointer"
                       >
                         Reject
                       </button>

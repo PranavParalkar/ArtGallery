@@ -68,7 +68,7 @@ const Header = ({ setIsWalletOpen }) => {
             {/* Wallet Icon Button */}
             <button
               onClick={() => setIsWalletOpen(true)}
-              className="w-9 h-9 shadow-2xl shadow-black flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition duration-200"
+              className="w-9 h-9 shadow-2xl shadow-black flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer transition duration-200"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

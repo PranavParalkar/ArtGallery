@@ -3,6 +3,8 @@ package com.RESTAPI.ArtGalleryProject.controller.OrdersController;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.naming.directory.InvalidAttributeValueException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.PaintingCodOrWalletRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
-import com.RESTAPI.ArtGalleryProject.DTO.Order.WalletPaymentRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.OrderService.OrderService;
@@ -55,26 +56,33 @@ public class OrdersController {
 	}
 
 	@PostMapping("/paymentCallbackCodOrWallet")
-	public String paymentCallbackCOD(@RequestBody PaintingCodOrWalletRequest request) throws IOException {
-		long userId = authHelper.getCurrentUserId();
-		String email = authHelper.getCurrentEmail();
-		orderService.updateStatusCOD(email, userId, request.amount(), request.paintingId(), request.mobile(), request.address(), request.paymentMode(), request.name());
-		logger.info("paymentCallback finished.");
-		return "success";
+	public ResponseEntity<?> paymentCallbackCOD(@RequestBody PaintingCodOrWalletRequest request) {
+		try {
+			long userId = authHelper.getCurrentUserId();
+			String email = authHelper.getCurrentEmail();
+
+			String result = orderService.updateStatusCOD(email, userId, request.amount(), request.paintingId(),
+					request.mobile(), request.address(), request.paymentMode(), request.name());
+
+			// Check for specific business logic messages from the service
+			if ("Painting is already sold".equals(result)) {
+				// Return a specific error for this known case
+				return new ResponseEntity<>(result, HttpStatus.CONFLICT); // 409
+			}
+
+			logger.info("paymentCallback finished successfully.");
+			return new ResponseEntity<>("success", HttpStatus.OK);
+
+		} catch (InvalidAttributeValueException e) {
+			// Handle specific, known exceptions with a clear error code
+			logger.error("Validation error: {}", e.getMessage());
+			return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.BAD_REQUEST); // 400
+		} catch (IOException e) {
+			// Handle unexpected internal errors
+			logger.error("Internal error during order processing:", e);
+			return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR); // 500
+		}
+
 	}
 
-	@PostMapping("/wallet-payment")
-	@ResponseBody
-	public ResponseEntity<?> processWalletPayment(@RequestBody WalletPaymentRequest request) {
-		logger.info("processWalletPayment started for Painting ID: {}", request.paintingId());
-		String email = authHelper.getCurrentEmail();
-		String result = orderService.processWalletPayment(request, email);
-		logger.info("processWalletPayment finished with result: {}", result);
-		
-		if (result.equals("Payment successful")) {
-			return new ResponseEntity<>(Map.of("message", result), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(Map.of("message", result), HttpStatus.BAD_REQUEST);
-		}
-	}
 }
