@@ -9,7 +9,17 @@ const Shop = () => {
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [pageNo, setPageNo] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const navigate = useNavigate();
+  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [selectedPainting, setSelectedPainting] = useState(null);
+  const [orderInfo, setOrderInfo] = useState({
+    name: "",
+    address: "123, Default Street, Pune",
+    mobile: "",
+    paymentMode: "Cash on Delivery",
+  });
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -42,18 +52,30 @@ const Shop = () => {
       setHasNextPage(false);
     }
   };
-  const [showOrderModal, setShowOrderModal] = useState(false);
-  const [selectedPainting, setSelectedPainting] = useState(null);
-  const [orderInfo, setOrderInfo] = useState({
-    name: "",
-    email: "",
-    address: "123, Default Street, Pune",
-    mobile: "",
-    paymentMode: "Cash on Delivery",
-  });
 
-  const [orderPlaced, setOrderPlaced] = useState(false);
-  const [showAddressModal, setShowAddressModal] = useState(false);
+  const handlePlaceOrder = async () => {
+    if (!selectedPainting || !orderInfo) return;
+
+    const orderPayload = {
+      paintingId: selectedPainting.paintingId,
+      amount: selectedPainting.startingPrice,
+      name: orderInfo.name,
+      address: orderInfo.address,
+      mobile: orderInfo.mobile,
+      paymentMode: orderInfo.paymentMode,
+    };
+
+    try {
+      await axiosInstance.post("/paymentCallbackCodOrWallet", orderPayload);
+
+      setShowConfirmationModal(false);
+      setOrderPlaced(true);
+      setTimeout(() => setOrderPlaced(false), 3000);
+    } catch (err) {
+      console.error("Failed to place order:", err);
+    }
+  };
+
 
   return (
     <div className="px-20 py-10 font-serif relative">
@@ -111,13 +133,8 @@ const Shop = () => {
                 <button
                   className="mt-4 block text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-[#6b4c35] hover:bg-[#776354] text-white font-semibold transition"
                   onClick={() => {
-                    if (token) {
-                      setSelectedPainting(painting);
-                      setShowOrderModal(true);
-                    } else {
-                      alert("Please login to place an order.");
-                      navigate("/login");
-                    }
+                    setSelectedPainting(painting);
+                    setShowAddressModal(true);
                   }}
                 >
                   Buy Now
@@ -237,6 +254,7 @@ const Shop = () => {
               <button
                 className="bg-[#6b4c35] cursor-pointer text-white px-4 py-2 rounded hover:bg-[#5a3c28]"
                 onClick={() => {
+                  // This part remains the same
                   const fullAddress =
                     [
                       profile.address?.building,
@@ -254,6 +272,8 @@ const Shop = () => {
 
                   setOrderInfo({
                     ...orderInfo,
+                    name: profile.name,
+                    mobile: profile.phoneNumber,
                     address: fullAddress,
                   });
                 }}
@@ -283,63 +303,109 @@ const Shop = () => {
         )}
       </AnimatePresence>
 
+      {/* MODIFIED - Payment Method Modal */}
       <AnimatePresence>
         {showOrderModal && (
-          <div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 flex items-center justify-center backdrop-blur-2xl bg-opacity-40 z-50"
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center backdrop-blur-2xl bg-opacity-40 z-50"
+          >
+            <div
+              className="bg-[#f8f1ea] p-8 rounded-lg shadow-xl w-full max-w-md text-center"
+              onClick={(e) => e.stopPropagation()}
             >
-              <div className="text-center space-y-6">
-                <h2 className="text-xl font-semibold text-[#5a3c28]">
-                  Select the Mode of Payment
-                </h2>
-                <div className="flex justify-center gap-6 mt-4">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
-                    value={orderInfo.paymentMode}
-                    onClick={() => {
-                      if (orderInfo.paymentMode === "Cash on Delivery") {
-                        setShowOrderModal(false);
-                        setOrderPlaced(true);
-                        setTimeout(() => setOrderPlaced(false), 3000);
-                        axiosInstance.post("/paymentCallbackCOD", {
-                          amount: selectedPainting.startingPrice,
-                          paintingId: selectedPainting.paintingId,
-                        });
-                      } else {
-                        alert(
-                          `Redirecting to ${orderInfo.paymentMode} payment gateway...`
-                        );
-                      }
-                    }}
-                  >
-                    Cash on Delivery
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
-                    value={orderInfo.paymentMode}
-                  >
-                    Pay with Wallet
-                  </motion.button>
-                </div>
+              <h2 className="text-xl font-semibold text-[#5a3c28] mb-6">
+                Select Payment Method
+              </h2>
+              <div className="flex justify-center gap-6">
+                {/* Cash on Delivery Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                  onClick={() => {
+                    setOrderInfo((prev) => ({ ...prev, paymentMode: "Cash on Delivery" }));
+                    setShowOrderModal(false);
+                    setShowConfirmationModal(true); // Open confirmation modal
+                  }}
+                >
+                  Cash on Delivery
+                </motion.button>
+                {/* Pay with Wallet Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                  onClick={() => {
+                    setOrderInfo((prev) => ({ ...prev, paymentMode: "Pay with Wallet" }));
+                    setShowOrderModal(false);
+                    setShowConfirmationModal(true); // Open confirmation modal
+                  }}
+                >
+                  Pay with Wallet
+                </motion.button>
               </div>
               <button
-                onClick={() => setShowOrderModal(null)}
-                className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black"
+                onClick={() => setShowOrderModal(false)}
+                className="mt-6 text-sm text-gray-500 hover:text-black"
               >
-                ✕ Close
+                Cancel
               </button>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
+
+      {/* NEW - Order Confirmation Modal */}
+      <AnimatePresence>
+        {showConfirmationModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center backdrop-blur-2xl bg-opacity-40 z-50"
+          >
+            <div
+              className="bg-[#f8f1ea] p-8 rounded-lg shadow-xl w-full max-w-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-2xl font-bold text-[#3e2e1e] mb-6 text-center">
+                Confirm Your Order
+              </h2>
+              <div className="space-y-3 text-md text-[#5a3c28]">
+                <p><span className="font-bold">Painting:</span> {selectedPainting?.title}</p>
+                <p><span className="font-bold">Price:</span> ₹{selectedPainting?.startingPrice}</p>
+                <hr className="my-2 border-t border-[#d3c1b3]" />
+                <p><span className="font-bold">Name:</span> {orderInfo.name}</p>
+                <p><span className="font-bold">Mobile:</span> {orderInfo.mobile}</p>
+                <p><span className="font-bold">Delivery Address:</span> {orderInfo.address}</p>
+                <hr className="my-2 border-t border-[#d3c1b3]" />
+                <p><span className="font-bold">Payment Method:</span> {orderInfo.paymentMode}</p>
+              </div>
+              <div className="flex justify-between mt-8">
+                <button
+                  className="bg-gray-300 px-6 py-2 rounded cursor-pointer hover:bg-gray-400"
+                  onClick={() => {
+                    setShowConfirmationModal(false);
+                    setShowOrderModal(true); // Go back to payment selection
+                  }}
+                >
+                  Go Back
+                </button>
+                <button
+                  className="bg-[#6b4c35] text-white px-6 cursor-pointer py-2 rounded hover:bg-[#5a3c28]"
+                  onClick={handlePlaceOrder} // Call the final order function
+                >
+                  Confirm & Place Order
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {orderPlaced && (
           <motion.div

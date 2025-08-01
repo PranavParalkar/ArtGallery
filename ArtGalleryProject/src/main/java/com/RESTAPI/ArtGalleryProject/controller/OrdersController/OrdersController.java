@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.PaintingCodRequest;
+import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.PaintingCodOrWalletRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.Order.WalletPaymentRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
@@ -54,8 +54,8 @@ public class OrdersController {
 		return "success";
 	}
 
-	@PostMapping("/paymentCallbackCOD")
-	public String paymentCallbackCOD(@RequestBody PaintingCodRequest request) throws IOException {
+	@PostMapping("/paymentCallbackCodOrWallet")
+	public String paymentCallbackCOD(@RequestBody PaintingCodOrWalletRequest request) throws IOException {
 		long userId = authHelper.getCurrentUserId();
 		String email = authHelper.getCurrentEmail();
 		orderService.updateStatusCOD(email, userId, request.amount(), request.paintingId(), request.mobile(), request.address(), request.paymentMode(), request.name());
@@ -67,7 +67,8 @@ public class OrdersController {
 	@ResponseBody
 	public ResponseEntity<?> processWalletPayment(@RequestBody WalletPaymentRequest request) {
 		logger.info("processWalletPayment started for Painting ID: {}", request.paintingId());
-		String result = orderService.processWalletPayment(request);
+		String email = authHelper.getCurrentEmail();
+		String result = orderService.processWalletPayment(request, email);
 		logger.info("processWalletPayment finished with result: {}", result);
 		
 		if (result.equals("Payment successful")) {

@@ -1,8 +1,8 @@
 package com.RESTAPI.ArtGalleryProject.DTO.DashBoard;
 
-public record PaintingCodRequest(
-	long paintingId,
+public record PaintingCodOrWalletRequest(
 	double amount,
+	long paintingId,
 	String mobile,
 	String paymentMode,
 	String address,

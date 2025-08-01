@@ -22,8 +22,6 @@ import com.RESTAPI.ArtGalleryProject.repository.LoginCredRepo;
 import com.RESTAPI.ArtGalleryProject.repository.OrdersRepo;
 import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
-import com.RESTAPI.ArtGalleryProject.service.OrderService.EmailService;
-import com.RESTAPI.ArtGalleryProject.service.OrderService.PdfService;
 import com.RESTAPI.ArtGalleryProject.service.WalletService.WalletService;
 import com.lowagie.text.DocumentException;
 import com.razorpay.Order;
@@ -165,9 +163,9 @@ public class OrderServiceImpl implements OrderService {
 		Orders savedOrder = ordersRepository.save(order);
 
 		// Mark painting as sold and set buyer
-		painting.setSold(true);
-		painting.setBuyer(user);
-		paintingRepo.save(painting);
+//		painting.setSold(true);
+//		painting.setBuyer(user);
+//		paintingRepo.save(painting);
 
 		String subject = "🎨 Your Fusion Art Order Confirmation (#" + savedOrder.getOrderId() + ")";
 		String imageAbsolutePath = Paths.get(imageDirectory, painting.getImageUrl()).toString();
@@ -398,7 +396,7 @@ public class OrderServiceImpl implements OrderService {
 		            subject,
 		            htmlContent,
 		            imageAbsolutePath,
-		            null, // no attachment
+		            null,
 		            null
 		        );
 		        logger.warn("PDF was not attached, but email sent without PDF for Order ID: {}", savedOrder.getOrderId());
@@ -417,67 +415,63 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional
-	public String processWalletPayment(WalletPaymentRequest request) {
-		logger.info("processWalletPayment started for Painting ID: {} and User Email: {}", request.paintingId(), request.userEmail());
-		
+	public String processWalletPayment(WalletPaymentRequest request, String email) {
+		logger.info("processWalletPayment started for Painting ID: {} and User Email: {}", request.paintingId(), email);
+
 		try {
 			// Find the painting
-			Painting painting = paintingRepo.findById(request.paintingId())
-					.orElseThrow(() -> new EntityNotFoundException("Painting not found with id: " + request.paintingId()));
-			
+			Painting painting = paintingRepo.findById(request.paintingId()).orElseThrow(
+					() -> new EntityNotFoundException("Painting not found with id: " + request.paintingId()));
+
 			// Check if painting is already sold
 			if (painting.isSold()) {
 				logger.warn("Painting {} is already sold", request.paintingId());
 				return "Painting is already sold";
 			}
-			
+
 			// Find the user by email through LoginCredentials
-			User user = loginCredRepo.findById(request.userEmail())
-					.orElseThrow(() -> new EntityNotFoundException("User not found with email: " + request.userEmail()))
-					.getUser();
-			
+			User user = loginCredRepo.findById(email)
+					.orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email)).getUser();
+
 			// Check wallet balance
 			double paintingPrice = painting.getStartingPrice();
 			double currentBalance = user.getWallet().getBalance();
-			
+
 			if (currentBalance < paintingPrice) {
-				logger.warn("Insufficient wallet balance for user {}. Required: {}, Available: {}", 
-					request.userEmail(), paintingPrice, currentBalance);
+				logger.warn("Insufficient wallet balance for user {}. Required: {}, Available: {}", email,
+						paintingPrice, currentBalance);
 				return "Insufficient wallet balance";
 			}
-			
+
 			// Decrement wallet balance
-			walletService.decrementBalanceByEmail(request.userEmail(), paintingPrice);
-			
+			walletService.decrementBalanceByEmail(email, paintingPrice);
+
 			// Mark painting as sold and set buyer
-			painting.setSold(true);
-			painting.setBuyer(user);
-			paintingRepo.save(painting);
-			
+//			painting.setSold(true);
+//			painting.setBuyer(user);
+//			paintingRepo.save(painting);
+
 			// Create order record
 			Orders order = new Orders();
 			order.setName(user.getName());
-			order.setEmail(request.userEmail());
+			order.setEmail(email);
 			order.setAmount(paintingPrice);
 			order.setOrderStatus("PAID");
 			ordersRepository.save(order);
-			
+
 			// Send confirmation email
 			try {
-				emailService.sendOrderConfirmationEmail(
-					request.userEmail(), 
-					"Payment Successful - Art Gallery", 
-					"Hi " + user.getName() + ",\n\nYour wallet payment has been processed successfully for painting: " + 
-					painting.getTitle() + ".\n\nAmount: ₹" + paintingPrice + "\n\nThanks for shopping with us!"
-				);
-				logger.info("Order confirmation email sent to: {}", request.userEmail());
+				emailService.sendOrderConfirmationEmail(email, "Payment Successful - Art Gallery", "Hi "
+						+ user.getName() + ",\n\nYour wallet payment has been processed successfully for painting: "
+						+ painting.getTitle() + ".\n\nAmount: ₹" + paintingPrice + "\n\nThanks for shopping with us!");
+				logger.info("Order confirmation email sent to: {}", email);
 			} catch (Exception e) {
 				logger.error("Error sending email confirmation: {}", e.getMessage());
 			}
-			
+
 			logger.info("processWalletPayment finished successfully for Painting ID: {}", request.paintingId());
 			return "Payment successful";
-			
+
 		} catch (Exception e) {
 			logger.error("Error in processWalletPayment: {}", e.getMessage(), e);
 			return "Payment failed: " + e.getMessage();

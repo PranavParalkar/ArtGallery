@@ -4,7 +4,11 @@ import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.PlaceBidRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.TopBidDTO;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.DashBoard.BidService;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,10 +19,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/auctions")
-public class BidController {
+public class AuctionsController {
 
-	private static final Logger logger = LoggerFactory.getLogger(BidController.class);
+	private static final Logger logger = LoggerFactory.getLogger(AuctionsController.class);
 
+	private boolean isAuctionLive = false;
 	@Autowired
 	private AuthHelper authHelper;
 	@Autowired
@@ -27,6 +32,7 @@ public class BidController {
 	@PostMapping("/bid/{paintingId}")
 	public ResponseEntity<?> placeBidcont(@PathVariable long paintingId, @RequestBody PlaceBidRequest request) {
 		try {
+			logger.info("placeBidcont started.");
 			long userId = authHelper.getCurrentUserId();
 			service.placeBid(userId, paintingId, request.bidAmount());
 			logger.info("placeBidcont finished.");
@@ -43,34 +49,39 @@ public class BidController {
 		List<TopBidDTO> topBids = service.getTop3BidsWithRank(paintingId);
 		logger.info("getTop3Bids finished.");
 		return ResponseEntity.ok(topBids);
-
 	}
 
-//	@GetMapping("/not-live")
-//	public ResponseEntity<?> auctionEnded() {
-////		logger.info("auctionEnded called.");
-////		String response = 
-////		switch () {
-////		case value: {
-////			
-////			yield type;
-////		}
-////		default:
-////			throw new IllegalArgumentException("Unexpected value: " + );
-////		}
-//	}
-//	
-//	@GetMapping("/live")
-//	public ResponseEntity<?> auctionStarted() {
-////		logger.info("auctionEnded called.");
-////		String response = 
-////		switch () {
-////		case value: {
-////			
-////			yield type;
-////		}
-////		default:
-////			throw new IllegalArgumentException("Unexpected value: " + );
-////		}
-//	}
+	@GetMapping("/live")
+	@Transactional
+	public ResponseEntity<?> auctionIsLive() {
+		try {
+			if (isAuctionLive) {
+				return new ResponseEntity<>("Auction is already live.", HttpStatus.OK);
+			} else {
+				isAuctionLive = true;
+				return new ResponseEntity<>("Auction is now live.", HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/upcoming")
+	@Transactional
+	public ResponseEntity<?> auctionIsNotLive() {
+		try {
+			if (!isAuctionLive) {
+				return new ResponseEntity<>("Auction is already upcoming.", HttpStatus.OK);
+			} else {
+				isAuctionLive = false;
+				
+				return new ResponseEntity<>("Auction has now ended.", HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 }

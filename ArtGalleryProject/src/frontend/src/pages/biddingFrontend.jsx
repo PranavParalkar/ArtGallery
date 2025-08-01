@@ -199,6 +199,7 @@ const BiddingFrontend = () => {
                     : "bg-gray-400 cursor-not-allowed"
                   } text-white px-8 py-3 rounded-lg font-bold text-lg transition shadow-lg`}
               >
+                {console.log(auctionLive)}
                 Place Bid
               </button>
             </form>
