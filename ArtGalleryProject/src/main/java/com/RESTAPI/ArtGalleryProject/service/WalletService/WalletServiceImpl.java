@@ -23,20 +23,6 @@ public class WalletServiceImpl implements WalletService {
 	private WalletRepo walletRepo;
 
 	@Override
-	public void incrementBalanceByEmail(String email, double amount) {
-		logger.info("Attempting to increment balance for email: {} by amount: {}", email, amount);
-		Wallet wallet = walletRepo.findByEmail(email)
-				.orElseThrow(() -> {
-					logger.warn("Wallet not found for email: {}", email);
-					return new EntityNotFoundException("Wallet not found for user with email: " + email);
-				});
-		double oldBalance = wallet.getBalance();
-		wallet.setBalance(oldBalance + amount);
-		walletRepo.save(wallet);
-		logger.info("Successfully incremented balance for email: {} from {} to {}", email, oldBalance, wallet.getBalance());
-	}
-
-	@Override
 	public Map<String, Object> getBalance(String email) {
 		logger.info("Fetching wallet balance for User Email: {}", email);
 		Optional<Wallet> walletOptional = walletRepo.findByEmail(email);
@@ -50,6 +36,20 @@ public class WalletServiceImpl implements WalletService {
 			throw new EntityNotFoundException("Wallet not found for user with email: " + email);
 		}
 		return response;
+	}
+
+	@Override
+	public void incrementBalanceByEmail(String email, double amount) {
+		logger.info("Attempting to increment balance for email: {} by amount: {}", email, amount);
+		Wallet wallet = walletRepo.findByEmail(email)
+				.orElseThrow(() -> {
+					logger.warn("Wallet not found for email: {}", email);
+					return new EntityNotFoundException("Wallet not found for user with email: " + email);
+				});
+		double oldBalance = wallet.getBalance();
+		wallet.setBalance(oldBalance + amount);
+		walletRepo.save(wallet);
+		logger.info("Successfully incremented balance for email: {} from {} to {}", email, oldBalance, wallet.getBalance());
 	}
 
     @Override

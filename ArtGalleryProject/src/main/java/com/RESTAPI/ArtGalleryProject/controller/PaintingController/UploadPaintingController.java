@@ -1,6 +1,8 @@
 package com.RESTAPI.ArtGalleryProject.controller.PaintingController;
 
 import java.io.IOException;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.UploadPaintingRequest;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
@@ -36,11 +39,11 @@ public class UploadPaintingController {
 			long userId = authHelper.getCurrentUserId();
 			logger.info("upload finished.");
 			return new ResponseEntity<>(service.uploadPainting(userId, path, request), HttpStatus.ACCEPTED);
-		} catch (IOException e) {
+		} catch (IOException | MaxUploadSizeExceededException e) {
+			logger.info("upload finished.");
 			e.printStackTrace();
+			return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		logger.info("upload finished.");
-		return new ResponseEntity<>("internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }

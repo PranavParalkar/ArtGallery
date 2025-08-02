@@ -5,6 +5,7 @@ import axiosInstance from "../axiosInstance";
 // Withdraw Modal Component
 // -----------------------------
 const WithdrawModal = ({ onClose, currentBalance }) => {
+  const token = localStorage.getItem("token");
   const [profile, setProfile] = useState(null);
   // Fetch user profile
   useEffect(() => {

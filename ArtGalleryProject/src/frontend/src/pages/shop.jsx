@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaSignOutAlt,
+  FaUserCircle,
+  FaEnvelope,
+  FaPhoneAlt,
+  FaMapMarkerAlt,
+  FaImage,
+  FaInfoCircle,
+  FaRulerCombined,
+  FaUser,
+  FaTag,
+} from "react-icons/fa";
 
 const Shop = () => {
   const [profile, setProfile] = useState(null);
@@ -76,19 +88,18 @@ const Shop = () => {
     setShowConfirmationModal(false); // Close modal
     setIsLoading(true); // Start loading
     try {
-        await axiosInstance.post("/paymentCallbackCodOrWallet", orderPayload);
-        setOrderPlaced(true);
-        setTimeout(() => setOrderPlaced(false), 3000);
+      await axiosInstance.post("/paymentCallbackCodOrWallet", orderPayload);
+      setOrderPlaced(true);
+      setTimeout(() => setOrderPlaced(false), 3000);
     } catch (err) {
       console.error("Failed to place order:", err);
 
       let errorMessage = "An unexpected error occurred. Please try again.";
 
       if (err.response?.data) {
-        if (typeof err.response.data === 'string') {
+        if (typeof err.response.data === "string") {
           errorMessage = err.response.data;
-        }
-        else if (err.response.data.message) {
+        } else if (err.response.data.message) {
           errorMessage = err.response.data.message;
         }
       }
@@ -147,37 +158,50 @@ const Shop = () => {
               className="rounded-2xl bg-[#f0e2d2] h-[500px] transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition flex flex-col"
             >
               {painting.imageUrl && (
-                <div className="overflow-hidden h-1/2 rounded-t-2xl">
+                <div className="relative overflow-hidden h-1/2 rounded-t-md group group">
                   <img
                     src={`http://localhost:8085${painting.imageUrl}`}
                     alt={painting.title}
-                    className="w-full h-full object-cover cursor-pointer transform transition-transform duration-300 hover:scale-110"
+                    className="w-full h-80 object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
                     onClick={() =>
                       setFullscreenImage(
                         `http://localhost:8085${painting.imageUrl}`
                       )
                     }
                   />
+
+                  {/* Hover message */}
+                  <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#6b4c35]/50 text-white text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition">
+                    Click to view image
+                  </div>
                 </div>
               )}
               <div className="p-6 flex flex-col justify-between flex-grow">
                 <div>
-                  <h2 className="text-xl font-bold text-[#5a3c28] mb-1">
-                    {painting.title}
-                  </h2>
+                  <div className="flex items-center gap-2 mb-2">
+                    <FaImage className="text-[#5a3c28]" />
+                    <h2 className="text-2xl font-bold text-[#5a3c28]">
+                      {painting.title}
+                    </h2>
+                  </div>
                   <p className="text-md text-[#6b4c35] mb-2">
-                    {painting.description}
+                    <div className="flex items-center  ">
+                      <FaInfoCircle className="mr-2" />
+                      {painting.description}
+                    </div>
                   </p>
-                  <p className="text-md text-[#6b4c35] mb-1">
-                    <span className="font-bold">Dimensions:</span>{" "}
+                  <p className="text-md text-[#6b4c35] mb-1 flex gap-2">
+                    <FaRulerCombined />{" "}
+                    <span className="font-bold">Dimensions</span>{" "}
                     {painting.length}cm x {painting.breadth}cm
                   </p>
-                  <p className="text-md text-[#6b4c35] mb-1">
-                    <span className="font-bold">Price:</span> ₹
+                  <p className="text-md text-[#6b4c35] flex gap-2 my-2">
+                    <FaTag className="" />
+                    <span className="font-bold">Starting Price:</span> ₹
                     {painting.startingPrice}
                   </p>
-                  <p className="text-md font-bold text-[#6b4c35]">
-                    Seller:{" "}
+                  <p className="text-md mt-2 font-bold flex gap-2 text-[#6b4c35]">
+                    <FaUserCircle className="mt-1" /> Seller:{" "}
                     <span className="font-medium text-[#6b4c35]">
                       {painting.seller || "Unknown"}
                     </span>
@@ -202,20 +226,24 @@ const Shop = () => {
         )}
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center mt-8 gap-4">
+      {/* Pagination Controls */}
+      <div className="flex justify-center items-center mt-10 gap-6">
         <button
           onClick={() => setPageNo((p) => Math.max(0, p - 1))}
           disabled={pageNo === 0}
-          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+          className="px-5 py-2 bg-[#a17b5d] text-white font-semibold rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#8c6448] disabled:hover:bg-[#a17b5d]"
         >
           Previous
         </button>
-        <span className="px-4 py-2">Page {pageNo + 1}</span>
+
+        <span className="text-lg font-medium text-gray-700">
+          Page {pageNo + 1}
+        </span>
+
         <button
           onClick={() => setPageNo((p) => p + 1)}
           disabled={!hasNextPage}
-          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+          className="px-5 py-2 bg-[#a17b5d] text-white font-semibold rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#8c6448] disabled:hover:bg-[#a17b5d]"
         >
           Next
         </button>
@@ -238,7 +266,7 @@ const Shop = () => {
             />
             <button
               onClick={() => setFullscreenImage(null)}
-              className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black"
+              className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black cursor-pointer"
             >
               ✕ Close
             </button>
@@ -262,7 +290,9 @@ const Shop = () => {
               <h2 className="text-xl font-bold text-[#3e2e1e] mb-4 text-center">
                 Confirm Address & Mobile
               </h2>
-              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Name</label>
+              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">
+                Name
+              </label>
               <input
                 type="text"
                 className="w-full mb-4 px-4 py-2 border rounded-md"
@@ -273,7 +303,9 @@ const Shop = () => {
                 }
               />
 
-              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Mobile Number</label>
+              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">
+                Mobile Number
+              </label>
               <input
                 type="tel"
                 className="w-full mb-4 px-4 py-2 border rounded-md"
@@ -284,7 +316,9 @@ const Shop = () => {
                 }
               />
 
-              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Delivery Address</label>
+              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">
+                Delivery Address
+              </label>
               <textarea
                 rows="3"
                 className="w-full mb-4 px-4 py-2 border rounded-md"
@@ -295,7 +329,7 @@ const Shop = () => {
                 }
               />
               <button
-                className="bg-[#6b4c35] cursor-pointer text-white px-4 py-2 rounded hover:bg-[#5a3c28]"
+                className="bg-[#6b4c35] cursor-pointer text-white px-4 py-2 rounded hover:bg-[#5a3c28] cursor-pointer"
                 onClick={() => {
                   const fullAddress =
                     [
@@ -358,14 +392,19 @@ const Shop = () => {
               className="bg-[#f8f1ea] p-8 rounded-lg shadow-xl w-full max-w-md text-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-xl font-semibold text-[#5a3c28] mb-6">Select Payment Method</h2>
+              <h2 className="text-xl font-semibold text-[#5a3c28] mb-6">
+                Select Payment Method
+              </h2>
               <div className="flex justify-center gap-6">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                  className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a] cursor-pointer"
                   onClick={() => {
-                    setOrderInfo((prev) => ({ ...prev, paymentMode: "Cash on Delivery" }));
+                    setOrderInfo((prev) => ({
+                      ...prev,
+                      paymentMode: "Cash on Delivery",
+                    }));
                     setShowOrderModal(false);
                     setShowConfirmationModal(true);
                   }}
@@ -375,9 +414,12 @@ const Shop = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                  className="bg-[#5a3c28] w-[40%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a] cursor-pointer"
                   onClick={() => {
-                    setOrderInfo((prev) => ({ ...prev, paymentMode: "Pay with Wallet" }));
+                    setOrderInfo((prev) => ({
+                      ...prev,
+                      paymentMode: "Pay with Wallet",
+                    }));
                     setShowOrderModal(false);
                     setShowConfirmationModal(true);
                   }}
@@ -387,7 +429,7 @@ const Shop = () => {
               </div>
               <button
                 onClick={() => setShowOrderModal(false)}
-                className="mt-6 text-sm text-gray-500 hover:text-black"
+                className="mt-6 text-sm text-gray-500 hover:text-blackcursor-pointer cursor-pointer"
               >
                 Cancel
               </button>
@@ -403,41 +445,134 @@ const Shop = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center backdrop-blur-2xl bg-opacity-40 z-50"
+            className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-2xl bg-black/30 px-4"
           >
-            <div
-              className="bg-[#f8f1ea] p-8 rounded-lg shadow-xl w-full max-w-lg"
+            <motion.div
+              initial={{ scale: 0.9, y: 40 }}
+              animate={{
+                scale: 1,
+                y: 0,
+                transition: { duration: 0.4, ease: "easeOut" },
+              }}
+              exit={{ scale: 0.9, y: 40, opacity: 0 }}
+              className="relative bg-[#f8f1ea] text-[#3e2e1e] p-8 rounded-2xl shadow-2xl w-full max-w-xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-2xl font-bold text-[#3e2e1e] mb-6 text-center">Confirm Your Order</h2>
-              <div className="space-y-3 text-md text-[#5a3c28]">
-                <p><span className="font-bold">Painting:</span> {selectedPainting?.title}</p>
-                <p><span className="font-bold">Price:</span> ₹{selectedPainting?.startingPrice}</p>
-                <hr className="my-2 border-t border-[#d3c1b3]" />
-                <p><span className="font-bold">Name:</span> {orderInfo.name}</p>
-                <p><span className="font-bold">Mobile:</span> {orderInfo.mobile}</p>
-                <p><span className="font-bold">Delivery Address:</span> {orderInfo.address}</p>
-                <hr className="my-2 border-t border-[#d3c1b3]" />
-                <p><span className="font-bold">Payment Method:</span> <b><i>{orderInfo.paymentMode}</i></b></p>
+              {/* Close Icon */}
+              <button
+                onClick={() => setShowConfirmationModal(false)}
+                className="absolute top-4 right-4 text-[#3e2e1e] hover:text-red-600 transition-colors text-xl cursor-pointer"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+
+              {/* Header */}
+              <div className="text-center mb-6">
+                <h2 className="text-3xl font-bold">Order Summary</h2>
+                <p className="text-sm text-[#5a3c28]">
+                  Please review your order before placing it
+                </p>
               </div>
-              <div className="flex justify-between mt-8">
-                <button
-                  className="bg-gray-300 px-6 py-2 rounded cursor-pointer hover:bg-gray-400"
+
+              {/* Receipt with Icons */}
+              <div className="border border-[#d3c1b3] rounded-lg overflow-hidden shadow-inner">
+                {/* Painting Details */}
+                <div className="bg-[#ebddd1] px-6 py-4 border-b border-[#d3c1b3] flex items-center gap-2 font-semibold text-lg">
+                  <div className="flex items-center gap-2 font-semibold text-lg">
+                    <FaImage className="text-[#5a3c28]" />
+                    Painting Details
+                  </div>
+                </div>
+                <div className="px-6 py-4 space-y-2 text-sm text-[#5a3c28]">
+                  <div className="flex justify-between">
+                    <span className="font-semibold">Title:</span>
+                    <span>{selectedPainting?.title}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-semibold">Base Price:</span>
+                    <span>₹{selectedPainting?.startingPrice}</span>
+                  </div>
+                </div>
+
+                {/* Customer Info */}
+                <div className="bg-[#ebddd1] px-6 py-4 border-t border-b border-[#d3c1b3] flex items-center gap-2 font-semibold text-lg">
+                  <FaUserCircle /> Customer Info
+                </div>
+                <div className="px-6 py-4 space-y-3 text-sm text-[#5a3c28]">
+                  <div className=" items-center gap-2 flex justify-between">
+                    <div className="flex items-center gap-2">
+                      <FaUserCircle className="text-[#5a3c28]" />
+                      <span className="font-semibold w-28">Name:</span>
+                    </div>
+                    <span>{orderInfo.name}</span>
+                  </div>
+                  <div className="flex items-center  justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <FaPhoneAlt className="text-[#5a3c28]" />
+                      <span className="font-semibold w-28">Mobile:</span>
+                    </div>
+                    <span>{orderInfo.mobile}</span>
+                  </div>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <FaMapMarkerAlt className="text-[#5a3c28] mt-1" />
+                      <span className="font-semibold w-28">Address:</span>
+                    </div>
+                    <span className="text-right max-w-[60%]">
+                      {orderInfo.address}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Payment Info */}
+                <div className="bg-[#ebddd1] px-6 py-4 border-t border-b border-[#d3c1b3] flex items-center gap-2 font-semibold text-lg">
+                  <FaSignOutAlt /> Payment Info
+                </div>
+                <div className="px-6 py-4 text-sm text-[#5a3c28] space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <FaSignOutAlt className="text-[#5a3c28]" />
+                      <span className="font-semibold w-36">
+                        Payment Method:
+                      </span>
+                    </div>
+                    <span>
+                      <i>{orderInfo.paymentMode}</i>
+                    </span>
+                  </div>
+                  <hr className="my-2 border-[#d3c1b3]" />
+                  <div className="flex justify-between font-bold text-base">
+                    <span>Total Payable:</span>
+                    <span>₹{selectedPainting?.startingPrice}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="mt-8 flex justify-between gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full bg-gray-300 text-[#3e2e1e] py-2 rounded-lg hover:bg-gray-400 transition-colors cursor-pointer"
                   onClick={() => {
                     setShowConfirmationModal(false);
                     setShowOrderModal(true);
                   }}
                 >
                   Go Back
-                </button>
-                <button
-                  className="bg-[#6b4c35] text-white px-6 cursor-pointer py-2 rounded hover:bg-[#5a3c28]"
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full bg-[#6b4c35] text-white py-2 rounded-lg hover:bg-[#5a3c28] transition-colors cursor-pointer"
                   onClick={handlePlaceOrder}
                 >
                   Confirm & Place Order
-                </button>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

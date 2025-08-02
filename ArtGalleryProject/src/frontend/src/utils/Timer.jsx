@@ -11,7 +11,7 @@ const Timer = ({ setAuctionLive }) => {
       const currentDay = now.getDay();
 
       const auctionStart = new Date(now);
-      auctionStart.setDate(now.getDate() - currentDay + 5);
+      auctionStart.setDate(now.getDate() - currentDay + 1);
       auctionStart.setHours(17, 0, 0, 0);
 
       const auctionEndCheck = new Date(auctionStart);
@@ -30,11 +30,15 @@ const Timer = ({ setAuctionLive }) => {
         mode = "Auction ends in";
         setAuctionLive(true);
         axiosInstance.get('/auctions/live');
+        console.log("live api hits");
+        
       } else {
         target = auctionStart;
         mode = "Auction starts in";
         setAuctionLive(false);
         axiosInstance.get('/auctions/upcoming');
+        console.log("upcoming api hits");
+        
       }
 
       const diff = target.getTime() - now.getTime();
