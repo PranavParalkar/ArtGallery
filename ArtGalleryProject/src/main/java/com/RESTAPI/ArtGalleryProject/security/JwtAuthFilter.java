@@ -33,7 +33,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        logger.info("doFilterInternal started.");
+//        logger.info("doFilterInternal started.");
 
         String authHeader = request.getHeader("Authorization");
         String token = null;
@@ -64,6 +64,5 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-        logger.info("doFilterInternal finished.");
     }
 }

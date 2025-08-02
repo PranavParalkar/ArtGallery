@@ -6,15 +6,15 @@ import java.time.LocalTime;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.TopBidDTO;
 import com.RESTAPI.ArtGalleryProject.Entity.Bid;
@@ -31,12 +31,12 @@ import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
 import com.RESTAPI.ArtGalleryProject.service.OrderService.EmailService;
 import com.RESTAPI.ArtGalleryProject.service.OrderService.PdfService;
+import com.RESTAPI.ArtGalleryProject.service.WalletService.WalletService;
 import com.lowagie.text.DocumentException;
 
 import io.jsonwebtoken.io.IOException;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 
 @Service
 public class BidServiceImpl implements BidService {
@@ -59,6 +59,8 @@ public class BidServiceImpl implements BidService {
 	private PdfService pdfService;
 	@Autowired
 	private EmailService emailService;
+	@Autowired
+	private WalletService walletService;
 	private String imageDirectory = "C:/Users/varad/OneDrive/Desktop/projects/Super30SpringProject/ArtGalleryProject";
 
 	@Override
@@ -145,34 +147,29 @@ public class BidServiceImpl implements BidService {
 		return result;
 	}
 
-	@Transactional
+	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
-	public String auctionEnds() throws IOException, DocumentException, MessagingException, java.io.IOException {
+	public synchronized String auctionEnds() throws IOException, DocumentException, MessagingException, java.io.IOException {
 	    logger.info("auctionEnds started.");
-	    List<Painting> livePaintings = paintingRepo.findByIsSoldFalseAndIsForAuctionTrue();
+	    List<Painting> livePaintings = paintingRepo.findActiveAuctionsWithLock();
 
 	    for (Painting painting : livePaintings) {
+	    	if(painting.isWinnerEmailSent()) continue;
 	        Optional<Bid> highestBidderOpt = bidRepo.findTopByPaintingOrderByBidAmountDescTimeStampAsc(painting);
 	        if (highestBidderOpt.isEmpty()) continue;
 
 	        Bid highestBidder = highestBidderOpt.get();
 	        List<Bid> allBids = bidRepo.findByPainting(painting);
 
-	        Set<String> emailedUsers = new HashSet<>();
-
 	        for (Bid bid : allBids) {
 	            User user = bid.getBuyer();
 	            LoginCredentials userCredentials = loginCredRepo.findByUser(user)
 	                    .orElseThrow(() -> new EntityNotFoundException("User not found for painting id: " + painting.getPaintingId()));
 
-	            // Ensure user receives only one email
-	            if (emailedUsers.contains(userCredentials.getEmail())) continue;
-	            emailedUsers.add(userCredentials.getEmail());
-
 	            if (bid.getBidAmount() == highestBidder.getBidAmount()) {
 	                // Winner
-//	                LoginCredentials sellerLogin = loginCredRepo.findByUser(painting.getSeller())
-//	                        .orElseThrow(() -> new EntityNotFoundException("Seller for painting not found id: " + painting.getPaintingId()));
+	                LoginCredentials sellerLogin = loginCredRepo.findByUser(painting.getSeller())
+	                        .orElseThrow(() -> new EntityNotFoundException("Seller for painting not found id: " + painting.getPaintingId()));
 
 	                Orders order = new Orders();
 	                order.setName(user.getName());
@@ -181,6 +178,8 @@ public class BidServiceImpl implements BidService {
 	                order.setOrderStatus("PAID_AUCTION");
 	                ordersRepo.save(order);
 
+	                walletService.incrementBalanceByEmail(sellerLogin.getEmail(), bid.getBidAmount());
+	                
 	                String subject = "🎨 Your Fusion Art Auction Confirmation (#" + order.getOrderId() + ")";
 					String imageAbsolutePath = Paths.get(imageDirectory, painting.getImageUrl()).toString();
 					String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
@@ -426,6 +425,7 @@ public class BidServiceImpl implements BidService {
 	        painting.setSold(true);
 	        painting.setFinalPrice(highestBidder.getBidAmount());
 	        painting.setBuyer(highestBidder.getBuyer());
+	        painting.setWinnerEmailSent(true);
 	        paintingRepo.save(painting);
 	    }
 

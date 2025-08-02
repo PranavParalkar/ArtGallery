@@ -110,6 +110,7 @@ public class OrderServiceImpl implements OrderService {
 			throw new RuntimeException("Order not found for payment callback");
 		}
 
+		order.setRazorpayPaymentId(map.get("razorpay_payment_id"));
 		order.setOrderStatus("PAYMENT DONE");
 		Orders savedOrder = ordersRepository.save(order);
 
@@ -127,49 +128,50 @@ public class OrderServiceImpl implements OrderService {
 		if (order.getEmail() != null) {
 			try {
 				String htmlContent = """
-						    <html>
-						    <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 30px;">
-						        <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-						            <h2 style="color: #2c3e50;">Payment Successful ✅</h2>
-						            <p>Hi <strong>%s</strong>,</p>
-						            <p>We’ve received your payment for your recent transaction with <strong>Fusion Art Gallery</strong>.</p>
+						   <html>
+						   <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 30px;">
+						       <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+						           <h2 style="color: #2c3e50;">Payment Successful ✅</h2>
+						           <p>Hi <strong>%s</strong>,</p>
+						           <p>We’ve received your payment for your recent transaction with <strong>Fusion Art Gallery</strong>.</p>
 
-						            <div style="margin: 20px 0; padding: 15px; background-color: #f0f4f8; border-radius: 8px;">
-						                <p style="margin: 0;"><strong>Order ID:</strong> #%d</p>
-						                <p style="margin: 0;"><strong>Amount Paid:</strong> ₹%.2f</p>
-						                <p style="margin: 0;"><strong>Status:</strong> Payment Done</p>
-						            </div>
+						           <div style="margin: 20px 0; padding: 15px; background-color: #f0f4f8; border-radius: 8px;">
+						               <p style="margin: 0;"><strong>Order ID:</strong> #%d</p>
+						               <p style="margin: 0;"><strong>Transaction ID:</strong> %s</p>
+						               <p style="margin: 0;"><strong>Amount Paid:</strong> ₹%.2f</p>
+						               <p style="margin: 0;"><strong>Status:</strong> Payment Done</p>
+						           </div>
 
-						            <p>You can now use your wallet balance for bidding on exclusive artwork or explore our gallery for more collections.</p>
-						            <p>If you have any questions, feel free to <a href="#">contact our support</a>.</p>
+						           <p>You can now use your wallet balance for bidding on exclusive artwork or explore our gallery for more collections.</p>
+						           <p>If you have any questions, feel free to <a href="#">contact our support</a>.</p>
 
-						            <p style="margin-top: 30px;">Thank you for your support,<br/><strong>The Fusion Art Team</strong></p>
+						           <p style="margin-top: 30px;">Thank you for your support,<br/><strong>The Fusion Art Team</strong></p>
 
-						            <hr style="margin-top: 40px;"/>
-						            <p style="font-size: 12px; color: #888;">This is an automated message. Please do not reply directly to this email.</p>
-						        </div>
-						    </body>
-						    </html>
-						""".formatted(
-							order.getName(),
-							order.getRazorpayOrderId(),
-							order.getAmount()
-							);
+						           <hr style="margin-top: 40px;"/>
+						           <p style="font-size: 12px; color: #888;">This is an automated message. Please do not reply directly to this email.</p>
+						     </div>
+						 </body>
+						 </html>
+						"""
+						.formatted(order.getName(), order.getOrderId(), // or order.getRazorpayOrderId()
+								order.getRazorpayPaymentId(), // ✅ Add this
+								order.getAmount());
 
-					emailService.sendOrderConfirmationEmail(order.getEmail(), "✅ Payment Received - Fusion Art Gallery", htmlContent);
+				emailService.sendOrderConfirmationEmail(order.getEmail(), "✅ Payment Received - Fusion Art Gallery",
+						htmlContent);
 
-					logger.info("Order confirmation email sent to: {}", order.getEmail());
-				} catch (Exception e) {
-					logger.error("Error sending email confirmation: {}", e.getMessage());
-				}
+				logger.info("Order confirmation email sent to: {}", order.getEmail());
+			} catch (Exception e) {
+				logger.error("Error sending email confirmation: {}", e.getMessage());
 			}
-
-			logger.info("updateStatus finished successfully for order ID: {}", savedOrder.getOrderId());
-			return savedOrder;
 		}
 
-		// Send Email With PDF
-		@Override
+		logger.info("updateStatus finished successfully for order ID: {}", savedOrder.getOrderId());
+		return savedOrder;
+	}
+
+	// Send Email With PDF
+	@Override
 	@Transactional
 	public String updateStatus(String email, long userId, double amount, long paintingId, String mobileNumber,
 			String address, String paymentMethod, String name)
@@ -414,24 +416,14 @@ public class OrderServiceImpl implements OrderService {
 				    </body>
 				    </html>
 				"""
-				.formatted(
-					savedOrder.getOrderId(),
-					formattedDate,
-					name,
-					mobileNumber,
-					painting.getTitle(),
-					painting.getTitle(),
-					amount,
-					paymentMethod,
-					address,
-					Year.now().getValue()
-				);
+				.formatted(savedOrder.getOrderId(), formattedDate, name, mobileNumber, painting.getTitle(),
+						painting.getTitle(), amount, paymentMethod, address, Year.now().getValue());
 
 		try {
 			logger.info("Generating PDF receipt for Order ID: {}", savedOrder.getOrderId());
 
-			byte[] pdfReceipt = pdfService.generateReceiptPdf(savedOrder, buyer, painting, imageDirectory, paymentMethod,
-					name, mobileNumber, address);
+			byte[] pdfReceipt = pdfService.generateReceiptPdf(savedOrder, buyer, painting, imageDirectory,
+					paymentMethod, name, mobileNumber, address);
 			String pdfFilename = "FusionArt-Receipt-" + savedOrder.getOrderId() + ".pdf";
 
 			logger.info("Sending confirmation email with PDF attachment to: {}", email);
@@ -445,7 +437,7 @@ public class OrderServiceImpl implements OrderService {
 		} catch (DocumentException | IOException e) {
 			logger.error("PDF generation failed for Order ID: {}", savedOrder.getOrderId(), e);
 
-			// Optionally still try to send the email without attachment
+			// still try to send the email without attachment
 			try {
 				emailService.sendOrderConfirmationEmailCOD(email, subject, htmlContent, imageAbsolutePath, null, null);
 				logger.warn("PDF was not attached, but email sent without PDF for Order ID: {}",

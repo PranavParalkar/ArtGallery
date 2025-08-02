@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.RESTAPI.ArtGalleryProject.Embeddable.Address;
 import com.RESTAPI.ArtGalleryProject.Enum.Role;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -43,6 +44,10 @@ public class User {
     private boolean authorizedSeller;
     private LocalDate createdAt;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private WithdrawalRequest withdrawalRequest;
+    
     @Column(name = "ROLE_User", length = 20)
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -55,14 +60,17 @@ public class User {
 
     // paintings uploaded as seller
     @OneToMany(mappedBy = "seller")
+    @JsonManagedReference(value = "user-seller")
     private List<Painting> paintingsSold;
 
     // paintings bought as buyer
     @OneToMany(mappedBy = "buyer")
+    @JsonManagedReference(value = "user-buyer")
     private List<Painting> paintingsBought;
 
     // bidding of user (many to many)
     @OneToMany(mappedBy = "buyer")
+    @JsonManagedReference(value = "user-bids")
     private List<Bid> bids;
 }
 
