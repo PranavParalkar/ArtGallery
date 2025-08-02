@@ -1,13 +1,19 @@
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState, useMemo } from "react";
-import axiosInstance from '../axiosInstance';
+import axiosInstance from "../axiosInstance";
 import { Navigate } from "react-router-dom";
+import logo from "../utils/logo.png";
 import {
   FaSignOutAlt,
   FaUserCircle,
   FaEnvelope,
   FaPhoneAlt,
   FaMapMarkerAlt,
+  FaImage,
+  FaInfoCircle,
+  FaRulerCombined,
+  FaUser,
+  FaTag,
 } from "react-icons/fa";
 
 const ProfilePage = () => {
@@ -17,11 +23,12 @@ const ProfilePage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
   const token = localStorage.getItem("token");
+  const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   useEffect(() => {
-    axiosInstance.get(
-      "/user/profile"
-    )
+    axiosInstance
+      .get("/user/profile")
       .then((res) => {
         console.dir(res.data, { depth: null });
         setProfile(res.data);
@@ -82,10 +89,11 @@ const ProfilePage = () => {
   const tabButton = (label) => (
     <button
       onClick={() => setActiveTab(label)}
-      className={`px-6 py-2 rounded-full font-semibold transition-all ${activeTab === label
-        ? "bg-[#3e2e1e] text-white"
-        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-        }`}
+      className={`px-6 py-2 rounded-full font-semibold transition-all ${
+        activeTab === label
+          ? "bg-[#3e2e1e] text-white"
+          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+      }`}
     >
       {label === "profile" ? "Profile" : "My Paintings"}
     </button>
@@ -114,13 +122,52 @@ const ProfilePage = () => {
         className="flex flex-row justify-evenly gap-8 items-start"
       >
         {/* Profile Section */}
-        <div className="flex flex-col items-center justify-center w-full lg:pl-20">
-          <img
-            className="rounded-full md:h-2/3 md:w-2/3 mt-10 w-40 h-40 hover:scale-110 transition-all duration-500 shadow-xl"
-            src="https://images.unsplash.com/photo-1740252117070-7aa2955b25f8?w=600&auto=format&fit=crop&q=60"
-            alt="Profile"
-          />
-          <h2 className="text-5xl items-center justify-center ml-16 font-serif font-bold mt-16 ">
+        <div className="flex flex-col items-center justify-center w-full ">
+          <motion.div
+            className="w-[300px] mt-20 h-[300px] md:w-[500px] md:h-[500px] cursor-pointer"
+            style={{ perspective: "1200px" }}
+            onMouseEnter={() => setIsFlipped(true)}
+            onMouseLeave={() => setIsFlipped(false)}
+          >
+            <motion.div
+              className="relative w-full h-full"
+              animate={{ rotateY: isFlipped ? 180 : 0 }}
+              transition={{ duration: 0.8 }}
+              style={{
+                transformStyle: "preserve-3d",
+              }}
+            >
+              {/* Front */}
+              <motion.div
+                className="absolute w-full h-full"
+                style={{
+                  backfaceVisibility: "hidden",
+                }}
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1740252117070-7aa2955b25f8?w=600&auto=format&fit=crop&q=60"
+                  alt=""
+                  className="rounded-full w-full h-full object-cover  shadow-2xl shadow-black"
+                />
+              </motion.div>
+
+              {/* Back */}
+              <motion.div
+                className="absolute w-full h-full"
+                style={{
+                  transform: "rotateY(180deg)",
+                  backfaceVisibility: "hidden",
+                }}
+              >
+                <img
+                  src={logo}
+                  alt=""
+                  className="rounded-full w-full h-full object-fit  shadow-2xl  shadow-black"
+                />
+              </motion.div>
+            </motion.div>
+          </motion.div>
+          <h2 className="text-5xl flex items-center justify-center font-serif font-bold mt-16 ">
             Hello {profile.name} !
           </h2>
         </div>
@@ -293,24 +340,81 @@ const ProfilePage = () => {
                       {profile.paintingsSold.map((painting) => (
                         <motion.div
                           key={painting.paintingId}
-                          whileHover={{ scale: 1.03 }}
-                          className="border rounded-xl shadow p-3 bg-white"
+                          initial={{ opacity: 0, y: 15 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.75 }}
+                          className="rounded-2xl bg-[#f0e2d2] h-[300px]  transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition flex flex-col"
                         >
-                          <img
-                            src={`http://localhost:8085${painting.imageUrl}`}
-                            alt={painting.title}
-                            className="w-full h-40 object-cover rounded-lg mb-2"
-                          />
-                          <h3 className="text-lg font-semibold">
-                            {painting.title}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            {painting.description}
-                          </p>
+                          {painting.imageUrl && (
+                            <div className="relative overflow-hidden h-1/2 rounded-t-md  group">
+                              <img
+                                src={`http://localhost:8085${painting.imageUrl}`}
+                                alt={painting.title}
+                                className="w-full h-80 object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
+                                onClick={() =>
+                                  setFullscreenImage(
+                                    `http://localhost:8085${painting.imageUrl}`
+                                  )
+                                }
+                              />
+
+                              {/* Hover message */}
+                              <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#6b4c35]/50 text-white text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition">
+                                Click to view
+                              </div>
+                            </div>
+                          )}
+                          <div className="p-6 flex flex-col justify-between">
+                            <div>
+                              <div className="flex items-center gap-2 mb-2">
+                                <FaImage className="text-[#5a3c28]" />
+                                <h2 className="text-lg font-bold text-[#5a3c28]">
+                                  {painting.title}
+                                </h2>
+                              </div>
+                              <p className="text-sm text-[#6b4c35] mb-2">
+                                <div className="flex items-center  ">
+                                  <FaInfoCircle className="mr-2" />
+                                  {painting.description}
+                                </div>
+                              </p>
+                              <p className="text-sm text-[#6b4c35] flex gap-2 my-2">
+                                <FaTag className="" />
+                                <span className="font-bold">
+                                  Starting Price:
+                                </span>{" "}
+                                ₹{painting.startingPrice}
+                              </p>
+                            </div>
+                          </div>
                         </motion.div>
                       ))}
                     </div>
                   )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+            {/* Fullscreen Image Modal */}
+            <AnimatePresence>
+              {fullscreenImage && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+                  onClick={() => setFullscreenImage(null)}
+                >
+                  <img
+                    src={fullscreenImage}
+                    alt="Fullscreen Preview"
+                    className="w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+                  />
+                  <button
+                    onClick={() => setFullscreenImage(null)}
+                    className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black"
+                  >
+                    ✕ Close
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
