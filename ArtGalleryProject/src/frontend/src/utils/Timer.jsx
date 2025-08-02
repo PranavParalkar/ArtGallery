@@ -31,14 +31,12 @@ const Timer = ({ setAuctionLive }) => {
         setAuctionLive(true);
         axiosInstance.get('/auctions/live');
         console.log("live api hits");
-        
       } else {
         target = auctionStart;
         mode = "Auction starts in";
         setAuctionLive(false);
         axiosInstance.get('/auctions/upcoming');
         console.log("upcoming api hits");
-        
       }
 
       const diff = target.getTime() - now.getTime();

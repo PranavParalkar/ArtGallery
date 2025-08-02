@@ -10,41 +10,35 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.RESTAPI.ArtGalleryProject.Entity.WithdrawalRequest;
 import com.RESTAPI.ArtGalleryProject.repository.WithdrawalRequestRepo;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
-import com.RESTAPI.ArtGalleryProject.security.JwtService;
 import com.RESTAPI.ArtGalleryProject.service.WalletService.WalletService;
 
-import io.jsonwebtoken.Claims;
-
 @RestController
+@RequestMapping("/wallet")
 public class WalletController {
 
     private static final Logger logger = LoggerFactory.getLogger(WalletController.class);
 
     @Autowired
     private WithdrawalRequestRepo withdrawalRequestRepo;
-
     @Autowired
     private AuthHelper authHelper;
-
     @Autowired
     private WalletService walletService;
 
-    @Autowired
-    private JwtService jwtService;
 
-    @GetMapping("/wallet/test")
+    @GetMapping("/test")
     public ResponseEntity<?> testWallet() {
         logger.info("GET /wallet/test endpoint hit. Wallet controller is responsive.");
         return ResponseEntity.ok().body("Wallet controller is working!");
     }
 
-    @GetMapping("/wallet")
+    @GetMapping
     public ResponseEntity<?> getWallet() {
         String email = authHelper.getCurrentEmail();
         logger.info("GET /wallet - Request received for user: {}", email);
@@ -55,21 +49,15 @@ public class WalletController {
         return ResponseEntity.ok().body(map);
     }
 
-    @PostMapping("/wallet/withdraw")
-    public ResponseEntity<?> createWithdrawalRequest(
-            @RequestHeader("Authorization") String authHeader,
-            @RequestBody Map<String, Object> request) {
+    @PostMapping("/withdraw")
+    public ResponseEntity<?> createWithdrawalRequest(@RequestBody Map<String, Object> request) {
         
         logger.info("POST /wallet/withdraw - Received new withdrawal request.");
         logger.debug("Request payload: {}", request);
 
-        String email = null;
+        String email = authHelper.getCurrentEmail();
+        long userId = authHelper.getCurrentUserId();
         try {
-            email = extractEmailFromToken(authHeader);
-            if (email == null) {
-                logger.warn("Unauthorized withdrawal attempt. Token is missing, invalid, or expired.");
-                return ResponseEntity.status(401).body("Unauthorized");
-            }
 
             logger.info("Processing withdrawal request for user: {}", email);
 
@@ -112,20 +100,4 @@ public class WalletController {
         }
     }
 
-    private String extractEmailFromToken(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            logger.warn("Authorization header is missing or not in 'Bearer' format.");
-            return null;
-        }
-        String token = authHeader.substring(7);
-        try {
-            Claims claims = jwtService.extractAllClaims(token);
-            String email = claims.get("email", String.class);
-            logger.debug("Successfully extracted email '{}' from JWT.", email);
-            return email;
-        } catch (Exception e) {
-            logger.error("Failed to parse JWT token. Reason: {}", e.getMessage());
-            return null;
-        }
-    }
 }

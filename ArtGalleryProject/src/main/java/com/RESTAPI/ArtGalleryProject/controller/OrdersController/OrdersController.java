@@ -56,7 +56,7 @@ public class OrdersController {
 	}
 
 	@PostMapping("/paymentCallbackCodOrWallet")
-	public ResponseEntity<?> paymentCallbackCOD(@RequestBody PaintingCodOrWalletRequest request) {
+	public ResponseEntity<?> paymentCallback(@RequestBody PaintingCodOrWalletRequest request) {
 		try {
 			long userId = authHelper.getCurrentUserId();
 			String email = authHelper.getCurrentEmail();

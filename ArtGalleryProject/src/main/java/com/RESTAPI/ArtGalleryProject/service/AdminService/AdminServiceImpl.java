@@ -102,7 +102,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<WithdrawalRequest> getPendingWithdrawalRequests() {
         logger.info("getPendingWithdrawalRequests started.");
-        List<WithdrawalRequest> allRequests = withdrawalRequestRepo.findAll();
+        List<WithdrawalRequest> allRequests = withdrawalRequestRepo.findByStatus("PENDING");
         logger.info("getPendingWithdrawalRequests finished. {} total requests found.", allRequests.size());
         
         // Log each request for debugging

@@ -73,4 +73,5 @@ public class WalletServiceImpl implements WalletService {
             throw new RuntimeException("Wallet not found");
         }
     }
+    
 }

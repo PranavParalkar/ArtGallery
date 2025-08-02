@@ -110,6 +110,7 @@ public class OrderServiceImpl implements OrderService {
 			throw new RuntimeException("Order not found for payment callback");
 		}
 
+		order.setRazorpayPaymentId(map.get("razorpay_payment_id"));
 		order.setOrderStatus("PAYMENT DONE");
 		Orders savedOrder = ordersRepository.save(order);
 
@@ -127,293 +128,297 @@ public class OrderServiceImpl implements OrderService {
 		if (order.getEmail() != null) {
 			try {
 				String htmlContent = """
-						    <html>
-						    <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 30px;">
-						        <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-						            <h2 style="color: #2c3e50;">Payment Successful ✅</h2>
-						            <p>Hi <strong>%s</strong>,</p>
-						            <p>We’ve received your payment for your recent transaction with <strong>Fusion Art Gallery</strong>.</p>
+						   <html>
+						   <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 30px;">
+						       <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+						           <h2 style="color: #2c3e50;">Payment Successful ✅</h2>
+						           <p>Hi <strong>%s</strong>,</p>
+						           <p>We’ve received your payment for your recent transaction with <strong>Fusion Art Gallery</strong>.</p>
 
-						            <div style="margin: 20px 0; padding: 15px; background-color: #f0f4f8; border-radius: 8px;">
-						                <p style="margin: 0;"><strong>Order ID:</strong> #%d</p>
-						                <p style="margin: 0;"><strong>Amount Paid:</strong> ₹%.2f</p>
-						                <p style="margin: 0;"><strong>Status:</strong> Payment Done</p>
-						            </div>
+						           <div style="margin: 20px 0; padding: 15px; background-color: #f0f4f8; border-radius: 8px;">
+						               <p style="margin: 0;"><strong>Order ID:</strong> #%d</p>
+						               <p style="margin: 0;"><strong>Transaction ID:</strong> %s</p>
+						               <p style="margin: 0;"><strong>Amount Paid:</strong> ₹%.2f</p>
+						               <p style="margin: 0;"><strong>Status:</strong> Payment Done</p>
+						           </div>
 
-						            <p>You can now use your wallet balance for bidding on exclusive artwork or explore our gallery for more collections.</p>
-						            <p>If you have any questions, feel free to <a href="#">contact our support</a>.</p>
+						           <p>You can now use your wallet balance for bidding on exclusive artwork or explore our gallery for more collections.</p>
+						           <p>If you have any questions, feel free to <a href="#">contact our support</a>.</p>
 
-						            <p style="margin-top: 30px;">Thank you for your support,<br/><strong>The Fusion Art Team</strong></p>
+						           <p style="margin-top: 30px;">Thank you for your support,<br/><strong>The Fusion Art Team</strong></p>
 
-						            <hr style="margin-top: 40px;"/>
-						            <p style="font-size: 12px; color: #888;">This is an automated message. Please do not reply directly to this email.</p>
-						        </div>
-						    </body>
-						    </html>
-						""".formatted(
-							order.getName(),
-							order.getRazorpayOrderId(),
+						           <hr style="margin-top: 40px;"/>
+						           <p style="font-size: 12px; color: #888;">This is an automated message. Please do not reply directly to this email.</p>
+						     </div>
+						 </body>
+						 </html>
+						"""
+						.formatted(
+							order.getName(), 
+							order.getOrderId(),				// or order.getRazorpayOrderId()
+							order.getRazorpayPaymentId(), // ✅ Add this
 							order.getAmount()
-							);
+						);
 
-					emailService.sendOrderConfirmationEmail(order.getEmail(), "✅ Payment Received - Fusion Art Gallery", htmlContent);
+				emailService.sendOrderConfirmationEmail(order.getEmail(), "✅ Payment Received - Fusion Art Gallery",
+						htmlContent);
 
-					logger.info("Order confirmation email sent to: {}", order.getEmail());
-				} catch (Exception e) {
-					logger.error("Error sending email confirmation: {}", e.getMessage());
-				}
+				logger.info("Order confirmation email sent to: {}", order.getEmail());
+			} catch (Exception e) {
+				logger.error("Error sending email confirmation: {}", e.getMessage());
 			}
-
-			logger.info("updateStatus finished successfully for order ID: {}", savedOrder.getOrderId());
-			return savedOrder;
 		}
+
+		logger.info("updateStatus finished successfully for order ID: {}", savedOrder.getOrderId());
+		return savedOrder;
+	}
 
 		// Send Email With PDF
 		@Override
-	@Transactional
-	public String updateStatus(String email, long userId, double amount, long paintingId, String mobileNumber,
-			String address, String paymentMethod, String name)
-			throws java.io.IOException, InvalidAttributeValueException {
-		logger.info("updateStatusCOD started for User ID: {} and Painting ID: {}", userId, paintingId);
+		@Transactional
+		public String updateStatus(String email, long userId, double amount, long paintingId, String mobileNumber,
+				String address, String paymentMethod, String name)
+				throws java.io.IOException, InvalidAttributeValueException {
+			logger.info("updateStatusCOD started for User ID: {} and Painting ID: {}", userId, paintingId);
 
-		Painting painting = paintingRepo.findById(paintingId)
-				.orElseThrow(() -> new EntityNotFoundException("Painting not found with id: " + paintingId));
+			Painting painting = paintingRepo.findById(paintingId)
+					.orElseThrow(() -> new EntityNotFoundException("Painting not found with id: " + paintingId));
 
-		// Check if painting is already sold
-		if (painting.isSold()) {
-			logger.warn("Painting {} is already sold", paintingId);
-			return "Painting is already sold";
-		}
-
-		User buyer = userRepo.findById(userId)
-				.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-		LoginCredentials sellerLogin = loginCredRepo.findByUser(painting.getSeller())
-				.orElseThrow(() -> new EntityNotFoundException("Seller for painting not found id: " + paintingId));
-		Orders savedOrder;
-
-		if (paymentMethod.equals("Pay with Wallet")) {
-			double paintingPrice = painting.getStartingPrice();
-			double currentBalance = buyer.getWallet().getBalance();
-
-			if (currentBalance < paintingPrice) {
-				logger.warn("Insufficient wallet balance for user {}. Required: {}, Available: {}", email,
-						paintingPrice, currentBalance);
-				throw new InvalidAttributeValueException("Insufficient wallet balance, can't purchase the item.");
+			// Check if painting is already sold
+			if (painting.isSold()) {
+				logger.warn("Painting {} is already sold", paintingId);
+				return "Painting is already sold";
 			}
 
-			// Decrement wallet balance of buyer
-			walletService.decrementBalanceByEmail(email, paintingPrice);
-			// Increment wallet balance of seller
-			walletService.incrementBalanceByEmail(sellerLogin.getEmail(), amount);
+			User buyer = userRepo.findById(userId)
+					.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+			LoginCredentials sellerLogin = loginCredRepo.findByUser(painting.getSeller())
+					.orElseThrow(() -> new EntityNotFoundException("Seller for painting not found id: " + paintingId));
+			Orders savedOrder;
 
-			// Create order record
-			Orders order = new Orders();
-			order.setName(buyer.getName());
-			order.setEmail(email);
-			order.setAmount(paintingPrice);
-			order.setOrderStatus("PAID_WALLET");
-			savedOrder = ordersRepository.save(order);
-		} else {
-			Orders order = new Orders();
-			order.setName(buyer.getName());
-			order.setAmount(amount);
-			order.setEmail(email);
-			order.setOrderStatus("PENDING_COD");
-			savedOrder = ordersRepository.save(order);
-		}
+			if (paymentMethod.equals("Pay with Wallet")) {
+				double paintingPrice = painting.getStartingPrice();
+				double currentBalance = buyer.getWallet().getBalance();
 
-		// Mark painting as sold and set buyer
-		painting.setSold(true);
-		painting.setBuyer(buyer);
-		painting.setFinalPrice(painting.getStartingPrice());
-		paintingRepo.save(painting);
+				if (currentBalance < paintingPrice) {
+					logger.warn("Insufficient wallet balance for user {}. Required: {}, Available: {}", email,
+							paintingPrice, currentBalance);
+					throw new InvalidAttributeValueException("Insufficient wallet balance, can't purchase the item.");
+				}
 
-		String subject = "🎨 Your Fusion Art Order Confirmation (#" + savedOrder.getOrderId() + ")";
-		String imageAbsolutePath = Paths.get(imageDirectory, painting.getImageUrl()).toString();
-		String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
+				// Decrement wallet balance of buyer
+				walletService.decrementBalanceByEmail(email, paintingPrice);
+				// Increment wallet balance of seller
+				walletService.incrementBalanceByEmail(sellerLogin.getEmail(), amount);
 
-		String htmlContent = """
-				    <!DOCTYPE html>
-				    <html lang="en">
-				    <head>
-				        <meta charset="UTF-8" />
-				        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-				        <style>
-				            body {
-				                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-				                background-color: #f4f4f4;
-				                margin: 0;
-				                padding: 0;
-				                color: #333;
-				            }
+				// Create order record
+				Orders order = new Orders();
+				order.setName(buyer.getName());
+				order.setEmail(email);
+				order.setAmount(paintingPrice);
+				order.setOrderStatus("PAID_WALLET");
+				savedOrder = ordersRepository.save(order);
+			} else {
+				Orders order = new Orders();
+				order.setName(buyer.getName());
+				order.setAmount(amount);
+				order.setEmail(email);
+				order.setOrderStatus("PENDING_COD");
+				savedOrder = ordersRepository.save(order);
+			}
 
-				            .email-container {
-				                max-width: 720px;
-				                margin: 40px auto;
-				                background-color: #ffffff;
-				                border-radius: 16px;
-				                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-				                overflow: hidden;
-				            }
+			// Mark painting as sold and set buyer
+			painting.setSold(true);
+			painting.setBuyer(buyer);
+			painting.setFinalPrice(painting.getStartingPrice());
+			paintingRepo.save(painting);
 
-				            .header {
-				                background: linear-gradient(90deg, #2c3e50, #34495e);
-				                color: #fff;
-				                padding: 30px 40px;
-				                text-align: center;
-				            }
+			String subject = "🎨 Your Fusion Art Order Confirmation (#" + savedOrder.getOrderId() + ")";
+			String imageAbsolutePath = Paths.get(imageDirectory, painting.getImageUrl()).toString();
+			String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
 
-				            .header h1 {
-				                margin: 0;
-				                font-size: 30px;
-				                font-weight: bold;
-				            }
+			String htmlContent = """
+					    <!DOCTYPE html>
+					    <html lang="en">
+					    <head>
+					        <meta charset="UTF-8" />
+					        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+					        <style>
+					            body {
+					                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+					                background-color: #f4f4f4;
+					                margin: 0;
+					                padding: 0;
+					                color: #333;
+					            }
 
-				            .content {
-				                padding: 40px 50px;
-				                line-height: 1.7;
-				                font-size: 16px;
-				            }
+					            .email-container {
+					                max-width: 720px;
+					                margin: 40px auto;
+					                background-color: #ffffff;
+					                border-radius: 16px;
+					                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+					                overflow: hidden;
+					            }
 
-				            .order-info {
-				                display: flex;
-				                justify-content: space-between;
-				                margin-bottom: 35px;
-				                padding-bottom: 25px;
-				                border-bottom: 1px solid #e0e0e0;
-				            }
+					            .header {
+					                background: linear-gradient(90deg, #2c3e50, #34495e);
+					                color: #fff;
+					                padding: 30px 40px;
+					                text-align: center;
+					            }
 
-				            .order-info div {
-				                width: 48%%;
-				            }
+					            .header h1 {
+					                margin: 0;
+					                font-size: 30px;
+					                font-weight: bold;
+					            }
 
-				            .order-info strong {
-				                display: block;
-				                color: #555;
-				                font-weight: 600;
-				                margin-bottom: 5px;
-				            }
+					            .content {
+					                padding: 40px 50px;
+					                line-height: 1.7;
+					                font-size: 16px;
+					            }
 
-				            .item-table {
-								width: 100%%;
-								border-collapse: collapse;
-								margin-bottom: 35px;
-							}
+					            .order-info {
+					                display: flex;
+					                justify-content: space-between;
+					                margin-bottom: 35px;
+					                padding-bottom: 25px;
+					                border-bottom: 1px solid #e0e0e0;
+					            }
 
-							.item-table th,
-							.item-table td {
-								padding: 16px;
-								border-bottom: 1px solid #e6e6e6;
-								text-align: center;
-								vertical-align: middle;
-							}
+					            .order-info div {
+					                width: 48%%;
+					            }
 
-							.item-table th {
-								background-color: #f0f4f8;
-								color: #444;
-								font-size: 15px;
-								font-weight: 600;
-							}
+					            .order-info strong {
+					                display: block;
+					                color: #555;
+					                font-weight: 600;
+					                margin-bottom: 5px;
+					            }
 
-							.item-image {
-								width: 200px;
-								border-radius: 10px;
-								box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-							}
+					            .item-table {
+									width: 100%%;
+									border-collapse: collapse;
+									margin-bottom: 35px;
+								}
 
-							.item-title {
-								font-weight: 600;
-								font-size: 16px;
-								color: #333;
-							}
+								.item-table th,
+								.item-table td {
+									padding: 16px;
+									border-bottom: 1px solid #e6e6e6;
+									text-align: center;
+									vertical-align: middle;
+								}
 
-							.item-price {
-								font-size: 15px;
-								font-weight: 500;
-								color: #222;
-							}
+								.item-table th {
+									background-color: #f0f4f8;
+									color: #444;
+									font-size: 15px;
+									font-weight: 600;
+								}
+
+								.item-image {
+									width: 200px;
+									border-radius: 10px;
+									box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+								}
+
+								.item-title {
+									font-weight: 600;
+									font-size: 16px;
+									color: #333;
+								}
+
+								.item-price {
+									font-size: 15px;
+									font-weight: 500;
+									color: #222;
+								}
 
 
-				            .shipping-info {
-				                background-color: #f9fafb;
-				                padding: 25px;
-				                border-radius: 10px;
-				                margin-top: 30px;
-				                font-size: 15px;
-				            }
+					            .shipping-info {
+					                background-color: #f9fafb;
+					                padding: 25px;
+					                border-radius: 10px;
+					                margin-top: 30px;
+					                font-size: 15px;
+					            }
 
-				            .footer {
-				                text-align: center;
-				                padding: 30px 40px;
-				                background-color: #f1f5f9;
-				                color: #888;
-				                font-size: 13px;
-				                border-top: 1px solid #ddd;
-				            }
+					            .footer {
+					                text-align: center;
+					                padding: 30px 40px;
+					                background-color: #f1f5f9;
+					                color: #888;
+					                font-size: 13px;
+					                border-top: 1px solid #ddd;
+					            }
 
-				            .footer a {
-				                color: #2c3e50;
-				                text-decoration: none;
-				                margin: 0 10px;
-				            }
+					            .footer a {
+					                color: #2c3e50;
+					                text-decoration: none;
+					                margin: 0 10px;
+					            }
 
-				            .footer a:hover {
-				                text-decoration: underline;
-				            }
-				        </style>
-				    </head>
-				    <body>
-				        <div class="email-container">
-				            <div class="header">
-				                <h1>Thank You for Your Purchase!</h1>
-				            </div>
-				            <div class="content">
-				                <div class="order-info">
-				                    <div>
-				                        <strong>Order ID:</strong> #%d
-				                        <strong>Date:</strong> %s
-				                    </div>
-				                    <div>
-				                        <strong>Billed To:</strong> %s
-				                    	<strong>Contact Number:</strong> %s
-				                    </div>
-				                </div>
+					            .footer a:hover {
+					                text-decoration: underline;
+					            }
+					        </style>
+					    </head>
+					    <body>
+					        <div class="email-container">
+					            <div class="header">
+					                <h1>Thank You for Your Purchase!</h1>
+					            </div>
+					            <div class="content">
+					                <div class="order-info">
+					                    <div>
+					                        <strong>Order ID:</strong> #%d
+					                        <strong>Date:</strong> %s
+					                    </div>
+					                    <div>
+					                        <strong>Billed To:</strong> %s
+					                    	<strong>Contact Number:</strong> %s
+					                    </div>
+					                </div>
 
-				                <table class="item-table">
-									<thead>
-										<tr>
-											<th>Item</th>
-											<th>Title</th>
-											<th>Price</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td><img src="cid:paintingImage" alt="%s" class="item-image" /></td>
-											<td class="item-title">%s</td>
-											<td class="item-price">₹%.2f</td>
-										</tr>
-									</tbody>
-								</table>
+					                <table class="item-table">
+										<thead>
+											<tr>
+												<th>Item</th>
+												<th>Title</th>
+												<th>Price</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td><img src="cid:paintingImage" alt="%s" class="item-image" /></td>
+												<td class="item-title">%s</td>
+												<td class="item-price">₹%.2f</td>
+											</tr>
+										</tbody>
+									</table>
 
-				                <div class="shipping-info">
-				                    <p><strong>Payment Method:</strong> %s</p>
-				                    <p><strong>Shipping Address:</strong><br>%s</p>
-				                </div>
+					                <div class="shipping-info">
+					                    <p><strong>Payment Method:</strong> %s</p>
+					                    <p><strong>Shipping Address:</strong><br>%s</p>
+					                </div>
 
-				                <p style="margin-top: 30px;">
-				                    We have received your order and will begin processing it shortly. If you have any questions, feel free to contact our support team.
-				                </p>
-				            </div>
+					                <p style="margin-top: 30px;">
+					                    We have received your order and will begin processing it shortly. If you have any questions, feel free to contact our support team.
+					                </p>
+					            </div>
 
-				            <div class="footer">
-				                <p>&copy; %d Fusion Art. All Rights Reserved.<br/>
-				                <a href="#">Visit Our Gallery</a> | <a href="#">Contact Us</a></p>
-				            </div>
-				        </div>
-				    </body>
-				    </html>
-				"""
+					            <div class="footer">
+					                <p>&copy; %d Fusion Art. All Rights Reserved.<br/>
+					                <a href="#">Visit Our Gallery</a> | <a href="#">Contact Us</a></p>
+					            </div>
+					        </div>
+					    </body>
+					    </html>
+					"""
 				.formatted(
 					savedOrder.getOrderId(),
 					formattedDate,
@@ -427,41 +432,42 @@ public class OrderServiceImpl implements OrderService {
 					Year.now().getValue()
 				);
 
-		try {
-			logger.info("Generating PDF receipt for Order ID: {}", savedOrder.getOrderId());
-
-			byte[] pdfReceipt = pdfService.generateReceiptPdf(savedOrder, buyer, painting, imageDirectory, paymentMethod,
-					name, mobileNumber, address);
-			String pdfFilename = "FusionArt-Receipt-" + savedOrder.getOrderId() + ".pdf";
-
-			logger.info("Sending confirmation email with PDF attachment to: {}", email);
-
-			emailService.sendOrderConfirmationEmailCOD(email, subject, htmlContent, imageAbsolutePath, pdfReceipt,
-					pdfFilename);
-
-			logger.info("Order confirmation email sent successfully for Order ID: {}", savedOrder.getOrderId());
-			return "Order confirmation email with PDF receipt sent successfully.";
-
-		} catch (DocumentException | IOException e) {
-			logger.error("PDF generation failed for Order ID: {}", savedOrder.getOrderId(), e);
-
-			// Optionally still try to send the email without attachment
 			try {
-				emailService.sendOrderConfirmationEmailCOD(email, subject, htmlContent, imageAbsolutePath, null, null);
-				logger.warn("PDF was not attached, but email sent without PDF for Order ID: {}",
-						savedOrder.getOrderId());
-				return "Order placed. PDF receipt failed, but confirmation email sent without attachment.";
-			} catch (MessagingException ex) {
-				logger.error("Failed to send confirmation email without PDF for Order ID: {}", savedOrder.getOrderId(),
-						ex);
-				return "Order placed, but failed to generate PDF and send confirmation email.";
+				logger.info("Generating PDF receipt for Order ID: {}", savedOrder.getOrderId());
+
+				byte[] pdfReceipt = pdfService.generateReceiptPdf(savedOrder, buyer, painting, imageDirectory,
+						paymentMethod, name, mobileNumber, address);
+				String pdfFilename = "FusionArt-Receipt-" + savedOrder.getOrderId() + ".pdf";
+
+				logger.info("Sending confirmation email with PDF attachment to: {}", email);
+
+				emailService.sendOrderConfirmationEmailCOD(email, subject, htmlContent, imageAbsolutePath, pdfReceipt,
+						pdfFilename);
+
+				logger.info("Order confirmation email sent successfully for Order ID: {}", savedOrder.getOrderId());
+				return "Order confirmation email with PDF receipt sent successfully.";
+
+			} catch (DocumentException | IOException e) {
+				logger.error("PDF generation failed for Order ID: {}", savedOrder.getOrderId(), e);
+
+				// still try to send the email without attachment
+				try {
+					emailService.sendOrderConfirmationEmailCOD(email, subject, htmlContent, imageAbsolutePath, null,
+							null);
+					logger.warn("PDF was not attached, but email sent without PDF for Order ID: {}",
+							savedOrder.getOrderId());
+					return "Order placed. PDF receipt failed, but confirmation email sent without attachment.";
+				} catch (MessagingException ex) {
+					logger.error("Failed to send confirmation email without PDF for Order ID: {}",
+							savedOrder.getOrderId(), ex);
+					return "Order placed, but failed to generate PDF and send confirmation email.";
+				}
+
+			} catch (MessagingException e) {
+				logger.error("Email sending failed for Order ID: {}", savedOrder.getOrderId(), e);
+				return "Order placed, but failed to send confirmation email with PDF receipt.";
 			}
 
-		} catch (MessagingException e) {
-			logger.error("Email sending failed for Order ID: {}", savedOrder.getOrderId(), e);
-			return "Order placed, but failed to send confirmation email with PDF receipt.";
 		}
-
-	}
 
 }

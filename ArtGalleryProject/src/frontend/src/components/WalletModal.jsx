@@ -184,6 +184,7 @@ const WalletModal = ({ isOpen, onClose }) => {
   const [balance, setBalance] = useState("₹0.00");
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [rawBalance, setRawBalance] = useState(0);
+  console.log(rawBalance);
 
   const token = localStorage.getItem("token");
 
@@ -192,9 +193,9 @@ const WalletModal = ({ isOpen, onClose }) => {
 
     try {
       const res = await axiosInstance.get(`http://localhost:8085/wallet`);
-      const rawBalance = parseFloat(res.data.balance || 0);
-      setRawBalance(rawBalance);
-      setBalance(`₹${rawBalance.toFixed(2)}`);
+      const getBalance = parseFloat(res.data.balance || 0);
+      setRawBalance(getBalance);
+      setBalance(`₹${getBalance.toFixed(2)}`);
     } catch (err) {
       console.error("Failed to fetch wallet balance:", err);
       setBalance("₹0.00");
@@ -203,22 +204,10 @@ const WalletModal = ({ isOpen, onClose }) => {
   }, [token]);
 
   useEffect(() => {
-    if (isOpen) {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      axiosInstance
-        .get(`http://localhost:8085/wallet`)
-        .then((res) => {
-          const rawBalance = parseFloat(res.data.balance || 0);
-          setBalance(`₹${rawBalance.toFixed(2)}`);
-        })
-        .catch((err) => {
-          console.error("Failed to fetch wallet balance:", err);
-          setBalance("₹0.00");
-        });
+    if (isOpen && token) {
+      fetchBalance();
     }
-  }, [isOpen, fetchBalance]);
+  }, [isOpen, token, fetchBalance]);
 
   const handleSetAmount = useCallback(() => {
     window.location.href = "http://localhost:8085/orders";
