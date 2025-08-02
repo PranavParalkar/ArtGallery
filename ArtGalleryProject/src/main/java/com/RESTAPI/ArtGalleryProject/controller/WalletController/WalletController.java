@@ -1,6 +1,5 @@
 package com.RESTAPI.ArtGalleryProject.controller.WalletController;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.RESTAPI.ArtGalleryProject.Entity.WithdrawalRequest;
-import com.RESTAPI.ArtGalleryProject.repository.WithdrawalRequestRepo;
 import com.RESTAPI.ArtGalleryProject.security.AuthHelper;
 import com.RESTAPI.ArtGalleryProject.service.WalletService.WalletService;
 
@@ -24,8 +21,6 @@ public class WalletController {
 
     private static final Logger logger = LoggerFactory.getLogger(WalletController.class);
 
-    @Autowired
-    private WithdrawalRequestRepo withdrawalRequestRepo;
     @Autowired
     private AuthHelper authHelper;
     @Autowired
@@ -51,51 +46,20 @@ public class WalletController {
 
     @PostMapping("/withdraw")
     public ResponseEntity<?> createWithdrawalRequest(@RequestBody Map<String, Object> request) {
-        
         logger.info("POST /wallet/withdraw - Received new withdrawal request.");
         logger.debug("Request payload: {}", request);
 
         String email = authHelper.getCurrentEmail();
         long userId = authHelper.getCurrentUserId();
+
         try {
-
-            logger.info("Processing withdrawal request for user: {}", email);
-
-            Double amount = Double.parseDouble(request.get("amount").toString());
-            String bankAccount = request.get("bankAccount").toString();
-            String ifscCode = request.get("ifscCode").toString();
-            String accountHolderName = request.get("accountHolderName").toString();
-            
-            logger.debug("Parsed withdrawal details - Amount: {}, Bank Account: {}, IFSC: {}, Holder Name: {}", 
-                         amount, "******", ifscCode, accountHolderName);
-
-            WithdrawalRequest withdrawalRequest = new WithdrawalRequest();
-            withdrawalRequest.setUserId(1L);
-            withdrawalRequest.setUserEmail(email);
-            withdrawalRequest.setAmount(amount);
-            withdrawalRequest.setBankAccount(bankAccount);
-            withdrawalRequest.setIfscCode(ifscCode);
-            withdrawalRequest.setAccountHolderName(accountHolderName);
-            withdrawalRequest.setStatus("PENDING");
-
-            logger.info("Saving withdrawal request for user: {}", email);
-            WithdrawalRequest savedRequest = withdrawalRequestRepo.save(withdrawalRequest);
-            logger.info("Successfully saved withdrawal request with ID: {} for user: {}", savedRequest.getId(), email);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Withdrawal request submitted successfully. Awaiting admin approval.");
-            response.put("requestId", savedRequest.getId());
-            response.put("amount", amount);
-            response.put("status", "PENDING");
-            response.put("estimatedTime", "3-5 business days after approval");
-
+            Map<String, Object> response = walletService.processWithdrawalRequest(userId, email, request);
             return ResponseEntity.ok().body(response);
-
         } catch (NumberFormatException e) {
-            logger.error("Error in createWithdrawalRequest for user: {}. Invalid 'amount' format in request.", email, e);
+            logger.error("Invalid amount format: {}", e.getMessage());
             return ResponseEntity.status(400).body("Bad Request: Invalid format for 'amount'.");
         } catch (Exception e) {
-            logger.error("Error creating withdrawal request for user: {}", (email != null ? email : "unknown"), e);
+            logger.error("Error creating withdrawal request: {}", e.getMessage());
             return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
         }
     }

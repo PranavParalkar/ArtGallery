@@ -127,22 +127,22 @@ public class AdminServiceImpl implements AdminService {
         var request = optional.get();
         
         // Check if user has sufficient balance
-        var user = userRepo.findById(request.getUserId()).orElse(null);
+        var user = request.getUser();
         if (user == null) {
-            logger.warn("User with ID {} not found for withdrawal request ID {}.", request.getUserId(), id);
+            logger.warn("User with ID {} not found for withdrawal request ID {}.", request.getUser().getUserId(), id);
             return "User not found";
         }
 
         if (user.getWallet().getBalance() < request.getAmount()) {
-            logger.warn("Insufficient balance for user ID {} in withdrawal request ID {}.", request.getUserId(), id);
+            logger.warn("Insufficient balance for user ID {} in withdrawal request ID {}.", request.getUser().getUserId(), id);
             return "Insufficient balance";
         }
 
         try {
             walletService.decrementBalanceByEmail(request.getUserEmail(), request.getAmount());
             
-            // Delete the request after processing
-            withdrawalRequestRepo.deleteById(id);
+            request.setStatus("APPROVED");
+            withdrawalRequestRepo.save(request);
 
             logger.info("Withdrawal request with ID {} approved and deleted successfully.", id);
             return "Withdrawal request approved and processed.";
@@ -161,9 +161,9 @@ public class AdminServiceImpl implements AdminService {
             logger.warn("Withdrawal request with ID {} not found during rejection.", id);
             return "Withdrawal request not found";
         }
-
-        // Delete the request after rejection
-        withdrawalRequestRepo.deleteById(id);
+        var request = optional.get();
+        request.setStatus("REJECTED");
+        withdrawalRequestRepo.save(request);
 
         logger.info("Withdrawal request with ID {} successfully rejected and deleted.", id);
         return "Withdrawal request rejected.";

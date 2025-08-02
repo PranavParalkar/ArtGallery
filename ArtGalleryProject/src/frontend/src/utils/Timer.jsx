@@ -8,10 +8,10 @@ const Timer = ({ setAuctionLive }) => {
   useEffect(() => {
     const calculateTime = () => {
       const now = new Date();
-      const currentDay = now.getDay();
+      const currentDay = now.getDay() === 0 ? 7 : now.getDay();
 
       const auctionStart = new Date(now);
-      auctionStart.setDate(now.getDate() - currentDay + 1);
+      auctionStart.setDate(now.getDate() - currentDay + 5); //  day(sunday:0  and saturday:6)
       auctionStart.setHours(17, 0, 0, 0);
 
       const auctionEndCheck = new Date(auctionStart);
@@ -30,13 +30,11 @@ const Timer = ({ setAuctionLive }) => {
         mode = "Auction ends in";
         setAuctionLive(true);
         axiosInstance.get('/auctions/live');
-        console.log("live api hits");
       } else {
         target = auctionStart;
         mode = "Auction starts in";
         setAuctionLive(false);
         axiosInstance.get('/auctions/upcoming');
-        console.log("upcoming api hits");
       }
 
       const diff = target.getTime() - now.getTime();

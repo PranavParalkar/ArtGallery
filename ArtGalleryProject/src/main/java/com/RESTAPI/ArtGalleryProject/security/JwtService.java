@@ -18,7 +18,7 @@ import java.util.Map;
 public class JwtService {
 
 	private final String SECRET_KEY = "23ui42ydq78cebqnspduq8o2h47ybr807G@*&G)&*TBD87qdb87gw7gw7dxhsefgbouydewgfyeb8723brf87gv2bdy8eg3w2g6";
-	private final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
+	private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24 hours
 
 	private final SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 	
