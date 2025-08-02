@@ -24,7 +24,7 @@ public class DashboardController {
 	@GetMapping("/auctions")
 	public ResponseEntity<?> getPainting(@RequestParam(defaultValue = "0") int pageNo) {
 		logger.info("getPainting started.");
-		final int pageSize = 12;
+		final int pageSize = 6;
 		var allPaintings = service.getUpcomingPaintingsByPageAuction(pageNo, pageSize);
 		logger.info("getPainting finished.");
 		return new ResponseEntity<>(allPaintings, HttpStatus.OK);
@@ -40,14 +40,14 @@ public class DashboardController {
 		else
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
-	
+
 	@GetMapping("/store")
 	public ResponseEntity<?> getStorePaintings(@RequestParam(defaultValue = "0") int pageNo) {
-	    logger.info("getStorePaintings started.");
-	    final int pageSize = 12;
-	    var allPaintings = service.getPaintingsByPageShop(pageNo, pageSize);
-	    logger.info("getStorePaintings finished.");
-	    return new ResponseEntity<>(allPaintings, HttpStatus.OK);
+		logger.info("getStorePaintings started.");
+		final int pageSize = 6;
+		var allPaintings = service.getPaintingsByPageShop(pageNo, pageSize);
+		logger.info("getStorePaintings finished.");
+		return new ResponseEntity<>(allPaintings, HttpStatus.OK);
 	}
-	
+
 }

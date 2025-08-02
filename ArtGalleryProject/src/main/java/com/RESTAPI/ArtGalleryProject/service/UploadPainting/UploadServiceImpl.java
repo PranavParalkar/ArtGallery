@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.UploadPaintingRequest;
@@ -31,7 +32,7 @@ public class UploadServiceImpl implements UploadService {
 
         if (file.getSize() > 5 * 1024 * 1024) {
             logger.info("uploadPainting finished.");
-            return "File too large. Max size is 5MB.";
+            throw new MaxUploadSizeExceededException(5);
         }
 
         String name = file.getOriginalFilename();

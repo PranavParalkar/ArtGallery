@@ -9,7 +9,7 @@ const Auction = () => {
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [pageNo, setPageNo] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [auctionLive, setAuctionLive] = useState(false);
   const [bidButton, setBidButton] = useState("Place Bid");
 
@@ -101,9 +101,9 @@ const Auction = () => {
                 <button
                   disabled={!auctionLive}
                   className={`mt-10 block text-center bottom-0 cursor-pointer py-2 rounded-lg font-semibold transition duration-300 ease-in-out
-                  ${auctionLive ? 
-                    'bg-[#7c5c3d] hover:bg-[#847464] hover:scale-95 active:scale-90 text-white' 
-                  : 'bg-gray-400 text-gray-200 cursor-not-allowed'}`}
+                  ${auctionLive ?
+                      'bg-[#7c5c3d] hover:bg-[#847464] hover:scale-95 active:scale-90 text-white'
+                      : 'bg-gray-400 text-gray-200 cursor-not-allowed'}`}
                   onClick={() =>
                     navigate(`/biddingFrontend/${painting.paintingId}`)
                   }
@@ -121,19 +121,23 @@ const Auction = () => {
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex justify-center mt-8 gap-4">
+      <div className="flex justify-center items-center mt-10 gap-6">
         <button
           onClick={() => setPageNo((p) => Math.max(0, p - 1))}
           disabled={pageNo === 0}
-          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+          className="px-5 py-2 bg-[#a17b5d] text-white font-semibold rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#8c6448] disabled:hover:bg-[#a17b5d]"
         >
           Previous
         </button>
-        <span className="px-4 py-2">Page {pageNo + 1}</span>
+
+        <span className="text-lg font-medium text-gray-700">
+          Page {pageNo + 1}
+        </span>
+
         <button
           onClick={() => setPageNo((p) => p + 1)}
           disabled={!hasNextPage}
-          className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+          className="px-5 py-2 bg-[#a17b5d] text-white font-semibold rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#8c6448] disabled:hover:bg-[#a17b5d]"
         >
           Next
         </button>

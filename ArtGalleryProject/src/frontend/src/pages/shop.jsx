@@ -76,9 +76,9 @@ const Shop = () => {
     setShowConfirmationModal(false); // Close modal
     setIsLoading(true); // Start loading
     try {
-        await axiosInstance.post("/paymentCallbackCodOrWallet", orderPayload);
-        setOrderPlaced(true);
-        setTimeout(() => setOrderPlaced(false), 3000);
+      await axiosInstance.post("/paymentCallbackCodOrWallet", orderPayload);
+      setOrderPlaced(true);
+      setTimeout(() => setOrderPlaced(false), 3000);
     } catch (err) {
       console.error("Failed to place order:", err);
 
@@ -262,84 +262,96 @@ const Shop = () => {
               <h2 className="text-xl font-bold text-[#3e2e1e] mb-4 text-center">
                 Confirm Address & Mobile
               </h2>
-              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Name</label>
-              <input
-                type="text"
-                className="w-full mb-4 px-4 py-2 border rounded-md"
-                placeholder="Enter Name"
-                value={orderInfo.name}
-                onChange={(e) =>
-                  setOrderInfo({ ...orderInfo, name: e.target.value })
-                }
-              />
-
-              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Mobile Number</label>
-              <input
-                type="tel"
-                className="w-full mb-4 px-4 py-2 border rounded-md"
-                placeholder="Enter mobile number"
-                value={orderInfo.mobile}
-                onChange={(e) =>
-                  setOrderInfo({ ...orderInfo, mobile: e.target.value })
-                }
-              />
-
-              <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Delivery Address</label>
-              <textarea
-                rows="3"
-                className="w-full mb-4 px-4 py-2 border rounded-md"
-                placeholder="Enter delivery address"
-                value={orderInfo.address}
-                onChange={(e) =>
-                  setOrderInfo({ ...orderInfo, address: e.target.value })
-                }
-              />
-              <button
-                className="bg-[#6b4c35] cursor-pointer text-white px-4 py-2 rounded hover:bg-[#5a3c28]"
-                onClick={() => {
-                  const fullAddress =
-                    [
-                      profile.address?.building,
-                      profile.address?.landmark,
-                      profile.address?.street,
-                      profile.address?.city,
-                      profile.address?.region,
-                      profile.address?.country,
-                    ]
-                      .filter(Boolean)
-                      .join(", ") +
-                    (profile.address?.pincode
-                      ? `. Pincode - ${profile.address.pincode}`
-                      : "");
-
-                  setOrderInfo({
-                    ...orderInfo,
-                    name: profile.name || "",
-                    mobile: profile.phoneNumber || "",
-                    address: fullAddress || "",
-                  });
+              {/* Wrap content in a form */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault(); // Prevent default form submission
+                  // If the form is valid, proceed with your logic
+                  setShowAddressModal(false);
+                  setShowOrderModal(true);
                 }}
               >
-                Continue with Profile Info
-              </button>
+                <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Name</label>
+                <input
+                  required
+                  type="text"
+                  className="w-full mb-4 px-4 py-2 border rounded-md"
+                  placeholder="Enter Name"
+                  value={orderInfo.name}
+                  onChange={(e) =>
+                    setOrderInfo({ ...orderInfo, name: e.target.value })
+                  }
+                />
 
-              <div className="flex justify-between mt-6">
+                <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Mobile Number</label>
+                <input
+                  required 
+                  type="tel"
+                  className="w-full mb-4 px-4 py-2 border rounded-md"
+                  placeholder="Enter mobile number"
+                  value={orderInfo.mobile}
+                  onChange={(e) =>
+                    setOrderInfo({ ...orderInfo, mobile: e.target.value })
+                  }
+                />
+
+                <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Delivery Address</label>
+                <textarea
+                  required
+                  rows="3"
+                  className="w-full mb-4 px-4 py-2 border rounded-md"
+                  placeholder="Enter delivery address"
+                  value={orderInfo.address}
+                  onChange={(e) =>
+                    setOrderInfo({ ...orderInfo, address: e.target.value })
+                  }
+                />
                 <button
-                  className="bg-gray-300 px-4 py-2 rounded cursor-pointer hover:bg-gray-400"
-                  onClick={() => setShowAddressModal(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="bg-[#6b4c35] text-white px-4 cursor-pointer py-2 rounded hover:bg-[#5a3c28]"
+                  type="button"
+                  className="bg-[#6b4c35] cursor-pointer text-white px-4 py-2 rounded hover:bg-[#5a3c28]"
                   onClick={() => {
-                    setShowAddressModal(false);
-                    setShowOrderModal(true);
+                    const fullAddress =
+                      [
+                        profile.address?.building,
+                        profile.address?.landmark,
+                        profile.address?.street,
+                        profile.address?.city,
+                        profile.address?.region,
+                        profile.address?.country,
+                      ]
+                        .filter(Boolean)
+                        .join(", ") +
+                      (profile.address?.pincode
+                        ? `. Pincode - ${profile.address.pincode}`
+                        : "");
+
+                    setOrderInfo({
+                      ...orderInfo,
+                      name: profile.name || "",
+                      mobile: profile.phoneNumber || "",
+                      address: fullAddress || "",
+                    });
                   }}
                 >
-                  Continue
+                  Continue with Profile Info
                 </button>
-              </div>
+
+                <div className="flex justify-between mt-6">
+                  <button
+                    type="button"
+                    className="bg-gray-300 px-4 py-2 rounded cursor-pointer hover:bg-gray-400"
+                    onClick={() => setShowAddressModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit" 
+                    className="bg-[#6b4c35] text-white px-4 cursor-pointer py-2 rounded hover:bg-[#5a3c28]"
+                  >
+                    Continue
+                  </button>
+                </div>
+              </form>
             </div>
           </motion.div>
         )}

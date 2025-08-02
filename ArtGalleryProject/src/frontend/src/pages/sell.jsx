@@ -17,10 +17,34 @@ const Sell = () => {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: files ? files[0] : value,
-    }));
+
+    if (name === "file") {
+      const file = files[0];
+      if (!file) return;
+
+      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+
+      if (file.size > maxSizeInBytes) {
+        alert("File size exceeds 5MB. Please choose a smaller file.");
+
+        e.target.value = null;
+
+        setFormData((prev) => ({
+          ...prev,
+          file: null,
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          file: file,
+        }));
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -126,7 +150,7 @@ const Sell = () => {
                 </p>
               </motion.div>
             </div>
-  
+
             <div className="text-center mt-10">
               <button
                 onClick={() => setStep(2)}
