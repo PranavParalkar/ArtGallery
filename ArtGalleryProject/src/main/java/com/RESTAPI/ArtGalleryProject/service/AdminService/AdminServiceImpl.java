@@ -15,6 +15,7 @@ import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UnverifiedPaintingRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WithdrawalRequestRepo;
+import com.RESTAPI.ArtGalleryProject.service.OrderService.EmailService;
 import com.RESTAPI.ArtGalleryProject.service.WalletService.WalletService;
 
 @Service
@@ -24,18 +25,16 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private UnverifiedPaintingRepo unverifiedRepo;
-
     @Autowired
     private PaintingRepo paintingRepo;
-
     @Autowired
     private UserRepo userRepo;
-
     @Autowired
     private WithdrawalRequestRepo withdrawalRequestRepo;
-
     @Autowired
     private WalletService walletService;
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public List<UnverifiedPainting> getPendingPaintings() {
@@ -114,7 +113,6 @@ public class AdminServiceImpl implements AdminService {
         return allRequests;
     }
 
-    @Override
     public String approveWithdrawalRequest(Long id) {
         logger.info("approveWithdrawalRequest started for request ID: {}", id);
 
@@ -125,8 +123,8 @@ public class AdminServiceImpl implements AdminService {
         }
 
         var request = optional.get();
-        
-        // Check if user has sufficient balance
+
+        // Check if user exists and has sufficient balance
         var user = request.getUser();
         if (user == null) {
             logger.warn("User with ID {} not found for withdrawal request ID {}.", request.getUser().getUserId(), id);
@@ -134,23 +132,57 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (user.getWallet().getBalance() < request.getAmount()) {
-            logger.warn("Insufficient balance for user ID {} in withdrawal request ID {}.", request.getUser().getUserId(), id);
+            logger.warn("Insufficient balance for user ID {} in withdrawal request ID {}.", user.getUserId(), id);
             return "Insufficient balance";
         }
 
         try {
+            // Deduct amount
             walletService.decrementBalanceByEmail(request.getUserEmail(), request.getAmount());
-            
+
             request.setStatus("APPROVED");
             withdrawalRequestRepo.save(request);
 
-            logger.info("Withdrawal request with ID {} approved and deleted successfully.", id);
+            // Prepare HTML email content
+            String htmlContent = """
+                <html>
+                    <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 30px;">
+                        <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                            <h2 style="color: #2c3e50;">Withdrawal Approved ✅</h2>
+                            <p>Hi <strong>%s</strong>,</p>
+                            <p>Your withdrawal request has been approved and processed successfully.</p>
+
+                            <div style="margin: 20px 0; padding: 15px; background-color: #f0f4f8; border-radius: 8px;">
+                                <p style="margin: 0;"><strong>Order ID:</strong> %s</p>
+                                <p style="margin: 0;"><strong>Amount Withdrawn:</strong> ₹%.2f</p>
+                                <p style="margin: 0;"><strong>Status:</strong> Approved</p>
+                            </div>
+
+                            <p>The amount will reflect in your linked account shortly. If there are any issues, please <a href="#">contact our support</a>.</p>
+                            <p style="margin-top: 30px;">Thank you for using <strong>Fusion Art Gallery</strong>,<br/>The Fusion Art Team</p>
+
+                            <hr style="margin-top: 40px;" />
+                            <p style="font-size: 12px; color: #888;">This is an automated message. Please do not reply directly to this email.</p>
+                        </div>
+                    </body>
+                </html>
+            """.formatted(user.getName(), request.getId(), request.getAmount());
+
+            // Send email
+            emailService.sendSimpleHtmlEmail(
+                request.getUserEmail(),
+                "Fusion Art - Withdrawal Approved ✅",
+                htmlContent
+            );
+
+            logger.info("Withdrawal request with ID {} approved and email sent.", id);
             return "Withdrawal request approved and processed.";
         } catch (Exception e) {
             logger.error("Error processing withdrawal request ID {}: {}", id, e.getMessage());
             return "Error processing withdrawal request";
         }
     }
+
 
     @Override
     public String rejectWithdrawalRequest(Long id) {
@@ -161,11 +193,53 @@ public class AdminServiceImpl implements AdminService {
             logger.warn("Withdrawal request with ID {} not found during rejection.", id);
             return "Withdrawal request not found";
         }
+
         var request = optional.get();
+        var user = request.getUser();
+
+        if (user == null) {
+            logger.warn("User not found for withdrawal request ID {} during rejection.", id);
+            return "User not found";
+        }
         request.setStatus("REJECTED");
         withdrawalRequestRepo.save(request);
+
+        String htmlContent = """
+            <html>
+                <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 30px;">
+                    <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                        <h2 style="color: #c0392b;">Withdrawal Rejected ❌</h2>
+                        <p>Hi <strong>%s</strong>,</p>
+                        <p>We're sorry to inform you that your withdrawal request could not be approved at this time.</p>
+
+                        <div style="margin: 20px 0; padding: 15px; background-color: #fff4f4; border-radius: 8px;">
+                            <p style="margin: 0;"><strong>Order ID:</strong> %s</p>
+                            <p style="margin: 0;"><strong>Requested Amount:</strong> ₹%.2f</p>
+                            <p style="margin: 0;"><strong>Status:</strong> Rejected</p>
+                        </div>
+
+                        <p>If you believe this was a mistake or have questions, please <a href="#">contact our support</a>.</p>
+                        <p style="margin-top: 30px;">Thank you for using <strong>Fusion Art Gallery</strong>,<br/>The Fusion Art Team</p>
+
+                        <hr style="margin-top: 40px;" />
+                        <p style="font-size: 12px; color: #888;">This is an automated message. Please do not reply directly to this email.</p>
+                    </div>
+                </body>
+            </html>
+            """.formatted(user.getName(), request.getId(), request.getAmount());
+
+        try {
+            emailService.sendSimpleHtmlEmail(
+                request.getUserEmail(),
+                "Withdrawal Request Rejected ❌",
+                htmlContent
+            );
+        } catch (Exception e) {
+            logger.error("Failed to send rejection email for withdrawal request ID {}: {}", id, e.getMessage());
+        }
 
         logger.info("Withdrawal request with ID {} successfully rejected and deleted.", id);
         return "Withdrawal request rejected.";
     }
+
 }

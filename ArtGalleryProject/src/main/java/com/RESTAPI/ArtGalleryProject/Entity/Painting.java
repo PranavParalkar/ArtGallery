@@ -41,6 +41,7 @@ public class Painting {
 	private double finalPrice = 0.0;
 	private boolean isForAuction;
 	private boolean isSold;
+	private boolean winnerEmailSent = false;
 
 	// --Relation tables
 

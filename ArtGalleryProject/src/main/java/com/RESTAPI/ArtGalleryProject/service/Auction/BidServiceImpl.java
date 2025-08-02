@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.TopBidDTO;
 import com.RESTAPI.ArtGalleryProject.Entity.Bid;
@@ -35,7 +37,6 @@ import com.lowagie.text.DocumentException;
 import io.jsonwebtoken.io.IOException;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 
 @Service
 public class BidServiceImpl implements BidService {
@@ -146,13 +147,14 @@ public class BidServiceImpl implements BidService {
 		return result;
 	}
 
-	@Transactional
+	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
-	public String auctionEnds() throws IOException, DocumentException, MessagingException, java.io.IOException {
+	public synchronized String auctionEnds() throws IOException, DocumentException, MessagingException, java.io.IOException {
 	    logger.info("auctionEnds started.");
-	    List<Painting> livePaintings = paintingRepo.findByIsSoldFalseAndIsForAuctionTrue();
+	    List<Painting> livePaintings = paintingRepo.findActiveAuctionsWithLock();
 
 	    for (Painting painting : livePaintings) {
+	    	if(painting.isWinnerEmailSent()) continue;
 	        Optional<Bid> highestBidderOpt = bidRepo.findTopByPaintingOrderByBidAmountDescTimeStampAsc(painting);
 	        if (highestBidderOpt.isEmpty()) continue;
 
@@ -423,6 +425,7 @@ public class BidServiceImpl implements BidService {
 	        painting.setSold(true);
 	        painting.setFinalPrice(highestBidder.getBidAmount());
 	        painting.setBuyer(highestBidder.getBuyer());
+	        painting.setWinnerEmailSent(true);
 	        paintingRepo.save(painting);
 	    }
 
