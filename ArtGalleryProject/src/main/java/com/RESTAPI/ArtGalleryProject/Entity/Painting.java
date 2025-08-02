@@ -2,6 +2,9 @@ package com.RESTAPI.ArtGalleryProject.Entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -44,14 +47,17 @@ public class Painting {
 	// user sold painting
 	@ManyToOne
 	@JoinColumn(name = "seller_id", nullable = false)
+	@JsonBackReference(value = "user-seller")
 	private User seller;
 
 	// user bought painting
 	@ManyToOne
 	@JoinColumn(name = "buyer_id")
+	@JsonBackReference(value = "user-buyer")
 	private User buyer;
 
 	// bid on painting
 	@OneToMany(mappedBy = "painting")
+	@JsonManagedReference(value = "painting-bids")
 	private List<Bid> bids;
 }

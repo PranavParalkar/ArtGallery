@@ -4,21 +4,7 @@ import axiosInstance from "../axiosInstance";
 // -----------------------------
 // Withdraw Modal Component
 // -----------------------------
-const WithdrawModal = ({ onClose, currentBalance }) => {
-  const token = localStorage.getItem("token");
-  const [profile, setProfile] = useState(null);
-  // Fetch user profile
-  useEffect(() => {
-    axiosInstance
-      .get("/user/profile")
-      .then((res) => {
-        setProfile(res.data);
-      })
-      .catch((err) => {
-        console.error("Failed to load profile:", err);
-        setProfile(null);
-      });
-  }, [token]);
+const WithdrawModal = ({ onClose, rawBalance }) => {
   const [formData, setFormData] = useState({
     amount: "",
     bankAccount: "",
@@ -39,36 +25,46 @@ const WithdrawModal = ({ onClose, currentBalance }) => {
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
+    setError(""); // Reset error on new submission
+
+    // 1. Convert form amount to a number for reliable validation
+    const numericAmount = parseFloat(formData.amount);
+
+    // 2. Client-side validation for the amount
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      setError("Please enter a valid withdrawal amount.");
+      return;
+    }
+
+    // 3. Check for sufficient balance
+    if (numericAmount > rawBalance) {
+      setError("Insufficient funds. You cannot withdraw more than your available balance.");
+      return;
+    }
+
     setLoading(true);
-    setError("");
 
     try {
-      if (amount > profile.balance) {
-        alert("Insufficient amount in wallet");
-        setIsWalletOpen(true);
-        setShowWithdrawModal(false);
-      } else {
-        const response = await axiosInstance.post("/wallet/withdraw", formData);
+      const response = await axiosInstance.post("/wallet/withdraw", {
+        ...formData,
+        amount: numericAmount // Send the validated number to the API
+      });
 
-        if (response.data.message) {
-          setSuccess(true);
-          setTimeout(() => {
-            onClose();
-            window.location.reload();
-          }, 2000);
-        }
+      if (response.data.message) {
+        setSuccess(true);
+        setTimeout(() => {
+          onClose();
+          window.location.reload();
+        }, 2000);
       }
     } catch (err) {
       console.error("Withdrawal error:", err);
-      setSuccess(true);
-      setTimeout(() => {
-        onClose();
-        window.location.reload();
-      }, 2000);
-    } finally {
-      setLoading(false);
+      // 4. Correctly handle errors from the API
+      const errorMessage = err.response?.data?.message || "Your withdrawal request failed. Please try again.";
+      setError(errorMessage);
+      setLoading(false); // Stop loading indicator on failure
     }
-  }, [formData, onClose]);
+  }, [formData, rawBalance, onClose]); // 5. Added rawBalance to dependency array
 
   return (
     <AnimatePresence>
@@ -77,7 +73,6 @@ const WithdrawModal = ({ onClose, currentBalance }) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 backdrop-blur-3xl flex items-center justify-center z-50"
-        onClick={onClose}
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -90,7 +85,7 @@ const WithdrawModal = ({ onClose, currentBalance }) => {
             <h2 className="text-xl font-semibold">Withdraw Funds</h2>
             <button
               onClick={onClose}
-              className="text-[#3e2e1e] text-2xl font-bold"
+              className="text-[#3e2e1e] text-2xl font-bold cursor-pointer"
             >
               ×
             </button>
@@ -101,78 +96,84 @@ const WithdrawModal = ({ onClose, currentBalance }) => {
               <div className="text-green-500 text-6xl mb-4">✓</div>
               <h3 className="text-lg font-semibold mb-2">Withdrawal Request Submitted!</h3>
               <p className="text-sm text-gray-600">
-                Your withdrawal request has been submitted successfully and is awaiting admin approval.
-                You will be notified once the request is processed.
+                Your request is awaiting admin approval. You will be notified once it is processed.
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="bg-[#f0e2d2] rounded-lg p-4">
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold mb-2">Amount to Withdraw</label>
-                  <input
-                    type="number"
-                    name="amount"
-                    value={formData.amount}
-                    onChange={handleInputChange}
-                    placeholder="Enter amount"
-                    className="w-full p-2 bg-white rounded-md outline-none text-black placeholder-gray-400"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold mb-2">Account Holder Name</label>
-                  <input
-                    type="text"
-                    name="accountHolderName"
-                    value={formData.accountHolderName}
-                    onChange={handleInputChange}
-                    placeholder="Enter account holder name"
-                    className="w-full p-2 bg-white rounded-md outline-none text-black placeholder-gray-400"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold mb-2">Bank Account Number</label>
-                  <input
-                    type="text"
-                    name="bankAccount"
-                    value={formData.bankAccount}
-                    onChange={handleInputChange}
-                    placeholder="Enter bank account number"
-                    className="w-full p-2 bg-white rounded-md outline-none text-black placeholder-gray-400"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold mb-2">IFSC Code</label>
-                  <input
-                    type="text"
-                    name="ifscCode"
-                    value={formData.ifscCode}
-                    onChange={handleInputChange}
-                    placeholder="Enter IFSC code"
-                    className="w-full p-2 bg-white rounded-md outline-none text-black placeholder-gray-400"
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-[#3e2e1e] hover:bg-[#8d7a67] disabled:bg-gray-400 text-white font-semibold py-2 rounded-md transition-colors"
-                >
-                  {loading ? "Processing..." : "Submit Withdrawal Request"}
-                </button>
+            <>
+              <div className="bg-[#f0e2d2] rounded-lg p-4 mb-4">
+                <p className="text-sm font-semibold">Available Balance:</p>
+                <p className="text-lg font-bold">₹{rawBalance}</p>
               </div>
-            </form>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="bg-[#f0e2d2] rounded-lg p-4">
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold mb-2">Amount to Withdraw</label>
+                    <input
+                      type="number"
+                      name="amount"
+                      value={formData.amount}
+                      onChange={handleInputChange}
+                      placeholder="Enter amount"
+                      className="w-full p-2 bg-white rounded-md outline-none text-black placeholder-gray-400"
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold mb-2">Account Holder Name</label>
+                    <input
+                      type="text"
+                      name="accountHolderName"
+                      value={formData.accountHolderName}
+                      onChange={handleInputChange}
+                      placeholder="Enter account holder name"
+                      className="w-full p-2 bg-white rounded-md outline-none text-black placeholder-gray-400"
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold mb-2">Bank Account Number</label>
+                    <input
+                      type="text"
+                      name="bankAccount"
+                      value={formData.bankAccount}
+                      onChange={handleInputChange}
+                      placeholder="Enter bank account number"
+                      className="w-full p-2 bg-white rounded-md outline-none text-black placeholder-gray-400"
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold mb-2">IFSC Code</label>
+                    <input
+                      type="text"
+                      name="ifscCode"
+                      value={formData.ifscCode}
+                      onChange={handleInputChange}
+                      placeholder="Enter IFSC code"
+                      className="w-full p-2 bg-white rounded-md outline-none text-black placeholder-gray-400"
+                      required
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-[#3e2e1e] hover:bg-[#8d7a67] disabled:bg-gray-400 text-white font-semibold py-2 rounded-md transition-colors cursor-pointer"
+                  >
+                    {loading ? "Processing..." : "Submit Withdrawal Request"}
+                  </button>
+                </div>
+              </form>
+              {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
+            </>
           )}
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence >
   );
 };
 
@@ -184,7 +185,6 @@ const WalletModal = ({ isOpen, onClose }) => {
   const [balance, setBalance] = useState("₹0.00");
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [rawBalance, setRawBalance] = useState(0);
-  console.log(rawBalance);
 
   const token = localStorage.getItem("token");
 
@@ -228,7 +228,12 @@ const WalletModal = ({ isOpen, onClose }) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 flex items-center justify-center z-40 p-4"
-        onClick={onClose}
+        onClick={() => {
+          if (!showWithdrawModal) {
+            onClose();
+          }
+        }}
+
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -241,7 +246,12 @@ const WalletModal = ({ isOpen, onClose }) => {
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <h2 className="text-2xl font-bold text-[#5a3c28]">Wallet</h2>
             <button
-              onClick={onClose}
+              onClick={() => {
+                if (!showWithdrawModal) {
+                  onClose();
+                }
+              }}
+
               className="text-gray-500 hover:text-gray-700 text-2xl font-bold cursor-pointer"
             >
               x
@@ -321,7 +331,7 @@ const WalletModal = ({ isOpen, onClose }) => {
         {showWithdrawModal && (
           <WithdrawModal
             onClose={() => setShowWithdrawModal(false)}
-            currentBalance={balance}
+            rawBalance={rawBalance}
           />
         )}
       </motion.div>

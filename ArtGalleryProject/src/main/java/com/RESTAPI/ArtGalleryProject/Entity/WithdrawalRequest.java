@@ -2,6 +2,8 @@ package com.RESTAPI.ArtGalleryProject.Entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,7 +23,9 @@ public class WithdrawalRequest {
     private Long id;
 
     @OneToOne
+    @JsonBackReference
     private User user;
+    
     private String userEmail;
     private Double amount;
     private String bankAccount;
