@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../axiosInstance";
 import { motion } from "framer-motion";
 import { getUserRole } from "../utils/auth";
@@ -9,6 +10,21 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
   const [activeTab, setActiveTab] = useState("paintings");
+  const [hasChecked, setHasChecked] = useState(true);
+  const navigate = useNavigate();
+  const role = getUserRole();
+
+  useEffect(() => {
+    if (role !== "ROLE_ADMIN") {
+      if (!sessionStorage.getItem("adminAccessDenied")) {
+        alert("Access Denied!");
+        sessionStorage.setItem("adminAccessDenied", "true");
+      }
+      navigate("/", { replace: true });
+    } else {
+      sessionStorage.removeItem("adminAccessDenied");
+    }
+  }, [role, navigate]);
 
   const fetchUnverifiedPaintings = async () => {
     try {

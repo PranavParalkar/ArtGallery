@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
@@ -21,6 +22,7 @@ import io.jsonwebtoken.io.IOException;
 public class PdfServiceImpl implements PdfService{
 
 	@Override
+	@Async
     public byte[] generateReceiptPdf(Orders order, User user, Painting painting, String imageDirectory, 
     		String paymentMode, String name, String contactNumber, String address)
             throws DocumentException, IOException, java.io.IOException {

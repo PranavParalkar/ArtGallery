@@ -163,9 +163,6 @@ const Dashboard = () => {
     </div>
   );
 
-  console.log(paintings);
-  console.log(typeof paintings);
-
   const upcomingAuctions = paintings.filter((p) => !p.isSold);
 
   return (
