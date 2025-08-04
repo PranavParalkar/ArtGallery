@@ -10,6 +10,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import jakarta.mail.MessagingException;
@@ -27,6 +28,7 @@ public class EmailServiceImpl implements EmailService {
 	private String emailFrom;
 
 	@Override
+	@Async
 	public void sendOrderConfirmationEmailCOD(String to, String subject, String htmlContent,
 			String inlineImageAbsolutePath, byte[] pdfBytes, String attachmentFilename) throws MessagingException {
 		logger.info("Preparing MIME email to: {}", to);
@@ -54,6 +56,7 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
+	@Async
 	public void sendOrderConfirmationEmail(String to, String subject, String htmlContent) throws MessagingException {
 	    MimeMessage message = mailSender.createMimeMessage();
 	    MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -65,6 +68,7 @@ public class EmailServiceImpl implements EmailService {
 
 
 	@Override
+	@Async
 	public void sendSimpleHtmlEmail(String to, String subject, String htmlContent) throws MessagingException {
 	    MimeMessage message = mailSender.createMimeMessage();
 	    MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");

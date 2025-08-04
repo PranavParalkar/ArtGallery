@@ -44,9 +44,9 @@ public class User {
     private boolean authorizedSeller;
     private LocalDate createdAt;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private WithdrawalRequest withdrawalRequest;
+    private List<WithdrawalRequest> withdrawalRequest;
     
     @Column(name = "ROLE_User", length = 20)
     @Enumerated(EnumType.STRING)
