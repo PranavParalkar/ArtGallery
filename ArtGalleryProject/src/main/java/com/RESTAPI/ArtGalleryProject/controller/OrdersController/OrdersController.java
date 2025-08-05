@@ -50,18 +50,18 @@ public class OrdersController {
 
 	@PostMapping("/paymentCallback")
 	public String paymentCallback(@RequestParam Map<String, String> response) {
-		orderService.updateStatus(response);
+		orderService.updateStatusPayment(response);
 		logger.info("paymentCallback finished.");
 		return "success";
 	}
 
 	@PostMapping("/paymentCallbackCodOrWallet")
-	public ResponseEntity<?> paymentCallbackCOD(@RequestBody PaintingCodOrWalletRequest request) {
+	public ResponseEntity<?> paymentCallback(@RequestBody PaintingCodOrWalletRequest request) {
 		try {
 			long userId = authHelper.getCurrentUserId();
 			String email = authHelper.getCurrentEmail();
 
-			String result = orderService.updateStatusCOD(email, userId, request.amount(), request.paintingId(),
+			String result = orderService.updateStatus(email, userId, request.amount(), request.paintingId(),
 					request.mobile(), request.address(), request.paymentMode(), request.name());
 
 			// Check for specific business logic messages from the service

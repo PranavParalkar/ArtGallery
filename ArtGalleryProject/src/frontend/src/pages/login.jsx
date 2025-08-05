@@ -395,7 +395,7 @@ const Login = () => {
             </div>
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold text-lg"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold text-lg cursor-pointer"
               disabled={userDetailsLoading}
             >
               {userDetailsLoading ? "Saving..." : "Save & Go to Dashboard"}
@@ -419,7 +419,7 @@ const Login = () => {
                 />
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold text-lg"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold text-lg cursor-pointer"
                   disabled={forgotLoading}
                 >
                   {forgotLoading ? "Checking..." : "Next"}
@@ -448,7 +448,7 @@ const Login = () => {
                 />
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold text-lg"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold text-lg cursor-pointer"
                   disabled={forgotLoading}
                 >
                   {forgotLoading ? "Verifying..." : "Next"}
@@ -480,7 +480,7 @@ const Login = () => {
                 />
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold text-lg"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold text-lg cursor-pointer"
                   disabled={forgotLoading}
                 >
                   {forgotLoading ? "Resetting..." : "Reset Password"}

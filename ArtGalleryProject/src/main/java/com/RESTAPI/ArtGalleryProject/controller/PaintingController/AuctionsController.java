@@ -71,13 +71,13 @@ public class AuctionsController {
 	@Transactional
 	public ResponseEntity<?> auctionIsNotLive() {
 		try {
-			logger.info("auctionIsNotLive started.");
+//			logger.info("auctionIsNotLive started.");
 			if (!isAuctionLive) {
-				logger.info("auctionIsNotLive finished.");
+//				logger.info("auctionIsNotLive finished.");
 				return new ResponseEntity<>("Auction is already upcoming.", HttpStatus.OK);
 			} else {
 				isAuctionLive = false;
-
+				service.auctionEnds();
 				return new ResponseEntity<>("Auction has now ended.", HttpStatus.OK);
 			}
 		} catch (Exception e) {

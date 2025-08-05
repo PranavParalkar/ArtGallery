@@ -2,6 +2,8 @@ package com.RESTAPI.ArtGalleryProject.Entity;
 
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,9 +36,11 @@ public class Bid {
 
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
+	@JsonBackReference(value = "user-bids")
 	private User buyer;
 
 	@ManyToOne
 	@JoinColumn(name = "painting_id", nullable = false)
+	@JsonBackReference(value = "painting-bids")
 	private Painting painting;
 }

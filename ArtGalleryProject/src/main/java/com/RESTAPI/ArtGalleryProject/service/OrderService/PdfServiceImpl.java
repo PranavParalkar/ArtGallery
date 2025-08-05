@@ -1,12 +1,15 @@
 package com.RESTAPI.ArtGalleryProject.service.OrderService;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
@@ -15,15 +18,15 @@ import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.lowagie.text.DocumentException;
 
-import io.jsonwebtoken.io.IOException;
 
 @Service
 public class PdfServiceImpl implements PdfService{
 
 	@Override
-    public byte[] generateReceiptPdf(Orders order, User user, Painting painting, String imageDirectory, 
+	@Async
+    public CompletableFuture<byte[]> generateReceiptPdf(Orders order, User user, Painting painting, String imageDirectory, 
     		String paymentMode, String name, String contactNumber, String address)
-            throws DocumentException, IOException, java.io.IOException {
+            throws DocumentException, IOException {
 
         String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"));
         Path imagePath = Paths.get(imageDirectory, painting.getImageUrl());
@@ -168,7 +171,8 @@ public class PdfServiceImpl implements PdfService{
             renderer.setDocumentFromString(html);
             renderer.layout();
             renderer.createPDF(outputStream);
-            return outputStream.toByteArray();
+            byte[] pdfBytes = outputStream.toByteArray();
+            return CompletableFuture.completedFuture(pdfBytes);
         }
     }
 

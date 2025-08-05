@@ -17,10 +17,34 @@ const Sell = () => {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: files ? files[0] : value,
-    }));
+
+    if (name === "file") {
+      const file = files[0];
+      if (!file) return;
+
+      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+
+      if (file.size > maxSizeInBytes) {
+        alert("File size exceeds 5MB. Please choose a smaller file.");
+
+        e.target.value = null;
+
+        setFormData((prev) => ({
+          ...prev,
+          file: null,
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          file: file,
+        }));
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -126,11 +150,11 @@ const Sell = () => {
                 </p>
               </motion.div>
             </div>
-  
+
             <div className="text-center mt-10">
               <button
                 onClick={() => setStep(2)}
-                className="bg-[#5a3c28] text-white px-8 py-3 rounded-lg text-lg hover:bg-[#3d281a] transition duration-300"
+                className="bg-[#5a3c28] text-white px-8 py-3 rounded-lg text-lg hover:bg-[#3d281a] transition duration-300 cursor-pointer"
               >
                 Start Selling
               </button>
@@ -159,7 +183,7 @@ const Sell = () => {
                     setSellingMode("auction");
                     setStep(3);
                   }}
-                  className="bg-[#5a3c28] w-[20%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                  className="bg-[#5a3c28] w-[20%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a] cursor-pointer"
                 >
                   Sell in Auction
                 </motion.button>
@@ -170,7 +194,7 @@ const Sell = () => {
                     setSellingMode("store");
                     setStep(3);
                   }}
-                  className="bg-[#5a3c28] w-[20%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a]"
+                  className="bg-[#5a3c28] w-[20%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a] cursor-pointer"
                 >
                   Sell in Store
                 </motion.button>
@@ -199,7 +223,7 @@ const Sell = () => {
                   required
                   accept="image/*"
                   onChange={handleChange}
-                  className="w-full border border-gray-300 p-2 rounded-md"
+                  className="w-full border border-gray-300 p-2 rounded-md cursor-pointer"
                 />
               </div>
               <div>
@@ -289,7 +313,7 @@ const Sell = () => {
               )}
               <button
                 type="submit"
-                className="bg-[#5a3c28] text-white px-6 py-2 rounded-lg hover:bg-[#3d281a]"
+                className="bg-[#5a3c28] text-white px-6 py-2 rounded-lg hover:bg-[#3d281a] cursor-pointer"
               >
                 Submit Application
               </button>

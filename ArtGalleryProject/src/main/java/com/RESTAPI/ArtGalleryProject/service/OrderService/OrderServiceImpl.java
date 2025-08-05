@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import javax.naming.directory.InvalidAttributeValueException;
 
@@ -14,11 +15,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
+import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
+import com.RESTAPI.ArtGalleryProject.repository.LoginCredRepo;
 import com.RESTAPI.ArtGalleryProject.repository.OrdersRepo;
 import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
@@ -28,7 +33,6 @@ import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 
-import io.jsonwebtoken.io.IOException;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
@@ -47,6 +51,8 @@ public class OrderServiceImpl implements OrderService {
 	private PaintingRepo paintingRepo;
 	@Autowired
 	private UserRepo userRepo;
+	@Autowired
+	private LoginCredRepo loginCredRepo;
 	@Autowired
 	private PdfService pdfService;
 	@Autowired
@@ -92,7 +98,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional
-	public Orders updateStatus(Map<String, String> map) {
+	public Orders updateStatusPayment(Map<String, String> map) {
 		String razorpayId = map.get("razorpay_order_id");
 
 		if (razorpayId == null) {
@@ -106,6 +112,7 @@ public class OrderServiceImpl implements OrderService {
 			throw new RuntimeException("Order not found for payment callback");
 		}
 
+		order.setRazorpayPaymentId(map.get("razorpay_payment_id"));
 		order.setOrderStatus("PAYMENT DONE");
 		Orders savedOrder = ordersRepository.save(order);
 
@@ -122,9 +129,39 @@ public class OrderServiceImpl implements OrderService {
 		// Send email confirmation
 		if (order.getEmail() != null) {
 			try {
-				emailService.sendOrderConfirmationEmail(order.getEmail(), "Payment Successful - Art Gallery",
-						"Hi " + order.getName() + ",\n\nYour payment has been received successfully for Order ID: "
-								+ order.getOrderId() + ".\n\nThanks for shopping with us!");
+				String htmlContent = """
+						   <html>
+						   <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 30px;">
+						       <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+						           <h2 style="color: #2c3e50;">Payment Successful ✅</h2>
+						           <p>Hi <strong>%s</strong>,</p>
+						           <p>We’ve received your payment for your recent transaction with <strong>Fusion Art Gallery</strong>.</p>
+
+						           <div style="margin: 20px 0; padding: 15px; background-color: #f0f4f8; border-radius: 8px;">
+						               <p style="margin: 0;"><strong>Order ID:</strong> #%d</p>
+						               <p style="margin: 0;"><strong>Transaction ID:</strong> %s</p>
+						               <p style="margin: 0;"><strong>Amount Paid:</strong> ₹%.2f</p>
+						               <p style="margin: 0;"><strong>Status:</strong> Payment Done</p>
+						           </div>
+
+						           <p>You can now use your wallet balance for bidding on exclusive artwork or explore our gallery for more collections.</p>
+						           <p>If you have any questions, feel free to <a href="#">contact our support</a>.</p>
+
+						           <p style="margin-top: 30px;">Thank you for your support,<br/><strong>The Fusion Art Team</strong></p>
+
+						           <hr style="margin-top: 40px;"/>
+						           <p style="font-size: 12px; color: #888;">This is an automated message. Please do not reply directly to this email.</p>
+						     </div>
+						 </body>
+						 </html>
+						"""
+						.formatted(order.getName(), order.getOrderId(), // or order.getRazorpayOrderId()
+								order.getRazorpayPaymentId(), // ✅ Add this
+								order.getAmount());
+
+				emailService.sendOrderConfirmationEmail(order.getEmail(), "✅ Payment Received - Fusion Art Gallery",
+						htmlContent);
+
 				logger.info("Order confirmation email sent to: {}", order.getEmail());
 			} catch (Exception e) {
 				logger.error("Error sending email confirmation: {}", e.getMessage());
@@ -135,9 +172,10 @@ public class OrderServiceImpl implements OrderService {
 		return savedOrder;
 	}
 
+	// Send Email With PDF
 	@Override
 	@Transactional
-	public String updateStatusCOD(String email, long userId, double amount, long paintingId, String mobileNumber,
+	public String updateStatus(String email, long userId, double amount, long paintingId, String mobileNumber,
 			String address, String paymentMethod, String name)
 			throws java.io.IOException, InvalidAttributeValueException {
 		logger.info("updateStatusCOD started for User ID: {} and Painting ID: {}", userId, paintingId);
@@ -151,13 +189,15 @@ public class OrderServiceImpl implements OrderService {
 			return "Painting is already sold";
 		}
 
-		User user = userRepo.findById(userId)
+		User buyer = userRepo.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-
+		LoginCredentials sellerLogin = loginCredRepo.findByUser(painting.getSeller())
+				.orElseThrow(() -> new EntityNotFoundException("Seller for painting not found id: " + paintingId));
 		Orders savedOrder;
+
 		if (paymentMethod.equals("Pay with Wallet")) {
 			double paintingPrice = painting.getStartingPrice();
-			double currentBalance = user.getWallet().getBalance();
+			double currentBalance = buyer.getWallet().getBalance();
 
 			if (currentBalance < paintingPrice) {
 				logger.warn("Insufficient wallet balance for user {}. Required: {}, Available: {}", email,
@@ -165,29 +205,32 @@ public class OrderServiceImpl implements OrderService {
 				throw new InvalidAttributeValueException("Insufficient wallet balance, can't purchase the item.");
 			}
 
-			// Decrement wallet balance
+			// Decrement wallet balance of buyer
 			walletService.decrementBalanceByEmail(email, paintingPrice);
+			// Increment wallet balance of seller
+			walletService.incrementBalanceByEmail(sellerLogin.getEmail(), amount);
 
 			// Create order record
 			Orders order = new Orders();
-			order.setName(user.getName());
+			order.setName(buyer.getName());
 			order.setEmail(email);
 			order.setAmount(paintingPrice);
-			order.setOrderStatus("PAID");
+			order.setOrderStatus("PAID_WALLET");
 			savedOrder = ordersRepository.save(order);
 		} else {
 			Orders order = new Orders();
-			order.setName(user.getName());
+			order.setName(buyer.getName());
 			order.setAmount(amount);
 			order.setEmail(email);
 			order.setOrderStatus("PENDING_COD");
 			savedOrder = ordersRepository.save(order);
 		}
+
 		// Mark painting as sold and set buyer
-//		painting.setSold(true);
-//		painting.setBuyer(user);
-//		painting.setFinalPrice(painting.getStartingPrice());
-//		paintingRepo.save(painting);
+		painting.setSold(true);
+		painting.setBuyer(buyer);
+		painting.setFinalPrice(painting.getStartingPrice());
+		paintingRepo.save(painting);
 
 		String subject = "🎨 Your Fusion Art Order Confirmation (#" + savedOrder.getOrderId() + ")";
 		String imageAbsolutePath = Paths.get(imageDirectory, painting.getImageUrl()).toString();
@@ -202,7 +245,7 @@ public class OrderServiceImpl implements OrderService {
 				        <style>
 				            body {
 				                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-				                background-color: #f1f5f9;
+				                background-color: #f4f4f4;
 				                margin: 0;
 				                padding: 0;
 				                color: #333;
@@ -375,53 +418,45 @@ public class OrderServiceImpl implements OrderService {
 				    </body>
 				    </html>
 				"""
-				.formatted(
-					savedOrder.getOrderId(),
-					formattedDate,
-					name,
-					mobileNumber,
-					painting.getTitle(),
-					painting.getTitle(),
-					amount,
-					paymentMethod,
-					address,
-					Year.now().getValue()
-				);
+				.formatted(savedOrder.getOrderId(), formattedDate, name, mobileNumber, painting.getTitle(),
+						painting.getTitle(), amount, paymentMethod, address, Year.now().getValue());
 
-		try {
-			logger.info("Generating PDF receipt for Order ID: {}", savedOrder.getOrderId());
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+		    @Override
+		    public void afterCommit() {
+		        logger.info("Transaction committed. Generating PDF and sending email for Order ID: {}",
+		                savedOrder.getOrderId());
 
-			byte[] pdfReceipt = pdfService.generateReceiptPdf(savedOrder, user, painting, imageDirectory, paymentMethod,
-					name, mobileNumber, address);
-			String pdfFilename = "FusionArt-Receipt-" + savedOrder.getOrderId() + ".pdf";
+		        String pdfFilename = "FusionArt-Receipt-" + savedOrder.getOrderId() + ".pdf";
 
-			logger.info("Sending confirmation email with PDF attachment to: {}", email);
+		        try {
+		            CompletableFuture<byte[]> futureReceipt =
+		                    pdfService.generateReceiptPdf(savedOrder, buyer, painting, imageDirectory,
+		                            paymentMethod, name, mobileNumber, address);
 
-			emailService.sendOrderConfirmationEmailCOD(email, subject, htmlContent, imageAbsolutePath, pdfReceipt,
-					pdfFilename);
+		            futureReceipt.thenAccept(pdfReceipt -> {
+		                logger.info("Sending confirmation email with PDF attachment to: {}", email);
+		                try {
+		                    emailService.sendOrderConfirmationEmailCOD(
+		                            email, subject, htmlContent, imageAbsolutePath,
+		                            pdfReceipt, pdfFilename);
+		                    logger.info("Order confirmation email sent successfully for Order ID: {}",
+		                            savedOrder.getOrderId());
+		                } catch (MessagingException e) {
+		                    logger.error("Email sending failed for Order ID: {}", savedOrder.getOrderId(), e);
+		                }
+		            }).exceptionally(ex -> {
+		                logger.error("Async PDF generation failed for Order ID: {}", savedOrder.getOrderId(), ex);
+		                return null;
+		            });
 
-			logger.info("Order confirmation email sent successfully for Order ID: {}", savedOrder.getOrderId());
-			return "Order confirmation email with PDF receipt sent successfully.";
+		        } catch (DocumentException | java.io.IOException e) {
+		            logger.error("Failed to start async PDF generation for Order ID: {}", savedOrder.getOrderId(), e);
+		        }
+		    }
+		});
 
-		} catch (DocumentException | IOException e) {
-			logger.error("PDF generation failed for Order ID: {}", savedOrder.getOrderId(), e);
-
-			// Optionally still try to send the email without attachment
-			try {
-				emailService.sendOrderConfirmationEmailCOD(email, subject, htmlContent, imageAbsolutePath, null, null);
-				logger.warn("PDF was not attached, but email sent without PDF for Order ID: {}",
-						savedOrder.getOrderId());
-				return "Order placed. PDF receipt failed, but confirmation email sent without attachment.";
-			} catch (MessagingException ex) {
-				logger.error("Failed to send confirmation email without PDF for Order ID: {}", savedOrder.getOrderId(),
-						ex);
-				return "Order placed, but failed to generate PDF and send confirmation email.";
-			}
-
-		} catch (MessagingException e) {
-			logger.error("Email sending failed for Order ID: {}", savedOrder.getOrderId(), e);
-			return "Order placed, but failed to send confirmation email with PDF receipt.";
-		}
+		return "Order placed successfully — confirmation email will be sent shortly.";
 
 	}
 
