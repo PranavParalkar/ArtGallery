@@ -63,7 +63,7 @@ const Auction = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75 }}
-              className=" rounded-xl  bg-[#f0e2d2] h-[550px] duration-150 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition"
+              className="rounded-2xl bg-[#f0e2d2] h-[550px] transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition flex flex-col"
             >
               {painting.imageUrl && (
                 <div className="relative overflow-hidden h-1/2 rounded-t-md group">
@@ -79,25 +79,25 @@ const Auction = () => {
                   />
 
                   {/* Hover message */}
-                  <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#6b4c35]/50 text-white text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition">
+                  <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#6b4c35]/50 text-white text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer">
                     Click to view image
                   </div>
                 </div>
               )}
-              <div className="p-6 flex flex-col justify-between">
+              <div className="p-6 flex flex-col justify-between flex-grow">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <FaImage className="text-[#5a3c28]" />
-                    <h2 className="text-2xl font-bold text-[#5a3c28]">
+                    <h2 className="text-2xl font-bold text-[#5a3c28] line-clamp-1">
                       {painting.title}
                     </h2>
                   </div>
-                  <p className="text-md text-[#6b4c35] mb-2">
-                    <div className="flex items-center  ">
-                      <FaInfoCircle className="mr-2" />
+                  <div className="flex items-start gap-2 text-md text-[#6b4c35] mb-2">
+                    <FaInfoCircle className="mt-1 flex-shrink-0" />
+                    <p className="line-clamp-2">
                       {painting.description}
-                    </div>
-                  </p>
+                    </p>
+                  </div>
                   <p className="text-md text-[#6b4c35] mb-1 flex gap-2">
                     <FaRulerCombined />{" "}
                     <span className="font-bold">Dimensions</span>{" "}
@@ -110,7 +110,7 @@ const Auction = () => {
                   </p>
                   <p className="text-md mt-2 font-bold flex gap-2 text-[#6b4c35]">
                     <FaUserCircle className="mt-1" /> Seller:{" "}
-                    <span className="font-medium text-[#6b4c35]">
+                    <span className="font-medium text-[#6b4c35] line-clamp-1">
                       {painting.seller || "Unknown"}
                     </span>
                   </p>
@@ -118,11 +118,10 @@ const Auction = () => {
                 <button
                   disabled={!auctionLive}
                   className={`mt-5 block text-center bottom-0 py-2 rounded-lg font-semibold transition duration-300 ease-in-out
-                  ${
-                    auctionLive
+                  ${auctionLive
                       ? "bg-[#7c5c3d] hover:bg-[#847464] hover:scale-95 active:scale-90 text-white cursor-pointer"
                       : "bg-gray-400 text-gray-200 cursor-not-allowed"
-                  }`}
+                    }`}
                   onClick={() =>
                     navigate(`/biddingFrontend/${painting.paintingId}`)
                   }
@@ -185,7 +184,7 @@ const Auction = () => {
               />
               <button
                 onClick={() => setFullscreenImage(null)}
-                className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black"
+                className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black cursor-pointer"
               >
                 ✕ Close
               </button>

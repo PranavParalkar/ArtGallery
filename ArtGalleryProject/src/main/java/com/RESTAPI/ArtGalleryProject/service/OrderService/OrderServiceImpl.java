@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import javax.naming.directory.InvalidAttributeValueException;
 
@@ -14,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.RESTAPI.ArtGalleryProject.DTO.Order.OrderRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
@@ -30,7 +33,6 @@ import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 
-import io.jsonwebtoken.io.IOException;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
@@ -419,40 +421,42 @@ public class OrderServiceImpl implements OrderService {
 				.formatted(savedOrder.getOrderId(), formattedDate, name, mobileNumber, painting.getTitle(),
 						painting.getTitle(), amount, paymentMethod, address, Year.now().getValue());
 
-		try {
-			logger.info("Generating PDF receipt for Order ID: {}", savedOrder.getOrderId());
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+		    @Override
+		    public void afterCommit() {
+		        logger.info("Transaction committed. Generating PDF and sending email for Order ID: {}",
+		                savedOrder.getOrderId());
 
-			byte[] pdfReceipt = pdfService.generateReceiptPdf(savedOrder, buyer, painting, imageDirectory,
-					paymentMethod, name, mobileNumber, address);
-			String pdfFilename = "FusionArt-Receipt-" + savedOrder.getOrderId() + ".pdf";
+		        String pdfFilename = "FusionArt-Receipt-" + savedOrder.getOrderId() + ".pdf";
 
-			logger.info("Sending confirmation email with PDF attachment to: {}", email);
+		        try {
+		            CompletableFuture<byte[]> futureReceipt =
+		                    pdfService.generateReceiptPdf(savedOrder, buyer, painting, imageDirectory,
+		                            paymentMethod, name, mobileNumber, address);
 
-			emailService.sendOrderConfirmationEmailCOD(email, subject, htmlContent, imageAbsolutePath, pdfReceipt,
-					pdfFilename);
+		            futureReceipt.thenAccept(pdfReceipt -> {
+		                logger.info("Sending confirmation email with PDF attachment to: {}", email);
+		                try {
+		                    emailService.sendOrderConfirmationEmailCOD(
+		                            email, subject, htmlContent, imageAbsolutePath,
+		                            pdfReceipt, pdfFilename);
+		                    logger.info("Order confirmation email sent successfully for Order ID: {}",
+		                            savedOrder.getOrderId());
+		                } catch (MessagingException e) {
+		                    logger.error("Email sending failed for Order ID: {}", savedOrder.getOrderId(), e);
+		                }
+		            }).exceptionally(ex -> {
+		                logger.error("Async PDF generation failed for Order ID: {}", savedOrder.getOrderId(), ex);
+		                return null;
+		            });
 
-			logger.info("Order confirmation email sent successfully for Order ID: {}", savedOrder.getOrderId());
-			return "Order confirmation email with PDF receipt sent successfully.";
+		        } catch (DocumentException | java.io.IOException e) {
+		            logger.error("Failed to start async PDF generation for Order ID: {}", savedOrder.getOrderId(), e);
+		        }
+		    }
+		});
 
-		} catch (DocumentException | IOException e) {
-			logger.error("PDF generation failed for Order ID: {}", savedOrder.getOrderId(), e);
-
-			// still try to send the email without attachment
-			try {
-				emailService.sendOrderConfirmationEmailCOD(email, subject, htmlContent, imageAbsolutePath, null, null);
-				logger.warn("PDF was not attached, but email sent without PDF for Order ID: {}",
-						savedOrder.getOrderId());
-				return "Order placed. PDF receipt failed, but confirmation email sent without attachment.";
-			} catch (MessagingException ex) {
-				logger.error("Failed to send confirmation email without PDF for Order ID: {}", savedOrder.getOrderId(),
-						ex);
-				return "Order placed, but failed to generate PDF and send confirmation email.";
-			}
-
-		} catch (MessagingException e) {
-			logger.error("Email sending failed for Order ID: {}", savedOrder.getOrderId(), e);
-			return "Order placed, but failed to send confirmation email with PDF receipt.";
-		}
+		return "Order placed successfully — confirmation email will be sent shortly.";
 
 	}
 

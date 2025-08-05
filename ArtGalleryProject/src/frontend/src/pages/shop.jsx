@@ -155,7 +155,7 @@ const Shop = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75 }}
-              className="rounded-2xl bg-[#f0e2d2] h-[500px] transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition flex flex-col"
+              className="rounded-2xl bg-[#f0e2d2] h-[550px] transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition flex flex-col"
             >
               {painting.imageUrl && (
                 <div className="relative overflow-hidden h-1/2 rounded-t-md group group">
@@ -171,7 +171,7 @@ const Shop = () => {
                   />
 
                   {/* Hover message */}
-                  <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#6b4c35]/50 text-white text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition">
+                  <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#6b4c35]/50 text-white text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer">
                     Click to view image
                   </div>
                 </div>
@@ -184,11 +184,11 @@ const Shop = () => {
                       {painting.title}
                     </h2>
                   </div>
-                  <div className="text-md text-[#6b4c35] mb-2">
-                    <div className="flex items-center  ">
-                      <FaInfoCircle className="mr-2" />
+                  <div className="flex items-start gap-2 text-md text-[#6b4c35] mb-2">
+                    <FaInfoCircle className="mt-1 flex-shrink-0" />
+                    <p className="line-clamp-2">
                       {painting.description}
-                    </div>
+                    </p>
                   </div>
                   <p className="text-md text-[#6b4c35] mb-1 flex gap-2">
                     <FaRulerCombined />{" "}
