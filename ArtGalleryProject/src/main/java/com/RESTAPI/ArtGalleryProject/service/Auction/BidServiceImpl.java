@@ -1,5 +1,6 @@
 package com.RESTAPI.ArtGalleryProject.service.Auction;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -8,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.TopBidDTO;
 import com.RESTAPI.ArtGalleryProject.Entity.Bid;
@@ -34,7 +38,6 @@ import com.RESTAPI.ArtGalleryProject.service.OrderService.PdfService;
 import com.RESTAPI.ArtGalleryProject.service.WalletService.WalletService;
 import com.lowagie.text.DocumentException;
 
-import io.jsonwebtoken.io.IOException;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -149,38 +152,43 @@ public class BidServiceImpl implements BidService {
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
-	public synchronized String auctionEnds() throws IOException, DocumentException, MessagingException, java.io.IOException {
-	    logger.info("auctionEnds started.");
-	    List<Painting> livePaintings = paintingRepo.findActiveAuctionsWithLock();
+	public synchronized String auctionEnds()
+			throws IOException, DocumentException, MessagingException {
+		logger.info("auctionEnds started.");
+		List<Painting> livePaintings = paintingRepo.findActiveAuctionsWithLock();
 
-	    for (Painting painting : livePaintings) {
-	    	if(painting.isWinnerEmailSent()) continue;
-	        Optional<Bid> highestBidderOpt = bidRepo.findTopByPaintingOrderByBidAmountDescTimeStampAsc(painting);
-	        if (highestBidderOpt.isEmpty()) continue;
+		for (Painting painting : livePaintings) {
+			if (painting.isWinnerEmailSent())
+				continue;
+			Optional<Bid> highestBidderOpt = bidRepo.findTopByPaintingOrderByBidAmountDescTimeStampAsc(painting);
+			if (highestBidderOpt.isEmpty())
+				continue;
 
-	        Bid highestBidder = highestBidderOpt.get();
-	        List<Bid> allBids = bidRepo.findByPainting(painting);
+			Bid highestBidder = highestBidderOpt.get();
+			List<Bid> allBids = bidRepo.findByPainting(painting);
 
-	        for (Bid bid : allBids) {
-	            User user = bid.getBuyer();
-	            LoginCredentials userCredentials = loginCredRepo.findByUser(user)
-	                    .orElseThrow(() -> new EntityNotFoundException("User not found for painting id: " + painting.getPaintingId()));
+			for (Bid bid : allBids) {
+				User user = bid.getBuyer();
+				LoginCredentials userCredentials = loginCredRepo.findByUser(user)
+						.orElseThrow(() -> new EntityNotFoundException(
+								"User not found for painting id: " + painting.getPaintingId()));
 
-	            if (bid.getBidAmount() == highestBidder.getBidAmount()) {
-	                // Winner
-	                LoginCredentials sellerLogin = loginCredRepo.findByUser(painting.getSeller())
-	                        .orElseThrow(() -> new EntityNotFoundException("Seller for painting not found id: " + painting.getPaintingId()));
+				if (bid.getBidAmount() == highestBidder.getBidAmount()) {
+					// Winner
+					LoginCredentials sellerLogin = loginCredRepo.findByUser(painting.getSeller())
+							.orElseThrow(() -> new EntityNotFoundException(
+									"Seller for painting not found id: " + painting.getPaintingId()));
 
-	                Orders order = new Orders();
-	                order.setName(user.getName());
-	                order.setEmail(userCredentials.getEmail());
-	                order.setAmount(highestBidder.getBidAmount());
-	                order.setOrderStatus("PAID_AUCTION");
-	                ordersRepo.save(order);
+					Orders order = new Orders();
+					order.setName(user.getName());
+					order.setEmail(userCredentials.getEmail());
+					order.setAmount(highestBidder.getBidAmount());
+					order.setOrderStatus("PAID_AUCTION");
+					ordersRepo.save(order);
 
-	                walletService.incrementBalanceByEmail(sellerLogin.getEmail(), bid.getBidAmount());
-	                
-	                String subject = "🎨 Your Fusion Art Auction Confirmation (#" + order.getOrderId() + ")";
+					walletService.incrementBalanceByEmail(sellerLogin.getEmail(), bid.getBidAmount());
+
+					String subject = "🎨 Your Fusion Art Auction Confirmation (#" + order.getOrderId() + ")";
 					String imageAbsolutePath = Paths.get(imageDirectory, painting.getImageUrl()).toString();
 					String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
 					String htmlContent = """
@@ -365,71 +373,86 @@ public class BidServiceImpl implements BidService {
 							    </body>
 							    </html>
 							"""
-							.formatted(
-							    order.getOrderId(),              // %d
-							    formattedDate,                   // %s
-							    user.getName(),                  // %s
-							    user.getPhoneNumber(),           // %s
-							    painting.getTitle(),             // %s (image alt)
-							    painting.getTitle(),             // %s (title)
-							    order.getAmount(),               // %.2f
-							    "Auction",                       // %s (payment mode)
-							    user.getAddress(),               // %s
-							    Year.now().getValue()            // %d (footer year)
+							.formatted(order.getOrderId(), // %d
+									formattedDate, // %s
+									user.getName(), // %s
+									user.getPhoneNumber(), // %s
+									painting.getTitle(), // %s (image alt)
+									painting.getTitle(), // %s (title)
+									order.getAmount(), // %.2f
+									"Auction", // %s (payment mode)
+									user.getAddress(), // %s
+									Year.now().getValue() // %d (footer year)
 							);
-	                byte[] pdfReceipt = pdfService.generateReceiptPdf(
-	                		order,
-	                		user,
-	                		painting,
-	                		imageDirectory,
-	                		"Auction",
-	                        user.getName(),
-	                        user.getPhoneNumber(),
-	                        user.getAddress().toString()
-	                );
-	                String pdfFilename = "FusionArt-Receipt-" + order.getOrderId() + ".pdf";
+					TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+						@Override
+						public void afterCommit() {
+							logger.info("Transaction committed. Generating PDF and sending email for Order ID: {}",
+									order.getOrderId());
 
-	                logger.info("Sending confirmation email with PDF attachment to: {}", userCredentials.getEmail());
-	                emailService.sendOrderConfirmationEmailCOD(
-	                        userCredentials.getEmail(),
-	                        subject,
-	                        htmlContent,
-	                        imageAbsolutePath,
-	                        pdfReceipt,
-	                        pdfFilename
-	                );
+							String pdfFilename = "FusionArt-Receipt-" + order.getOrderId() + ".pdf";
 
-	            } else {
-	                // Non-winners
-	                String subject = "Auction Result: Thank You for Participating!";
-	                String content = """
-	                        <html>
-	                        <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 30px;">
-	                            <div style="max-width: 600px; margin: auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-	                                <h2 style="color: #333;">Thank you for your interest in "%s"</h2>
-	                                <p>Dear %s,</p>
-	                                <p>We appreciate your participation in the Fusion Art auction for "<strong>%s</strong>".</p>
-	                                <p>While your bid was not the highest, we hope you enjoyed the experience and will join us again in future auctions.</p>
-	                                <p>If you have any questions or would like to explore more artworks, please visit our <a href="#">gallery</a>.</p>
-	                                <p style="margin-top: 20px;">Warm regards,<br/>Fusion Art Team</p>
-	                            </div>
-	                        </body>
-	                        </html>
-	                        """.formatted(painting.getTitle(), user.getName(), painting.getTitle());
+							try {
+								CompletableFuture<byte[]> futureReceipt = pdfService.generateReceiptPdf(order, user,
+										painting, imageDirectory, "Auction", user.getName(), user.getPhoneNumber(),
+										user.getAddress().toString());
 
-	                logger.info("Sending non-winner email to: {}", userCredentials.getEmail());
-	                emailService.sendSimpleHtmlEmail(userCredentials.getEmail(), subject, content);
-	            }
-	        }
+								futureReceipt.thenAccept(pdfReceipt -> {
+									logger.info("Sending confirmation email with PDF attachment to: {}",
+											userCredentials.getEmail());
+									try {
+										emailService.sendOrderConfirmationEmailCOD(userCredentials.getEmail(), subject,
+												htmlContent, imageAbsolutePath, pdfReceipt, pdfFilename);
+										logger.info("Order confirmation email sent successfully for Order ID: {}",
+												order.getOrderId());
+									} catch (MessagingException e) {
+										logger.error("Email sending failed for Order ID: {}", order.getOrderId(), e);
+									}
+								}).exceptionally(ex -> {
+									logger.error("Async PDF generation failed for Order ID: {}", order.getOrderId(),
+											ex);
+									return null;
+								});
 
-	        painting.setSold(true);
-	        painting.setFinalPrice(highestBidder.getBidAmount());
-	        painting.setBuyer(highestBidder.getBuyer());
-	        painting.setWinnerEmailSent(true);
-	        paintingRepo.save(painting);
-	    }
+							} catch (IOException | DocumentException e) {
+								logger.error("Failed to start async PDF generation for Order ID: {}",
+										order.getOrderId(), e);
+							}
+						}
+					});
 
-	    return "Auction processing completed.";
+				} else {
+					// Non-winners
+					String subject = "Auction Result: Thank You for Participating!";
+					String content = """
+							<html>
+							<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 30px;">
+							    <div style="max-width: 600px; margin: auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+							        <h2 style="color: #333;">Thank you for your interest in "%s"</h2>
+							        <p>Dear %s,</p>
+							        <p>We appreciate your participation in the Fusion Art auction for "<strong>%s</strong>".</p>
+							        <p>While your bid was not the highest, we hope you enjoyed the experience and will join us again in future auctions.</p>
+							        <p>If you have any questions or would like to explore more artworks, please visit our <a href="#">gallery</a>.</p>
+							        <p style="margin-top: 20px;">Warm regards,<br/>Fusion Art Team</p>
+							    </div>
+							</body>
+							</html>
+							"""
+							.formatted(painting.getTitle(), user.getName(), painting.getTitle());
+
+					logger.info("Sending non-winner email to: {}", userCredentials.getEmail());
+					emailService.sendSimpleHtmlEmail(userCredentials.getEmail(), subject, content);
+				}
+			}
+
+			painting.setSold(true);
+			painting.setFinalPrice(highestBidder.getBidAmount());
+			painting.setBuyer(highestBidder.getBuyer());
+			painting.setWinnerEmailSent(true);
+			paintingRepo.save(painting);
+		}
+
+		return "Auction processing completed.";
 	}
 
 }
