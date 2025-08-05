@@ -79,17 +79,23 @@ public class BidServiceImpl implements BidService {
 		Wallet buyerWallet = buyer.getWallet();
 		Optional<Bid> currentHighestBidOpt = bidRepo.findTopByPaintingOrderByBidAmountDescTimeStampAsc(painting);
 
+		if (newBidAmount > buyerWallet.getBalance()) {
+			logger.warn("Insufficient Funds");
+			throw new RuntimeException(
+					"Insufficient balance in wallet: " + buyerWallet.getBalance());
+		}
+
 		if (currentHighestBidOpt.isPresent()) {
 			double currentHighest = currentHighestBidOpt.get().getBidAmount();
 			if (newBidAmount <= currentHighest) {
-				logger.info("placeBid finished.");
+				logger.info("Insufficient amount.");
 				throw new RuntimeException(
 						"New bid must be strictly higher than current highest bid: " + currentHighest);
 			}
 		} else {
 			double startingPrice = painting.getStartingPrice();
 			if (newBidAmount < startingPrice) {
-				logger.info("placeBid finished.");
+				logger.info("Insufficient amount.");
 				throw new RuntimeException("First bid must be at least the starting price: " + startingPrice);
 			}
 		}
@@ -103,8 +109,7 @@ public class BidServiceImpl implements BidService {
 				logger.info("placeBid finished.");
 				throw new RuntimeException("Insufficient wallet balance.");
 			}
-			buyerWallet.setBalance(buyerWallet.getBalance() + existingBid.getBidAmount());
-			buyerWallet.setBalance(buyerWallet.getBalance() - newBidAmount);
+			buyerWallet.setBalance(buyerWallet.getBalance() + existingBid.getBidAmount() - newBidAmount);
 
 			existingBid.setBidAmount(newBidAmount);
 			existingBid.setTimeStamp(LocalTime.now());
@@ -117,6 +122,7 @@ public class BidServiceImpl implements BidService {
 				Wallet prevWallet = prevBid.getBuyer().getWallet();
 				prevWallet.setBalance(prevWallet.getBalance() + prevBid.getBidAmount());
 				walletRepo.save(prevWallet);
+				logger.info("amount is refunded");
 			}
 
 			// Deduct from current buyer
@@ -152,8 +158,7 @@ public class BidServiceImpl implements BidService {
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@Override
-	public synchronized String auctionEnds()
-			throws IOException, DocumentException, MessagingException {
+	public synchronized String auctionEnds() throws IOException, DocumentException, MessagingException {
 		logger.info("auctionEnds started.");
 		List<Painting> livePaintings = paintingRepo.findActiveAuctionsWithLock();
 
