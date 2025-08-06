@@ -79,12 +79,6 @@ public class BidServiceImpl implements BidService {
 		Wallet buyerWallet = buyer.getWallet();
 		Optional<Bid> currentHighestBidOpt = bidRepo.findTopByPaintingOrderByBidAmountDescTimeStampAsc(painting);
 
-		if (newBidAmount > buyerWallet.getBalance()) {
-			logger.warn("Insufficient Funds");
-			throw new RuntimeException(
-					"Insufficient balance in wallet: " + buyerWallet.getBalance());
-		}
-
 		if (currentHighestBidOpt.isPresent()) {
 			double currentHighest = currentHighestBidOpt.get().getBidAmount();
 			if (newBidAmount <= currentHighest) {
@@ -117,6 +111,12 @@ public class BidServiceImpl implements BidService {
 			walletRepo.save(buyerWallet);
 			bidRepo.save(existingBid);
 		} else {
+			if (newBidAmount > buyerWallet.getBalance()) {
+				logger.warn("Insufficient Funds");
+				throw new RuntimeException(
+						"Insufficient balance in wallet: " + buyerWallet.getBalance());
+			}
+			
 			if (currentHighestBidOpt.isPresent()) {
 				Bid prevBid = currentHighestBidOpt.get();
 				Wallet prevWallet = prevBid.getBuyer().getWallet();
