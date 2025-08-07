@@ -3,6 +3,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import axiosInstance from "../axiosInstance";
 import { Navigate } from "react-router-dom";
 import logo from "../utils/logo.png";
+import ArtLover from "../utils/ArtLover.jpg";
 import {
   FaSignOutAlt,
   FaUserCircle,
@@ -25,7 +26,51 @@ const ProfilePage = () => {
   const token = localStorage.getItem("token");
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [isFlipped, setIsFlipped] = useState(false);
-
+const [viewType, setViewType] = useState("sold");
+  const renderPaintingCard = (painting) => (
+    <motion.div
+      key={painting.paintingId}
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.75 }}
+      className="rounded-2xl bg-[#f0e2d2] h-[300px] transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition flex flex-col"
+    >
+      {painting.imageUrl && (
+        <div className="relative overflow-hidden h-1/2 rounded-t-md group">
+          <img
+            src={`http://localhost:8085${painting.imageUrl}`}
+            alt={painting.title}
+            className="w-full h-80 object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
+            onClick={() =>
+              setFullscreenImage(`http://localhost:8085${painting.imageUrl}`)
+            }
+          />
+          <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#6b4c35]/50 text-white text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition">
+            Click to view
+          </div>
+        </div>
+      )}
+      <div className="p-6 flex flex-col justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <FaImage className="text-[#5a3c28]" />
+            <h2 className="text-lg font-bold text-[#5a3c28]">
+              {painting.title}
+            </h2>
+          </div>
+          <p className="text-sm text-[#6b4c35] mb-2 flex items-center">
+            <FaInfoCircle className="mr-2" />
+            {painting.description}
+          </p>
+          <p className="text-sm text-[#6b4c35] flex gap-2 my-2">
+            <FaTag />
+            <span className="font-bold">Starting Price:</span> ₹
+            {painting.startingPrice}
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
   useEffect(() => {
     axiosInstance
       .get("/user/profile")
@@ -119,12 +164,12 @@ const ProfilePage = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className="flex flex-row justify-evenly gap-8 items-start"
+        className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-12 px-4"
       >
         {/* Profile Section */}
         <div className="flex flex-col items-center justify-center w-full ">
           <motion.div
-            className="w-[300px] mt-20 h-[300px] md:w-[500px] md:h-[500px] cursor-pointer"
+            className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] mt-10"
             style={{ perspective: "1200px" }}
             onMouseEnter={() => setIsFlipped(true)}
             onMouseLeave={() => setIsFlipped(false)}
@@ -160,14 +205,14 @@ const ProfilePage = () => {
                 }}
               >
                 <img
-                  src={logo}
+                  src={ArtLover}
                   alt=""
                   className="rounded-full w-full h-full object-fit  shadow-2xl  shadow-black"
                 />
               </motion.div>
             </motion.div>
           </motion.div>
-          <h2 className="text-5xl flex items-center justify-center font-serif font-bold mt-16 ">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl text-center font-serif font-bold mt-12">
             Hello {profile.name} !
           </h2>
         </div>
@@ -176,11 +221,11 @@ const ProfilePage = () => {
           initial={{ x: -50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className=" rounded-2xl w-full p-6"
+          className="rounded-2xl w-full max-w-4xl  sm:p-6 lg:p-8"
         >
-          <div className=" p-6 sm:p-10 text-[#3e2e1e]">
+          <div className="  sm:p-10 text-[#3e2e1e]">
             {/* Tab Buttons */}
-            <div className="flex justify-center mb-8 gap-4">
+            <div className="flex flex-row gap-2 justify-center sm:gap-4 text-sm sm:text-base mb-6">
               {tabButton("profile")}
               {tabButton("paintings")}
             </div>
@@ -190,11 +235,11 @@ const ProfilePage = () => {
               {activeTab === "profile" ? (
                 <motion.div
                   key="profile"
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 50 }}
-                  transition={{ duration: 0.5 }}
-                  className="bg-white rounded-2xl shadow-lg p-6 max-w-4xl mx-auto"
+                  initial={{ rotateY: 90, opacity: 0 }}
+                  animate={{ rotateY: 0, opacity: 1 }}
+                  exit={{ rotateY: -90, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-white rounded-2xl shadow-lg p-6 max-w-5xl "
                 >
                   <div className="flex items-center mb-6 gap-4">
                     <FaUserCircle className="text-4xl" />
@@ -273,7 +318,7 @@ const ProfilePage = () => {
                                 placeholder={field}
                                 value={form.address?.[field] || ""}
                                 onChange={handleInputChange}
-                                className="border rounded px-2 py-1 w-[130px]"
+                                className="border rounded px-2 py-1 w-[120px] sm:w-[140px]"
                               />
                             </div>
                           ))}
@@ -302,9 +347,17 @@ const ProfilePage = () => {
                     <motion.button
                       whileTap={{ scale: 0.95 }}
                       onClick={handleUpdate}
-                      className="mt-6 px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full"
+                      className="relative overflow-hidden h-10 cursor-pointer pb-5 mt-6  bg-green-500 hover:bg-green-600 text-white rounded-full w-[180px] group"
                     >
-                      Save Changes
+                      {/* Initial Text */}
+                      <motion.span className="absolute left-0 right-0 flex justify-center items-center transition-transform duration-700 group-hover:translate-x-full">
+                        Save Changes
+                      </motion.span>
+
+                      {/* Hover Text */}
+                      <motion.span className="absolute left-0 right-0 flex justify-center items-center transition-transform duration-700 -translate-x-full group-hover:translate-x-0">
+                        Have you done?
+                      </motion.span>
                     </motion.button>
                   )}
 
@@ -314,18 +367,27 @@ const ProfilePage = () => {
                       localStorage.removeItem("token");
                       window.location.href = "/";
                     }}
-                    className="mt-6 w-full px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full shadow flex items-center justify-center gap-2"
+                    className="relative overflow-hidden cursor-pointer mt-6 w-full px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full shadow group"
                   >
-                    <FaSignOutAlt /> Logout
+                    {/* Sliding Content Container */}
+                    <div className="flex items-center justify-center gap-2 transition-transform duration-700 group-hover:translate-x-full">
+                      <FaSignOutAlt />
+                      <span className="font-semibold">Logout</span>
+                    </div>
+
+                    {/* Sliding In New Text */}
+                    <div className="absolute inset-0 flex items-center justify-center text-md font-semibold text-white transition-transform duration-700 -translate-x-full group-hover:translate-x-0">
+                      Nice to meet you
+                    </div>
                   </button>
                 </motion.div>
               ) : (
                 <motion.div
                   key="paintings"
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -50 }}
-                  transition={{ duration: 0.5 }}
+                  initial={{ rotateY: 90, opacity: 0 }}
+                  animate={{ rotateY: 0, opacity: 1 }}
+                  exit={{ rotateY: -90, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
                   className="bg-white rounded-2xl shadow-lg p-6 max-w-6xl mx-auto"
                 >
                   <h2 className="text-2xl font-bold mb-4">
@@ -336,59 +398,63 @@ const ProfilePage = () => {
                       You haven't uploaded any paintings yet.
                     </p>
                   ) : (
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {profile.paintingsSold.map((painting) => (
-                        <motion.div
-                          key={painting.paintingId}
-                          initial={{ opacity: 0, y: 15 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.75 }}
-                          className="rounded-2xl bg-[#f0e2d2] h-[300px]  transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition flex flex-col"
+                    <div>
+                      {/* Toggle Buttons */}
+                      <div className="flex gap-4 mb-6">
+                        <button
+                          className={`px-4 py-2 rounded-lg font-semibold transition ${
+                            viewType === "sold"
+                              ? "bg-[#6b4c35] text-white"
+                              : "bg-[#f0e2d2] text-[#6b4c35]"
+                          }`}
+                          onClick={() => setViewType("sold")}
                         >
-                          {painting.imageUrl && (
-                            <div className="relative overflow-hidden h-1/2 rounded-t-md  group">
-                              <img
-                                src={`http://localhost:8085${painting.imageUrl}`}
-                                alt={painting.title}
-                                className="w-full h-80 object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
-                                onClick={() =>
-                                  setFullscreenImage(
-                                    `http://localhost:8085${painting.imageUrl}`
-                                  )
-                                }
-                              />
+                          Sold Paintings
+                        </button>
+                        <button
+                          className={`px-4 py-2 rounded-lg font-semibold transition ${
+                            viewType === "bought"
+                              ? "bg-[#6b4c35] text-white"
+                              : "bg-[#f0e2d2] text-[#6b4c35]"
+                          }`}
+                          onClick={() => setViewType("bought")}
+                        >
+                          Bought Paintings
+                        </button>
+                      </div>
 
-                              {/* Hover message */}
-                              <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#6b4c35]/50 text-white text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition">
-                                Click to view
-                              </div>
+                      {/* Conditionally Render Section */}
+                      {viewType === "sold" ? (
+                        <div>
+                          <h2 className="text-2xl font-bold text-[#5a3c28] mb-4">
+                            Sold Paintings
+                          </h2>
+                          {profile.paintingsSold?.length === 0 ? (
+                            <p className="text-gray-500">
+                              You haven't uploaded any paintings yet.
+                            </p>
+                          ) : (
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {profile.paintingsSold.map(renderPaintingCard)}
                             </div>
                           )}
-                          <div className="p-6 flex flex-col justify-between">
-                            <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <FaImage className="text-[#5a3c28]" />
-                                <h2 className="text-lg font-bold text-[#5a3c28]">
-                                  {painting.title}
-                                </h2>
-                              </div>
-                              <p className="text-sm text-[#6b4c35] mb-2">
-                                <div className="flex items-center  ">
-                                  <FaInfoCircle className="mr-2" />
-                                  {painting.description}
-                                </div>
-                              </p>
-                              <p className="text-sm text-[#6b4c35] flex gap-2 my-2">
-                                <FaTag className="" />
-                                <span className="font-bold">
-                                  Starting Price:
-                                </span>{" "}
-                                ₹{painting.startingPrice}
-                              </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <h2 className="text-2xl font-bold text-[#5a3c28] mb-4">
+                            Bought Paintings
+                          </h2>
+                          {profile.paintingsBought?.length === 0 ? (
+                            <p className="text-gray-500">
+                              You haven't bought any paintings yet.
+                            </p>
+                          ) : (
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {profile.paintingsBought.map(renderPaintingCard)}
                             </div>
-                          </div>
-                        </motion.div>
-                      ))}
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </motion.div>

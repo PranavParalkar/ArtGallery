@@ -115,16 +115,16 @@ const Login = () => {
 
     const payload = isLogin
       ? {
-          email: formData.email,
-          password: formData.password,
-        }
+        email: formData.email,
+        password: formData.password,
+      }
       : {
-          email: formData.email,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-          securityQuestion: formData.securityQuestion,
-          securityAnswer: formData.securityAnswer,
-        };
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        securityQuestion: formData.securityQuestion,
+        securityAnswer: formData.securityAnswer,
+      };
 
     try {
       const res = await axiosInstance.post(url, payload);
@@ -150,21 +150,20 @@ const Login = () => {
       }
 
       if (!isLogin) {
-        setShowUserDetails(true); // For signup: show form to collect additional details
+        setShowUserDetails(true);
       } else {
         toast.success(data.message || "Login successful");
 
-        // Wait for toast to show before navigating (optional)
         setTimeout(() => {
           navigate("/");
-          window.location.reload(); // Use only if absolutely needed
+          window.location.reload();
         }, 1200);
       }
     } catch (err) {
       alert(
         err.response?.data?.message ||
-          err.response?.data ||
-          "Something went wrong"
+        err.response?.data ||
+        "Something went wrong"
       );
     }
   };
@@ -179,7 +178,7 @@ const Login = () => {
         "/auth/forgot-password?step=check-email",
         { email: forgotEmail }
       );
-      setForgotQuestion(res.data); // Assume backend returns question as string
+      setForgotQuestion(res.data);
       setForgotStep(2);
     } catch (err) {
       setForgotError(
@@ -215,6 +214,7 @@ const Login = () => {
     e.preventDefault();
     setForgotLoading(true);
     setForgotError("");
+
     try {
       const res = await axiosInstance.put(
         "/auth/forgot-password?step=password-reset",
@@ -224,8 +224,20 @@ const Login = () => {
           confirmPassword: forgotConfirmPassword,
         }
       );
-      if (res.data === "Password changed successfully") {
-        alert("Password reset successful! Please login.");
+
+      const data = res.data;
+
+      if (typeof data === "string") {
+        setForgotError(data);
+      } else if (data.token) {
+        localStorage.setItem("token", data.token);
+        toast.success("Password Reset Successful.");
+
+        setTimeout(() => {
+          navigate("/");
+          window.location.reload();
+        }, 1200);
+
         setShowForgot(false);
         setForgotStep(1);
         setForgotEmail("");
@@ -234,7 +246,7 @@ const Login = () => {
         setForgotNewPassword("");
         setForgotConfirmPassword("");
       } else {
-        setForgotError(res.data || "Could not reset password.");
+        setForgotError("Unexpected response format.");
       }
     } catch (err) {
       setForgotError(
@@ -244,6 +256,7 @@ const Login = () => {
       setForgotLoading(false);
     }
   };
+
 
   return (
     <div className="h-[790px] w-screen bg-gradient-to-tr from-[#f9f9f8] via-[#f9f4ed] to-[#f5ebde] flex items-center justify-center px-4">
@@ -270,11 +283,10 @@ const Login = () => {
               setShowForgot(false);
               setShowUserDetails(false);
             }}
-            className={`px-6 py-2 rounded-full font-semibold cursor-pointer ${
-              isLogin && !showForgot && !showUserDetails
-                ? "bg-purple-500 text-white"
-                : "bg-white/60 text-gray-800"
-            }`}
+            className={`px-6 py-2 rounded-full font-semibold cursor-pointer ${isLogin && !showForgot && !showUserDetails
+              ? "bg-purple-500 text-white"
+              : "bg-white/60 text-gray-800"
+              }`}
           >
             Login
           </button>
@@ -284,11 +296,10 @@ const Login = () => {
               setShowForgot(false);
               setShowUserDetails(false);
             }}
-            className={`px-6 py-2 rounded-full font-semibold cursor-pointer ${
-              !isLogin && !showForgot && !showUserDetails
-                ? "bg-purple-500 text-white"
-                : "bg-white/60 text-gray-800"
-            }`}
+            className={`px-6 py-2 rounded-full font-semibold cursor-pointer ${!isLogin && !showForgot && !showUserDetails
+              ? "bg-purple-500 text-white"
+              : "bg-white/60 text-gray-800"
+              }`}
           >
             Sign Up
           </button>
@@ -298,10 +309,10 @@ const Login = () => {
           {showForgot
             ? "Forgot Password"
             : showUserDetails
-            ? "Complete Your Profile"
-            : isLogin
-            ? "Welcome Back"
-            : "Create Account"}
+              ? "Complete Your Profile"
+              : isLogin
+                ? "Welcome Back"
+                : "Create Account"}
         </h2>
 
         {/* User Details Form After Signup */}
@@ -460,24 +471,116 @@ const Login = () => {
             )}
             {forgotStep === 3 && (
               <form onSubmit={handleForgotReset} className="space-y-4">
-                <input
-                  type="password"
-                  name="forgotNewPassword"
-                  placeholder="New Password"
-                  required
-                  onChange={(e) => setForgotNewPassword(e.target.value)}
-                  value={forgotNewPassword}
-                  className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
-                />
-                <input
-                  type="password"
-                  name="forgotConfirmPassword"
-                  placeholder="Confirm New Password"
-                  required
-                  onChange={(e) => setForgotConfirmPassword(e.target.value)}
-                  value={forgotConfirmPassword}
-                  className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="forgotNewPassword"
+                    placeholder="New Password"
+                    required
+                    onChange={(e) => setForgotNewPassword(e.target.value)}
+                    value={forgotNewPassword}
+                    className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
+                  />
+                  <div
+                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      // Eye Off Icon
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-gray-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.15.195-2.253.55-3.275m5.025-1.725A10.05 10.05 0 0112 5c5.523 0 10 4.477 10 10 0 1.15-.195 2.253-.55 3.275M15 12a3 3 0 11-6 0 3 3 0 016 0zM3 3l18 18"
+                        />
+                      </svg>
+                    ) : (
+                      // Eye Icon
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-gray-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.522 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="forgotConfirmPassword"
+                    placeholder="Confirm New Password"
+                    required
+                    onChange={(e) => setForgotConfirmPassword(e.target.value)}
+                    value={forgotConfirmPassword}
+                    className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-400 bg-white text-gray-900 shadow-inner"
+                  />
+                  <div
+                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      // Eye Off Icon
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-gray-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.15.195-2.253.55-3.275m5.025-1.725A10.05 10.05 0 0112 5c5.523 0 10 4.477 10 10 0 1.15-.195 2.253-.55 3.275M15 12a3 3 0 11-6 0 3 3 0 016 0zM3 3l18 18"
+                        />
+                      </svg>
+                    ) : (
+                      // Eye Icon
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-gray-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.522 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                </div>
                 <button
                   type="submit"
                   className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold text-lg cursor-pointer"
@@ -681,11 +784,10 @@ const Login = () => {
               {/* Submit */}
               <button
                 type="submit"
-                className={`w-full py-3 cursor-pointer rounded-xl bg-gradient-to-r ${
-                  isLogin
-                    ? "from-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-purple-600"
-                    : "from-green-500 to-emerald-500 hover:from-emerald-600 hover:to-green-600"
-                } text-white font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl`}
+                className={`w-full py-3 cursor-pointer rounded-xl bg-gradient-to-r ${isLogin
+                  ? "from-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-purple-600"
+                  : "from-green-500 to-emerald-500 hover:from-emerald-600 hover:to-green-600"
+                  } text-white font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl`}
               >
                 {isLogin ? "Login" : "Sign Up"}
               </button>
