@@ -26,6 +26,8 @@ const Shop = () => {
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [selectedPainting, setSelectedPainting] = useState(null);
   const [isLoading, setIsLoading] = useState(true); // Manages all loading states
+  const [hoveredBuyId, setHoveredBuyId] = useState(null);
+
   const [orderInfo, setOrderInfo] = useState({
     name: "",
     address: "",
@@ -142,7 +144,7 @@ const Shop = () => {
 
   // Main Component UI
   return (
-    <div className="px-20 py-10 font-serif relative">
+    <div className="px-10 py-10 font-serif relative">
       <h1 className="text-4xl font-bold text-center text-[#3e2e1e] mb-12">
         Art Store
       </h1>
@@ -155,7 +157,7 @@ const Shop = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75 }}
-              className="rounded-2xl bg-[#f0e2d2] h-[550px] transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition flex flex-col"
+              className="rounded-2xl bg-[#f0e2d2] h-[500px] transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition flex flex-col"
             >
               {painting.imageUrl && (
                 <div className="relative overflow-hidden h-1/2 rounded-t-md group group">
@@ -171,7 +173,7 @@ const Shop = () => {
                   />
 
                   {/* Hover message */}
-                  <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#6b4c35]/50 text-white text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer">
+                  <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#6b4c35]/50 text-white text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition">
                     Click to view image
                   </div>
                 </div>
@@ -184,11 +186,11 @@ const Shop = () => {
                       {painting.title}
                     </h2>
                   </div>
-                  <div className="flex items-start gap-2 text-md text-[#6b4c35] mb-2">
-                    <FaInfoCircle className="mt-1 flex-shrink-0" />
-                    <p className="line-clamp-2">
+                  <div className="text-md text-[#6b4c35] mb-2">
+                    <div className="flex items-center  ">
+                      <FaInfoCircle className="mr-2" />
                       {painting.description}
-                    </p>
+                    </div>
                   </div>
                   <p className="text-md text-[#6b4c35] mb-1 flex gap-2">
                     <FaRulerCombined />{" "}
@@ -208,13 +210,39 @@ const Shop = () => {
                   </p>
                 </div>
                 <button
-                  className="mt-4 w-full text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-[#6b4c35] hover:bg-[#776354] text-white font-semibold transition"
+                  className="relative overflow-hidden h-10 w-full mt-4 text-center cursor-pointer pb-5 rounded-lg bg-[#6b4c35]  text-white font-semibold transition-all duration-300 ease-in-out "
                   onClick={() => {
                     setSelectedPainting(painting);
                     setShowAddressModal(true);
                   }}
+                  onMouseEnter={() => setHoveredBuyId(painting.paintingId)}
+                  onMouseLeave={() => setHoveredBuyId(null)}
                 >
-                  Buy Now
+                  <span className="block relative h-full">
+                    {/* Normal text */}
+                    <span
+                      className={`absolute left-0 right-0 top-1/2 transform -translate-y-1/2 transition-all duration-300 ease-in-out
+        ${
+          hoveredBuyId === painting.paintingId
+            ? "-translate-y-full opacity-0"
+            : "translate-y-0 opacity-100"
+        }`}
+                    >
+                      Buy Now
+                    </span>
+
+                    {/* Hover text */}
+                    <span
+                      className={`absolute left-0 right-0 top-1/2 transform -translate-y-1/2 transition-all duration-300 ease-in-out
+        ${
+          hoveredBuyId === painting.paintingId
+            ? "translate-y-0 opacity-100"
+            : "translate-y-full opacity-0"
+        }`}
+                    >
+                      Liked it? Don't miss it!
+                    </span>
+                  </span>
                 </button>
               </div>
             </motion.div>
@@ -299,7 +327,9 @@ const Shop = () => {
                   setShowOrderModal(true);
                 }}
               >
-                <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Name</label>
+                <label className="block mb-2 text-sm font-medium text-[#5a3c28]">
+                  Name
+                </label>
                 <input
                   required // This will now work with the form
                   type="text"
@@ -311,7 +341,9 @@ const Shop = () => {
                   }
                 />
 
-                <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Mobile Number</label>
+                <label className="block mb-2 text-sm font-medium text-[#5a3c28]">
+                  Mobile Number
+                </label>
                 <input
                   required // This will now work with the form
                   type="tel"
@@ -323,7 +355,9 @@ const Shop = () => {
                   }
                 />
 
-                <label className="block mb-2 text-sm font-medium text-[#5a3c28]">Delivery Address</label>
+                <label className="block mb-2 text-sm font-medium text-[#5a3c28]">
+                  Delivery Address
+                </label>
                 <textarea
                   required // This will now work with the form
                   rows="3"

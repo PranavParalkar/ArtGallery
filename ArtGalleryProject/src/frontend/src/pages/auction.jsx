@@ -18,10 +18,12 @@ const Auction = () => {
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [pageNo, setPageNo] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const navigate = useNavigate();
   const [auctionLive, setAuctionLive] = useState(false);
-  const [bidButton, setBidButton] = useState("Place Bid");
+  const [bidButton, setBidButton] = useState(""); // Single declaration
+  const [hoveredPaintingId, setHoveredPaintingId] = useState(null);
 
+  const [hovering, setHovering] = useState(false);
+  const navigate = useNavigate();
   useEffect(() => {
     if (auctionLive) {
       setBidButton("Place Bid");
@@ -51,7 +53,7 @@ const Auction = () => {
 
   return (
     <div className="  px-20 py-10 font-serif relative">
-      <h1 className="text-4xl font-bold text-center text-[#3e2e1e] mb-3">
+      <h1 className="md:text-4xl text-3xl font-bold text-center text-[#3e2e1e] mb-3">
         Auction Paintings
       </h1>
       <Timer setAuctionLive={setAuctionLive} />
@@ -63,7 +65,7 @@ const Auction = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.75 }}
-              className="rounded-2xl bg-[#f0e2d2] h-[550px] transform hover:-translate-y-2 duration-300 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition flex flex-col"
+              className=" rounded-xl  bg-[#f0e2d2] h-[550px] duration-150 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-amber-950 transition"
             >
               {painting.imageUrl && (
                 <div className="relative overflow-hidden h-1/2 rounded-t-md group">
@@ -79,25 +81,25 @@ const Auction = () => {
                   />
 
                   {/* Hover message */}
-                  <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#6b4c35]/50 text-white text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer">
+                  <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#6b4c35]/50 text-white text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition">
                     Click to view image
                   </div>
                 </div>
               )}
-              <div className="p-6 flex flex-col justify-between flex-grow">
+              <div className="p-6 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <FaImage className="text-[#5a3c28]" />
-                    <h2 className="text-2xl font-bold text-[#5a3c28] line-clamp-1">
+                    <h2 className="text-2xl font-bold text-[#5a3c28]">
                       {painting.title}
                     </h2>
                   </div>
-                  <div className="flex items-start gap-2 text-md text-[#6b4c35] mb-2">
-                    <FaInfoCircle className="mt-1 flex-shrink-0" />
-                    <p className="line-clamp-2">
+                  <p className="text-md text-[#6b4c35] mb-2">
+                    <div className="flex items-center  ">
+                      <FaInfoCircle className="mr-2" />
                       {painting.description}
-                    </p>
-                  </div>
+                    </div>
+                  </p>
                   <p className="text-md text-[#6b4c35] mb-1 flex gap-2">
                     <FaRulerCombined />{" "}
                     <span className="font-bold">Dimensions</span>{" "}
@@ -110,23 +112,50 @@ const Auction = () => {
                   </p>
                   <p className="text-md mt-2 font-bold flex gap-2 text-[#6b4c35]">
                     <FaUserCircle className="mt-1" /> Seller:{" "}
-                    <span className="font-medium text-[#6b4c35] line-clamp-1">
+                    <span className="font-medium text-[#6b4c35]">
                       {painting.seller || "Unknown"}
                     </span>
                   </p>
                 </div>
                 <button
                   disabled={!auctionLive}
-                  className={`mt-5 block text-center bottom-0 py-2 rounded-lg font-semibold transition duration-300 ease-in-out
-                  ${auctionLive
-                      ? "bg-[#7c5c3d] hover:bg-[#847464] hover:scale-95 active:scale-90 text-white cursor-pointer"
-                      : "bg-gray-400 text-gray-200 cursor-not-allowed"
-                    }`}
+                  className={`relative overflow-hidden h-10 w-full mt-5 block text-center bottom-0 pb-5 rounded-lg font-semibold transition duration-300 ease-in-out
+    ${
+      auctionLive
+        ? "bg-[#7c5c3d]  text-white cursor-pointer"
+        : "bg-gray-400 text-gray-200 cursor-not-allowed"
+    }`}
+                  onMouseEnter={() => setHoveredPaintingId(painting.paintingId)}
+                  onMouseLeave={() => setHoveredPaintingId(null)}
                   onClick={() =>
                     navigate(`/biddingFrontend/${painting.paintingId}`)
                   }
                 >
-                  {bidButton}
+                  <span className="block relative h-full">
+                    {/* Normal text */}
+                    <span
+                      className={`absolute left-0 right-0 top-1/2 transform -translate-y-1/2 transition-all duration-300 ease-in-out
+        ${
+          auctionLive && hoveredPaintingId === painting.paintingId
+            ? "-translate-y-full opacity-0"
+            : "translate-y-0 opacity-100"
+        }`}
+                    >
+                      {bidButton}
+                    </span>
+
+                    {/* Hover text */}
+                    <span
+                      className={`absolute left-0 right-0 top-1/2 transform -translate-y-1/2 transition-all duration-300 ease-in-out
+        ${
+          auctionLive && hoveredPaintingId === painting.paintingId
+            ? "translate-y-0 opacity-100"
+            : "translate-y-full opacity-0"
+        }`}
+                    >
+                      Liked it? Go for it...
+                    </span>
+                  </span>
                 </button>
               </div>
             </motion.div>
@@ -184,7 +213,7 @@ const Auction = () => {
               />
               <button
                 onClick={() => setFullscreenImage(null)}
-                className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black cursor-pointer"
+                className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black"
               >
                 ✕ Close
               </button>

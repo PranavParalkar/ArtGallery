@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import axiosInstance from '../axiosInstance';
+import axiosInstance from "../axiosInstance";
 
 const Sell = () => {
   const [step, setStep] = useState(1);
@@ -63,7 +63,7 @@ const Sell = () => {
     }
 
     try {
-      const url = "/upload-painting"
+      const url = "/upload-painting";
       await axiosInstance.post(url, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -76,12 +76,12 @@ const Sell = () => {
   };
 
   return (
-    <div className="w-auto h-[850px] mt-5 py-12 font-serif">
+    <div className="w-full min-h-screen mt-5 px-4 py-12 font-serif">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8"
+        className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-8"
       >
         <h1 className="text-4xl font-bold text-center text-[#5a3c28] mb-8">
           Sell Your Artwork
@@ -90,7 +90,7 @@ const Sell = () => {
         {step === 1 && (
           <div>
             {/* Intro cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2  gap-10 text-[#5a3c28]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 text-[#5a3c28]">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -154,7 +154,7 @@ const Sell = () => {
             <div className="text-center mt-10">
               <button
                 onClick={() => setStep(2)}
-                className="bg-[#5a3c28] text-white px-8 py-3 rounded-lg text-lg hover:bg-[#3d281a] transition duration-300 cursor-pointer"
+                className="bg-[#5a3c28] text-white px-6 sm:px-8 py-3 rounded-lg text-base sm:text-lg hover:bg-[#3d281a] transition duration-300"
               >
                 Start Selling
               </button>
@@ -175,7 +175,7 @@ const Sell = () => {
               <h2 className="text-xl font-semibold text-[#5a3c28]">
                 How do you want to sell your painting?
               </h2>
-              <div className="flex justify-center gap-6 mt-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mt-4">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -183,7 +183,7 @@ const Sell = () => {
                     setSellingMode("auction");
                     setStep(3);
                   }}
-                  className="bg-[#5a3c28] w-[20%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a] cursor-pointer"
+                  className="bg-[#5a3c28] w-full sm:w-48 text-white px-6 py-3 rounded-md hover:bg-[#3d281a] cursor-pointer text-sm sm:text-base"
                 >
                   Sell in Auction
                 </motion.button>
@@ -194,7 +194,7 @@ const Sell = () => {
                     setSellingMode("store");
                     setStep(3);
                   }}
-                  className="bg-[#5a3c28] w-[20%] text-white px-6 py-3 rounded-md hover:bg-[#3d281a] cursor-pointer"
+                  className="bg-[#5a3c28] w-full sm:w-48 text-white px-6 py-3 rounded-md hover:bg-[#3d281a] cursor-pointer text-sm sm:text-base"
                 >
                   Sell in Store
                 </motion.button>
@@ -223,7 +223,7 @@ const Sell = () => {
                   required
                   accept="image/*"
                   onChange={handleChange}
-                  className="w-full border border-gray-300 p-2 rounded-md cursor-pointer"
+                  className="w-full border border-gray-300 p-2 sm:p-3 rounded-md"
                 />
               </div>
               <div>
@@ -248,7 +248,7 @@ const Sell = () => {
                   className="w-full border border-gray-300 p-2 rounded-md"
                 />
               </div>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
                   <label className="block font-medium mb-1">Length (cm):</label>
                   <input
@@ -313,7 +313,7 @@ const Sell = () => {
               )}
               <button
                 type="submit"
-                className="bg-[#5a3c28] text-white px-6 py-2 rounded-lg hover:bg-[#3d281a] cursor-pointer"
+                className="bg-[#5a3c28] text-white px-6 py-3 rounded-lg text-base hover:bg-[#3d281a] transition duration-300 w-full sm:w-auto"
               >
                 Submit Application
               </button>
@@ -330,7 +330,7 @@ const Sell = () => {
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="text-[#5a3c28] text-center space-y-4">
+            <div className="text-[#5a3c28] text-center space-y-4 px-2 sm:px-4">
               <h2 className="text-2xl font-semibold">
                 Your application is being processed!
               </h2>

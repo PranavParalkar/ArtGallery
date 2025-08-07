@@ -17,54 +17,61 @@ const WithdrawModal = ({ onClose, rawBalance }) => {
 
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   }, []);
 
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault();
-    setError(""); // Reset error on new submission
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setError(""); // Reset error on new submission
 
-    // 1. Convert form amount to a number for reliable validation
-    const numericAmount = parseFloat(formData.amount);
+      // 1. Convert form amount to a number for reliable validation
+      const numericAmount = parseFloat(formData.amount);
 
-    // 2. Client-side validation for the amount
-    if (isNaN(numericAmount) || numericAmount <= 0) {
-      setError("Please enter a valid withdrawal amount.");
-      return;
-    }
-
-    // 3. Check for sufficient balance
-    if (numericAmount > rawBalance) {
-      setError("Insufficient funds. You cannot withdraw more than your available balance.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await axiosInstance.post("/wallet/withdraw", {
-        ...formData,
-        amount: numericAmount // Send the validated number to the API
-      });
-
-      if (response.data.message) {
-        setSuccess(true);
-        setTimeout(() => {
-          onClose();
-          window.location.reload();
-        }, 2000);
+      // 2. Client-side validation for the amount
+      if (isNaN(numericAmount) || numericAmount <= 0) {
+        setError("Please enter a valid withdrawal amount.");
+        return;
       }
-    } catch (err) {
-      console.error("Withdrawal error:", err);
-      // 4. Correctly handle errors from the API
-      const errorMessage = err.response?.data?.message || "Your withdrawal request failed. Please try again.";
-      setError(errorMessage);
-      setLoading(false); // Stop loading indicator on failure
-    }
-  }, [formData, rawBalance, onClose]); // 5. Added rawBalance to dependency array
+
+      // 3. Check for sufficient balance
+      if (numericAmount > rawBalance) {
+        setError(
+          "Insufficient funds. You cannot withdraw more than your available balance."
+        );
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const response = await axiosInstance.post("/wallet/withdraw", {
+          ...formData,
+          amount: numericAmount, // Send the validated number to the API
+        });
+
+        if (response.data.message) {
+          setSuccess(true);
+          setTimeout(() => {
+            onClose();
+            window.location.reload();
+          }, 2000);
+        }
+      } catch (err) {
+        console.error("Withdrawal error:", err);
+        // 4. Correctly handle errors from the API
+        const errorMessage =
+          err.response?.data?.message ||
+          "Your withdrawal request failed. Please try again.";
+        setError(errorMessage);
+        setLoading(false); // Stop loading indicator on failure
+      }
+    },
+    [formData, rawBalance, onClose]
+  ); // 5. Added rawBalance to dependency array
 
   return (
     <AnimatePresence>
@@ -94,9 +101,12 @@ const WithdrawModal = ({ onClose, rawBalance }) => {
           {success ? (
             <div className="text-center py-8">
               <div className="text-green-500 text-6xl mb-4">✓</div>
-              <h3 className="text-lg font-semibold mb-2">Withdrawal Request Submitted!</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Withdrawal Request Submitted!
+              </h3>
               <p className="text-sm text-gray-600">
-                Your request is awaiting admin approval. You will be notified once it is processed.
+                Your request is awaiting admin approval. You will be notified
+                once it is processed.
               </p>
             </div>
           ) : (
@@ -108,7 +118,9 @@ const WithdrawModal = ({ onClose, rawBalance }) => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="bg-[#f0e2d2] rounded-lg p-4">
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold mb-2">Amount to Withdraw</label>
+                    <label className="block text-sm font-semibold mb-2">
+                      Amount to Withdraw
+                    </label>
                     <input
                       type="number"
                       name="amount"
@@ -121,7 +133,9 @@ const WithdrawModal = ({ onClose, rawBalance }) => {
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold mb-2">Account Holder Name</label>
+                    <label className="block text-sm font-semibold mb-2">
+                      Account Holder Name
+                    </label>
                     <input
                       type="text"
                       name="accountHolderName"
@@ -134,7 +148,9 @@ const WithdrawModal = ({ onClose, rawBalance }) => {
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold mb-2">Bank Account Number</label>
+                    <label className="block text-sm font-semibold mb-2">
+                      Bank Account Number
+                    </label>
                     <input
                       type="text"
                       name="bankAccount"
@@ -147,7 +163,9 @@ const WithdrawModal = ({ onClose, rawBalance }) => {
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-sm font-semibold mb-2">IFSC Code</label>
+                    <label className="block text-sm font-semibold mb-2">
+                      IFSC Code
+                    </label>
                     <input
                       type="text"
                       name="ifscCode"
@@ -168,12 +186,14 @@ const WithdrawModal = ({ onClose, rawBalance }) => {
                   </button>
                 </div>
               </form>
-              {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
+              {error && (
+                <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+              )}
             </>
           )}
         </motion.div>
       </motion.div>
-    </AnimatePresence >
+    </AnimatePresence>
   );
 };
 
@@ -227,13 +247,12 @@ const WalletModal = ({ isOpen, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 flex items-center justify-center z-40 p-4"
+        className="fixed inset-0 flex items-center font-serif justify-center z-40 p-4"
         onClick={() => {
           if (!showWithdrawModal) {
             onClose();
           }
         }}
-
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -251,7 +270,6 @@ const WalletModal = ({ isOpen, onClose }) => {
                   onClose();
                 }
               }}
-
               className="text-gray-500 hover:text-gray-700 text-2xl font-bold cursor-pointer"
             >
               x
@@ -264,10 +282,11 @@ const WalletModal = ({ isOpen, onClose }) => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 py-4 px-6 text-sm font-semibold transition-colors ${activeTab === tab.id
-                  ? "text-[#a17b5d] border-b-2 border-[#a17b5d]"
-                  : "text-gray-500 hover:text-gray-700"
-                  }`}
+                className={`flex-1 py-4 px-6 text-sm font-semibold transition-colors ${
+                  activeTab === tab.id
+                    ? "text-[#a17b5d] border-b-2 border-[#a17b5d]"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
               >
                 {tab.label}
               </button>
@@ -278,18 +297,31 @@ const WalletModal = ({ isOpen, onClose }) => {
           <div className="p-6">
             {activeTab === "overview" && (
               <div className="text-center">
-                <div className="relative mb-6">
-                  <div className="w-32 h-32 mx-auto bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center mb-4">
-                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
-                      <span className="text-3xl">💰</span>
+                <div
+                  className="relative mb-6 group w-36 h-36 mx-auto flex items-center justify-center rounded-full"
+                  style={{
+                    animation: "spin 8s linear infinite",
+                    backgroundImage:
+                      "linear-gradient(to bottom right, #a78bfa, #60a5fa)",
+                    filter: "",
+                    opacity: 1.0,
+                  }}
+                >
+                  {/* Pulsing main circle */}
+                  <div className="absolute w-32 h-32 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center animate-pulse group-hover:scale-105 transition-transform duration-300">
+                    {/* Inner emoji circle */}
+                    <div className="w-20 h-20 bg-white shadow-md rounded-full flex items-center justify-center">
+                      <span className="text-4xl animate-bounce">💰</span>
                     </div>
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-red-500/20 to-transparent rounded-full"></div>
+
+                  {/* Glow overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-red-500/20 to-transparent rounded-full pointer-events-none"></div>
                 </div>
 
                 <div className="mb-6">
-                  <h3 className="text-xl font-bold text-[#5a3c28] mb-2">
-                    Your Art Gallery Wallet
+                  <h3 className="text-2xl font-bold text-[#5a3c28] mb-2">
+                    Your Wallet
                   </h3>
                   <div className="text-3xl font-bold text-[#a17b5d] mb-2">
                     {balance}
@@ -320,7 +352,6 @@ const WalletModal = ({ isOpen, onClose }) => {
                   >
                     Withdraw Funds
                   </button>
-
                 </div>
               </div>
             )}
