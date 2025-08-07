@@ -21,7 +21,9 @@ import com.RESTAPI.ArtGalleryProject.repository.LoginCredRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
 import com.RESTAPI.ArtGalleryProject.security.JwtService;
+import com.RESTAPI.ArtGalleryProject.service.OrderService.EmailService;
 
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -33,6 +35,8 @@ public class LoginServiceImpl implements LoginService {
 
 	@Autowired
 	private JwtService jwtService;
+	@Autowired
+	private EmailService emailService;
 	@Autowired
 	private UserRepo userrepo;
 	@Autowired
@@ -179,6 +183,36 @@ public class LoginServiceImpl implements LoginService {
 
 		logincred.setPassword(encoder.encode(newPassword));
 		loginrepo.save(logincred);
+		
+		String htmlContent = """
+	            <html>
+	                <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 30px;">
+	                    <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+	                        <h2 style="color: #27ae60;">Password Reset Successful ✅</h2>
+	                        <p>Hi <strong>%s</strong>,</p>
+	                        <p>Your password has been successfully reset for your Fusion Art Gallery account.</p>
+
+	                        <div style="margin: 20px 0; padding: 15px; background-color: #eafaf1; border-radius: 8px;">
+	                            <p style="margin: 0;"><strong>Email:</strong> %s</p>
+	                            <p style="margin: 0;"><strong>Status:</strong> Successfully Updated</p>
+	                        </div>
+
+	                        <p>If you did not request this password reset, please <a href="#">contact our support team</a> immediately.</p>
+	                        <p style="margin-top: 30px;">Thank you for using <strong>Fusion Art Gallery</strong>,<br/>The Fusion Art Team</p>
+
+	                        <hr style="margin-top: 40px;" />
+	                        <p style="font-size: 12px; color: #888;">This is an automated message. Please do not reply directly to this email.</p>
+	                    </div>
+	                </body>
+	            </html>
+	            """.formatted(logincred.getUser().getName(), Email);
+
+	    try {
+	        emailService.sendSimpleHtmlEmail(Email, "✅ Password Reset Successful - Fusion Art Gallery", htmlContent);
+	    } catch (MessagingException e) {
+	        logger.error("Failed to send password reset confirmation email", e);
+	    }
+		
 		long userId = logincred.getUser().getUserId();
 		String token = jwtService.generateToken(Email, userId, Role.ROLE_USER);
 		logger.info("passwordReset finished.");

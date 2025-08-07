@@ -115,16 +115,16 @@ const Login = () => {
 
     const payload = isLogin
       ? {
-          email: formData.email,
-          password: formData.password,
-        }
+        email: formData.email,
+        password: formData.password,
+      }
       : {
-          email: formData.email,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-          securityQuestion: formData.securityQuestion,
-          securityAnswer: formData.securityAnswer,
-        };
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        securityQuestion: formData.securityQuestion,
+        securityAnswer: formData.securityAnswer,
+      };
 
     try {
       const res = await axiosInstance.post(url, payload);
@@ -150,21 +150,20 @@ const Login = () => {
       }
 
       if (!isLogin) {
-        setShowUserDetails(true); // For signup: show form to collect additional details
+        setShowUserDetails(true); 
       } else {
         toast.success(data.message || "Login successful");
 
-        // Wait for toast to show before navigating (optional)
         setTimeout(() => {
           navigate("/");
-          window.location.reload(); // Use only if absolutely needed
+          window.location.reload();
         }, 1200);
       }
     } catch (err) {
       alert(
         err.response?.data?.message ||
-          err.response?.data ||
-          "Something went wrong"
+        err.response?.data ||
+        "Something went wrong"
       );
     }
   };
@@ -179,7 +178,7 @@ const Login = () => {
         "/auth/forgot-password?step=check-email",
         { email: forgotEmail }
       );
-      setForgotQuestion(res.data); // Assume backend returns question as string
+      setForgotQuestion(res.data);
       setForgotStep(2);
     } catch (err) {
       setForgotError(
@@ -215,6 +214,7 @@ const Login = () => {
     e.preventDefault();
     setForgotLoading(true);
     setForgotError("");
+
     try {
       const res = await axiosInstance.put(
         "/auth/forgot-password?step=password-reset",
@@ -224,8 +224,20 @@ const Login = () => {
           confirmPassword: forgotConfirmPassword,
         }
       );
-      if (res.data === "Password changed successfully") {
-        alert("Password reset successful! Please login.");
+
+      const data = res.data;
+
+      if (typeof data === "string") {
+        setForgotError(data);
+      } else if (data.token) {
+        localStorage.setItem("token", data.token);
+        toast.success("Password Reset Successful.");
+
+        setTimeout(() => {
+          navigate("/");
+          window.location.reload();
+        }, 1200);
+
         setShowForgot(false);
         setForgotStep(1);
         setForgotEmail("");
@@ -234,7 +246,7 @@ const Login = () => {
         setForgotNewPassword("");
         setForgotConfirmPassword("");
       } else {
-        setForgotError(res.data || "Could not reset password.");
+        setForgotError("Unexpected response format.");
       }
     } catch (err) {
       setForgotError(
@@ -244,6 +256,7 @@ const Login = () => {
       setForgotLoading(false);
     }
   };
+
 
   return (
     <div className="h-[790px] w-screen bg-gradient-to-tr from-[#f9f9f8] via-[#f9f4ed] to-[#f5ebde] flex items-center justify-center px-4">
@@ -270,11 +283,10 @@ const Login = () => {
               setShowForgot(false);
               setShowUserDetails(false);
             }}
-            className={`px-6 py-2 rounded-full font-semibold cursor-pointer ${
-              isLogin && !showForgot && !showUserDetails
-                ? "bg-purple-500 text-white"
-                : "bg-white/60 text-gray-800"
-            }`}
+            className={`px-6 py-2 rounded-full font-semibold cursor-pointer ${isLogin && !showForgot && !showUserDetails
+              ? "bg-purple-500 text-white"
+              : "bg-white/60 text-gray-800"
+              }`}
           >
             Login
           </button>
@@ -284,11 +296,10 @@ const Login = () => {
               setShowForgot(false);
               setShowUserDetails(false);
             }}
-            className={`px-6 py-2 rounded-full font-semibold cursor-pointer ${
-              !isLogin && !showForgot && !showUserDetails
-                ? "bg-purple-500 text-white"
-                : "bg-white/60 text-gray-800"
-            }`}
+            className={`px-6 py-2 rounded-full font-semibold cursor-pointer ${!isLogin && !showForgot && !showUserDetails
+              ? "bg-purple-500 text-white"
+              : "bg-white/60 text-gray-800"
+              }`}
           >
             Sign Up
           </button>
@@ -298,10 +309,10 @@ const Login = () => {
           {showForgot
             ? "Forgot Password"
             : showUserDetails
-            ? "Complete Your Profile"
-            : isLogin
-            ? "Welcome Back"
-            : "Create Account"}
+              ? "Complete Your Profile"
+              : isLogin
+                ? "Welcome Back"
+                : "Create Account"}
         </h2>
 
         {/* User Details Form After Signup */}
@@ -681,11 +692,10 @@ const Login = () => {
               {/* Submit */}
               <button
                 type="submit"
-                className={`w-full py-3 cursor-pointer rounded-xl bg-gradient-to-r ${
-                  isLogin
-                    ? "from-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-purple-600"
-                    : "from-green-500 to-emerald-500 hover:from-emerald-600 hover:to-green-600"
-                } text-white font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl`}
+                className={`w-full py-3 cursor-pointer rounded-xl bg-gradient-to-r ${isLogin
+                  ? "from-purple-500 to-indigo-500 hover:from-indigo-600 hover:to-purple-600"
+                  : "from-green-500 to-emerald-500 hover:from-emerald-600 hover:to-green-600"
+                  } text-white font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl`}
               >
                 {isLogin ? "Login" : "Sign Up"}
               </button>
