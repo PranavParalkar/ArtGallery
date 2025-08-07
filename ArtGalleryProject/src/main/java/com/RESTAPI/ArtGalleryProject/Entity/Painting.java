@@ -40,6 +40,7 @@ public class Painting {
 	private double startingPrice;
 	private double finalPrice = 0.0;
 	private boolean isForAuction;
+	private boolean isAuctionLive = false;
 	private boolean isSold;
 	private boolean winnerEmailSent = false;
 
