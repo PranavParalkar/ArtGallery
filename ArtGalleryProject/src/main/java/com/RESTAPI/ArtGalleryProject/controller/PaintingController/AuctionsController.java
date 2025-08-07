@@ -59,6 +59,7 @@ public class AuctionsController {
 				return new ResponseEntity<>("Auction is already live.", HttpStatus.OK);
 			} else {
 				isAuctionLive = true;
+				service.auctionStarts();
 				return new ResponseEntity<>("Auction is now live.", HttpStatus.OK);
 			}
 		} catch (Exception e) {

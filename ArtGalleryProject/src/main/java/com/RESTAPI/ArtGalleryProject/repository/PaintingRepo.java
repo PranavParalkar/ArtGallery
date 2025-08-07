@@ -17,7 +17,7 @@ import jakarta.persistence.LockModeType;
 public interface PaintingRepo extends JpaRepository<Painting, Long> {
     Page<Painting> findByIsSoldFalseAndIsForAuctionTrueOrderByPaintingIdDesc(Pageable pageable);    // for Auctions
 	Page<Painting> findByIsSoldFalseAndIsForAuctionFalseOrderByPaintingIdDesc(Pageable pageable);
-	List<Painting> findByIsSoldFalseAndIsForAuctionTrue(); // for end auction
+	List<Painting> findByIsSoldFalseAndIsForAuctionTrue();	
 	
 	// for database locking system
 	@Lock(LockModeType.PESSIMISTIC_WRITE)

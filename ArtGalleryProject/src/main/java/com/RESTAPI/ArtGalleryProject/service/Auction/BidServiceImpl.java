@@ -76,14 +76,13 @@ public class BidServiceImpl implements BidService {
 		Painting painting = paintingRepo.findById(paintingId)
 				.orElseThrow(() -> new RuntimeException("Painting not found"));
 
+		if (!painting.isAuctionLive()) {
+			logger.info("Auction ended cannot place bid for userId: {}.", buyer.getUserId());
+			throw new RuntimeException("Auction has Ended");
+		}
+
 		Wallet buyerWallet = buyer.getWallet();
 		Optional<Bid> currentHighestBidOpt = bidRepo.findTopByPaintingOrderByBidAmountDescTimeStampAsc(painting);
-
-		if (newBidAmount > buyerWallet.getBalance()) {
-			logger.warn("Insufficient Funds");
-			throw new RuntimeException(
-					"Insufficient balance in wallet: " + buyerWallet.getBalance());
-		}
 
 		if (currentHighestBidOpt.isPresent()) {
 			double currentHighest = currentHighestBidOpt.get().getBidAmount();
@@ -117,6 +116,11 @@ public class BidServiceImpl implements BidService {
 			walletRepo.save(buyerWallet);
 			bidRepo.save(existingBid);
 		} else {
+			if (newBidAmount > buyerWallet.getBalance()) {
+				logger.warn("Insufficient Funds");
+				throw new RuntimeException("Insufficient balance in wallet: " + buyerWallet.getBalance());
+			}
+
 			if (currentHighestBidOpt.isPresent()) {
 				Bid prevBid = currentHighestBidOpt.get();
 				Wallet prevWallet = prevBid.getBuyer().getWallet();
@@ -160,9 +164,14 @@ public class BidServiceImpl implements BidService {
 	@Override
 	public synchronized String auctionEnds() throws IOException, DocumentException, MessagingException {
 		logger.info("auctionEnds started.");
+
+		// get all locked paintings.
 		List<Painting> livePaintings = paintingRepo.findActiveAuctionsWithLock();
 
 		for (Painting painting : livePaintings) {
+			painting.setAuctionLive(false);
+			paintingRepo.save(painting);
+
 			if (painting.isWinnerEmailSent())
 				continue;
 			Optional<Bid> highestBidderOpt = bidRepo.findTopByPaintingOrderByBidAmountDescTimeStampAsc(painting);
@@ -458,6 +467,27 @@ public class BidServiceImpl implements BidService {
 		}
 
 		return "Auction processing completed.";
+	}
+
+	@Override
+	public String auctionStarts() {
+		try {
+			logger.info("auctionStarts started.");
+
+			// get all paintings to start auction.
+			List<Painting> livePaintings = paintingRepo.findActiveAuctionsWithLock();
+			
+			for (Painting painting : livePaintings) {
+				painting.setAuctionLive(true);
+				paintingRepo.save(painting);
+			}
+			return "auction Started";
+		} catch (Exception e) {
+			logger.error("Some error occured");
+			throw new RuntimeException("Some error occured");
+		}
+		
+		
 	}
 
 }
