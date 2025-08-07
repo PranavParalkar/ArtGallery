@@ -214,7 +214,7 @@ public class LoginServiceImpl implements LoginService {
 	    }
 		
 		long userId = logincred.getUser().getUserId();
-		String token = jwtService.generateToken(Email, userId, Role.ROLE_USER);
+		String token = jwtService.generateToken(Email, userId, logincred.getUser().getRole());
 		logger.info("passwordReset finished.");
 		return new JwtResponse(token);
 	}

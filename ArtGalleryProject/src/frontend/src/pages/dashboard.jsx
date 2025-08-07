@@ -51,7 +51,6 @@ const artNews = [
     category: "Heritage",
     icon: <FaUserAlt className="text-xl text-[#a17b5d]" />,
   },
- 
 ];
 const newsItems = [
   {
@@ -125,43 +124,89 @@ const Dashboard = () => {
       setIndex((prev) =>
         carouselItems.length > 0 ? (prev + 1) % carouselItems.length : 0
       );
-    }, 5000);
+    }, 3000);
     return () => clearInterval(interval);
   }, [carouselItems]);
 
-  const SlideCard = ({ data }) => (
-    <div className="flex w-full font-serif h-[890px]">
-      <div className="w-1/2 pt-10 px-10 flex flex-col justify-center bg-[#f8f5f0]">
-        <div className="text-xs uppercase text-gray-600 mb-2">
-          Auction Series
-        </div>
-        <h1 className="text-5xl font-serif mb-4">{data.title}</h1>
-        <p className="text-lg text-gray-700 mb-6">
-          {data.description || "Art at its finest"}
-        </p>
-        <div className="flex items-center gap-4 text-sm text-gray-600 mb-6"></div>
+  // const SlideCard = ({ data }) => (
+  //   <div className="flex flex-col md:flex-row w-full font-serif md:h-[890px] h-screen ">
+  //     <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center bg-[#f8f5f0]">
+  //       <div className="text-xs uppercase text-gray-600 mb-2">
+  //         Auction Series
+  //       </div>
+  //       <h1 className="text-3xl md:text-5xl font-serif mb-4">{data.title}</h1>
+  //       <p className="text-base md:text-lg text-gray-700 md:mb-6">
+  //         {data.description || "Art at its finest"}
+  //       </p>
 
-        <div className="flex mt-10 gap-2">
-          {carouselItems.map((_, i) => (
-            <div
-              key={i}
-              className={`w-2 h-2 rounded-full transition-all ${
-                i === index ? "bg-black" : "bg-gray-400"
-              }`}
-            ></div>
-          ))}
+  //       <div className="flex md:mt-10 mt-5 gap-2">
+  //         {carouselItems.map((_, i) => (
+  //           <div
+  //             key={i}
+  //             className={`w-2 h-2 rounded-full transition-all ${
+  //               i === index ? "bg-black" : "bg-gray-400"
+  //             }`}
+  //           ></div>
+  //         ))}
+  //       </div>
+  //     </div>
+
+  //     <div className="w-full md:w-1/2 h-64 md:h-full">
+  //       <img
+  //         src={`http://localhost:8085${data.imageUrl}`}
+  //         alt={data.title}
+  //         className="w-full h-full object-cover"
+  //       />
+  //     </div>
+  //   </div>
+  // );
+
+  const SlideCard = ({ data, index, carouselItems = [] }) => {
+    return (
+      <div className="flex flex-col md:flex-row w-full font-serif h-[890px]">
+        {/* Text Section for Desktop */}
+        <div className="hidden md:flex w-1/2 pt-10 px-10 flex-col justify-center bg-[#f8f5f0]">
+          <div className="text-xs uppercase text-gray-600 mb-2">
+            Auction Series
+          </div>
+          <h1 className="text-5xl font-serif mb-4">{data.title}</h1>
+          <p className="text-lg text-gray-700 mb-6">
+            {data.description || "Art at its finest"}
+          </p>
+
+          <div className="flex mt-10 gap-2">
+            {Array.isArray(carouselItems) &&
+              carouselItems.map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    i === index ? "bg-black" : "bg-gray-400"
+                  }`}
+                ></div>
+              ))}
+          </div>
+        </div>
+        {/* Image Section */}
+        <div className="relative w-full md:w-1/2 h-[890px] md:h-auto">
+          <img
+            src={`http://localhost:8085${data.imageUrl}`}
+            alt={data.title}
+            className="w-full h-full object-cover"
+          />
+
+          {/* Text Overlay for Mobile */}
+          <div className="absolute inset-0 backdrop-blur-xs bg-opacity-70 flex flex-col justify-center items-start px-6 text-black md:hidden">
+            <div className="text-xs uppercase mb-1">Auction Series</div>
+            <h1 className="text-3xl font-serif mb-2">{data.title}</h1>
+            <p className="text-sm">{data.description || "Art at its finest"}</p>
+          </div>
         </div>
       </div>
+    );
+  };
 
-      <div className="w-1/2 h-full">
-        <img
-          src={`http://localhost:8085${data.imageUrl}`}
-          alt={data.title}
-          className="w-full h-full object-cover"
-        />
-      </div>
-    </div>
-  );
+  console.log(paintings);
+  console.log(typeof paintings);
 
   const upcomingAuctions = paintings.filter((p) => !p.isSold);
 
@@ -198,7 +243,9 @@ const Dashboard = () => {
       {/* 🔹 Upcoming Auctions */}
       <div className="py-16 px-10 font-serif">
         <div className="flex items-center justify-between mb-10">
-          <h2 className="text-4xl font-serif">Upcoming auctions</h2>
+          <h2 className="text-4xl font-serif text-[#6b4c35]">
+            Upcoming auctions
+          </h2>
           <Link to="/auctions" className="ml-4 text-sm font-medium underline">
             View All →
           </Link>
@@ -281,7 +328,7 @@ const Dashboard = () => {
         transition={{ delay: 0.6 }}
         className="mt-16 mx-10 "
       >
-        <h2 className="text-3xl font-bold font-serif text-[#6b4c35] mb-8 text-center">
+        <h2 className="text-4xl font-serif text-[#6b4c35] mb-8 text-center">
           Auction News & Highlights
         </h2>
 
