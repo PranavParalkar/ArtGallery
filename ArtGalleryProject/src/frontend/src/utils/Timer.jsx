@@ -36,6 +36,8 @@ const Timer = ({ setAuctionLive }) => {
         setAuctionLive(false);
         axiosInstance.get('/auctions/upcoming');
       }
+      
+      setAuctionMode(mode);
 
       const diff = target.getTime() - now.getTime();
       const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -43,7 +45,6 @@ const Timer = ({ setAuctionLive }) => {
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
       setTimeLeft({ hours, minutes, seconds });
-      setAuctionMode(mode);
     };
 
     calculateTime();

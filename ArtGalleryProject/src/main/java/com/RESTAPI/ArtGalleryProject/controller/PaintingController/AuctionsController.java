@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auctions")
@@ -56,11 +57,11 @@ public class AuctionsController {
 	public ResponseEntity<?> auctionIsLive() {
 		try {
 			if (isAuctionLive) {
-				return new ResponseEntity<>("Auction is already live.", HttpStatus.OK);
+				return new ResponseEntity<>(Map.of("message", "Auction is already live."), HttpStatus.OK);
 			} else {
 				isAuctionLive = true;
 				service.auctionStarts();
-				return new ResponseEntity<>("Auction is now live.", HttpStatus.OK);
+				return new ResponseEntity<>(Map.of("message", "Auction is now live."), HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -75,11 +76,11 @@ public class AuctionsController {
 //			logger.info("auctionIsNotLive started.");
 			if (!isAuctionLive) {
 //				logger.info("auctionIsNotLive finished.");
-				return new ResponseEntity<>("Auction is already upcoming.", HttpStatus.OK);
+				return new ResponseEntity<>(Map.of("message", "Auction is already upcoming."), HttpStatus.OK);
 			} else {
 				isAuctionLive = false;
 				service.auctionEnds();
-				return new ResponseEntity<>("Auction has now ended.", HttpStatus.OK);
+				return new ResponseEntity<>(Map.of("message", "Auction has now ended."), HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

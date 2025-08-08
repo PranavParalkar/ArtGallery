@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { motion, AnimatePresence } from "framer-motion";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   FaSignOutAlt,
   FaUserCircle,
@@ -143,6 +145,7 @@ const Shop = () => {
   // Main Component UI
   return (
     <div className="px-20 py-10 font-serif relative">
+      <ToastContainer position="top-right" autoClose={5000} />
       <h1 className="text-4xl font-bold text-center text-[#3e2e1e] mb-12">
         Art Store
       </h1>
@@ -210,8 +213,12 @@ const Shop = () => {
                 <button
                   className="mt-4 w-full text-center bottom-0 cursor-pointer hover:scale-95 duration-300 ease-in-out py-2 rounded-lg bg-[#6b4c35] hover:bg-[#776354] text-white font-semibold transition"
                   onClick={() => {
-                    setSelectedPainting(painting);
-                    setShowAddressModal(true);
+                    if (!token) {
+                      toast.error("Login to buy painting.");
+                    } else {
+                      setSelectedPainting(painting);
+                      setShowAddressModal(true);
+                    }
                   }}
                 >
                   Buy Now
