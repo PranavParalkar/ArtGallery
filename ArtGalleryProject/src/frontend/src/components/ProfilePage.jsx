@@ -33,9 +33,9 @@ const ProfilePage = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="bg-[#fdfaf6] rounded-xl shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 border border-gray-200"
+      className="bg-[#fdfaf6] rounded-xl shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 border border-gray-200 md:h-48"
     >
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-1/2 overflow-hidden">
         <img
           src={`http://localhost:8085${painting.imageUrl}`}
           alt={painting.title}
@@ -49,7 +49,7 @@ const ProfilePage = () => {
         </div>
       </div>
       <div className="p-4">
-        <h3 className="text-lg font-bold text-[#5a3c28] truncate">
+        <h3 className="text-sm font-bold text-[#5a3c28] truncate">
           {painting.title}
         </h3>
         <p className="text-sm text-gray-500 line-clamp-2 h-10 my-2">
@@ -441,7 +441,7 @@ const ProfilePage = () => {
                               You haven't sold any paintings yet.
                             </p>
                           ) : (
-                            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                            <div className="grid sm:grid-cols-2 xl:grid-cols-3 md:gap-3 gap-3">
                               {/* 👇 Updated function call */}
                               {profile.paintingsSold.map((p) => renderPaintingCard(p, "sold"))}
                             </div>
@@ -490,6 +490,37 @@ const ProfilePage = () => {
                 </motion.div>
               )}
             </AnimatePresence>
+              {/* Fullscreen Image Modal */}
+                  <AnimatePresence>
+                    {fullscreenImage && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+                        onClick={() => setFullscreenImage(null)}
+                      >
+                        <motion.div
+                          initial={{ scale: 0.8 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0.8 }}
+                          className="relative max-w-4xl w-full"
+                        >
+                          <img
+                            src={fullscreenImage}
+                            alt="Fullscreen Preview"
+                            className="w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+                          />
+                          <button
+                            onClick={() => setFullscreenImage(null)}
+                            className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black cursor-pointer"
+                          >
+                            ✕ Close
+                          </button>
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
           </div>
         </motion.div>
       </motion.div>

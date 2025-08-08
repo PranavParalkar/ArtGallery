@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Timer from "../utils/Timer";
 import {
   FaImage,
@@ -22,6 +24,8 @@ const Auction = () => {
   const [auctionLive, setAuctionLive] = useState(false);
   const [bidButton, setBidButton] = useState("Place Bid");
   const [hoveredPaintingId, setHoveredPaintingId] = useState(null);
+
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (auctionLive) {
@@ -52,6 +56,7 @@ const Auction = () => {
 
   return (
     <div className="  px-20 py-10 font-serif relative">
+      <ToastContainer position="top-right" autoClose={5000} />
       <h1 className="text-4xl font-bold text-center text-[#3e2e1e] mb-3">
         Auction Paintings
       </h1>
@@ -119,21 +124,27 @@ const Auction = () => {
                 <button
                   disabled={!auctionLive}
                   className={`relative overflow-hidden h-11 w-full mt-5 rounded-lg font-semibold transition duration-300 ease-in-out ${auctionLive
-                      ? "bg-[#7c5c3d] hover:bg-[#6b4c35] text-white cursor-pointer"
-                      : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                    ? "bg-[#7c5c3d] hover:bg-[#6b4c35] text-white cursor-pointer"
+                    : "bg-gray-400 text-gray-200 cursor-not-allowed"
                     }`}
+
                   onMouseEnter={() => setHoveredPaintingId(painting.paintingId)}
                   onMouseLeave={() => setHoveredPaintingId(null)}
-                  onClick={() =>
-                    navigate(`/biddingFrontend/${painting.paintingId}`)
+                  onClick={() => {
+                    if (!token) {
+                      toast.error("Login to bid on paintings.");
+                    } else {
+                      navigate(`/biddingFrontend/${painting.paintingId}`)
+                    }
+                  }
                   }
                 >
                   <span className="block relative w-full h-full">
                     {/* Normal text */}
                     <span
                       className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out${auctionLive && hoveredPaintingId === painting.paintingId
-                          ? "-translate-y-full opacity-0"
-                          : "translate-y-0 opacity-100"
+                        ? "-translate-y-full opacity-0"
+                        : "translate-y-0 opacity-100"
                         }`}
                     >
                       {bidButton}
@@ -142,8 +153,8 @@ const Auction = () => {
                     {/* Hover text */}
                     <span
                       className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out${auctionLive && hoveredPaintingId === painting.paintingId
-                          ? "translate-y-0 opacity-100"
-                          : "translate-y-full opacity-0"
+                        ? "translate-y-0 opacity-100"
+                        : "translate-y-full opacity-0"
                         }`}
                     >
                       Liked it? Go for it...
@@ -214,7 +225,7 @@ const Auction = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </div >
   );
 };
 

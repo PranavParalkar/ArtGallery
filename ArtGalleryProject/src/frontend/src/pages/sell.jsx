@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import axiosInstance from "../axiosInstance";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Sell = () => {
   const [step, setStep] = useState(1);
   const [sellingMode, setSellingMode] = useState(""); // "auction" or "store"
+
+  const token = localStorage.getItem("token");
 
   const [formData, setFormData] = useState({
     file: null,
@@ -77,6 +81,7 @@ const Sell = () => {
 
   return (
     <div className="w-full min-h-screen mt-5 px-4 py-12 font-serif">
+      <ToastContainer position="top-right" autoClose={5000} />
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -153,8 +158,15 @@ const Sell = () => {
 
             <div className="text-center mt-10">
               <button
-                onClick={() => setStep(2)}
-                className="bg-[#5a3c28] text-white px-6 sm:px-8 py-3 rounded-lg text-base sm:text-lg hover:bg-[#3d281a] transition duration-300"
+                onClick={() => {
+                  if (!token) {
+                    toast.error("Login to sell paintings.");
+                  } else {
+                    setStep(2)
+                  }
+                }
+                }
+                className="bg-[#5a3c28] text-white px-6 sm:px-8 py-3 rounded-lg text-base sm:text-lg hover:bg-[#3d281a] transition duration-300 cursor-pointer"
               >
                 Start Selling
               </button>
