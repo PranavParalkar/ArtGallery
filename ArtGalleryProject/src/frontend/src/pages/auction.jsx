@@ -21,6 +21,7 @@ const Auction = () => {
   const navigate = useNavigate();
   const [auctionLive, setAuctionLive] = useState(false);
   const [bidButton, setBidButton] = useState("Place Bid");
+  const [hoveredPaintingId, setHoveredPaintingId] = useState(null);
 
   useEffect(() => {
     if (auctionLive) {
@@ -117,16 +118,37 @@ const Auction = () => {
                 </div>
                 <button
                   disabled={!auctionLive}
-                  className={`mt-5 block text-center bottom-0 py-2 rounded-lg font-semibold transition duration-300 ease-in-out
-                  ${auctionLive
-                      ? "bg-[#7c5c3d] hover:bg-[#847464] hover:scale-95 active:scale-90 text-white cursor-pointer"
+                  className={`relative overflow-hidden h-11 w-full mt-5 rounded-lg font-semibold transition duration-300 ease-in-out ${auctionLive
+                      ? "bg-[#7c5c3d] hover:bg-[#6b4c35] text-white cursor-pointer"
                       : "bg-gray-400 text-gray-200 cursor-not-allowed"
                     }`}
+                  onMouseEnter={() => setHoveredPaintingId(painting.paintingId)}
+                  onMouseLeave={() => setHoveredPaintingId(null)}
                   onClick={() =>
                     navigate(`/biddingFrontend/${painting.paintingId}`)
                   }
                 >
-                  {bidButton}
+                  <span className="block relative w-full h-full">
+                    {/* Normal text */}
+                    <span
+                      className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out${auctionLive && hoveredPaintingId === painting.paintingId
+                          ? "-translate-y-full opacity-0"
+                          : "translate-y-0 opacity-100"
+                        }`}
+                    >
+                      {bidButton}
+                    </span>
+
+                    {/* Hover text */}
+                    <span
+                      className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out${auctionLive && hoveredPaintingId === painting.paintingId
+                          ? "translate-y-0 opacity-100"
+                          : "translate-y-full opacity-0"
+                        }`}
+                    >
+                      Liked it? Go for it...
+                    </span>
+                  </span>
                 </button>
               </div>
             </motion.div>

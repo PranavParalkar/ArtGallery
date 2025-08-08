@@ -31,7 +31,7 @@ const BiddingFrontend = () => {
     axiosInstance.get(`/auctions/${paintingId}`)
       .then((res) => setPainting(res.data))
       .catch(() => setPainting(null));
-  }, [paintingId]);
+  }, [paintingId]);onabort
 
   // Fetch bids
   useEffect(() => {

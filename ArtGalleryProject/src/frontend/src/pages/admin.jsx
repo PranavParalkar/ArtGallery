@@ -7,10 +7,11 @@ import {
   FaImage,
   FaInfoCircle,
   FaRulerCombined,
-  FaTags,
-  FaUser,
   FaUserCircle,
   FaTag,
+  FaUniversity,
+  FaCheck,
+  FaTimes,
 } from "react-icons/fa";
 
 const Admin = () => {
@@ -252,85 +253,85 @@ const Admin = () => {
       }
 
       {/* Withdrawals Tab */}
-      {
-        activeTab === "withdrawals" && (
-          <div>
-            <h3 className="text-2xl font-bold text-[#3e2e1e] mb-6 text-center">
-              Pending Withdrawal Requests
-            </h3>
+      {activeTab === "withdrawals" && (
+        <div>
+          <h3 className="text-2xl font-bold text-[#3e2e1e] mb-6 text-center">
+            Pending Withdrawal Requests
+          </h3>
 
-            {withdrawalRequests.length === 0 ? (
-              <div className="text-center text-gray-500 mt-10 text-lg">
-                No pending withdrawal requests.
-              </div>
-            ) : (
-              <motion.div
-                layout
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              >
-                {withdrawalRequests.map((request) => (
-                  <motion.div
-                    layout
-                    key={request.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className="bg-white shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-orange-900 transition-shadow"
-                  >
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800">
-                          Withdrawal Request #{request.id}
-                        </h3>
-                        <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
-                          PENDING
-                        </span>
-                      </div>
+          {withdrawalRequests.length === 0 ? (
+            <div className="text-center text-gray-500 mt-10 text-lg">
+              No pending withdrawal requests.
+            </div>
+          ) : (
+            <motion.div
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8" // Increased gap
+            >
+              {withdrawalRequests.map((request) => (
+                <motion.div
+                  key={request.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="rounded-2xl bg-white p-6 transform hover:-translate-y-2 duration-300 shadow-lg hover:shadow-xl border border-gray-100 transition flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-2xl font-bold text-[#5a3c28]">
+                        ₹{request.amount.toLocaleString("en-IN")}
+                      </h2>
+                      <span className="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-1 rounded-full font-semibold">
+                        PENDING
+                      </span>
+                    </div>
 
-                      <div className="space-y-3 text-sm">
+                    {/* User and Bank Details */}
+                    <div className="text-md text-[#6b4c35] mb-4 space-y-3">
+                      <div className="flex items-start gap-3">
+                        <FaUserCircle className="mt-1 text-lg text-gray-400" />
                         <div>
-                          <strong>Amount:</strong> ₹{request.amount}
-                        </div>
-                        <div>
-                          <strong>User:</strong> {request.userEmail}
-                        </div>
-                        <div>
-                          <strong>Account Holder:</strong> {request.accountHolderName}
-                        </div>
-                        <div>
-                          <strong>Bank Account:</strong> {request.bankAccount}
-                        </div>
-                        <div>
-                          <strong>IFSC Code:</strong> {request.ifscCode}
-                        </div>
-                        <div>
-                          <strong>Request Date:</strong>{" "}
-                          {new Date(request.requestDate).toLocaleDateString()}
+                          <p className="font-semibold">Account name: {request.accountHolderName}</p>
+                          <p className="text-sm text-gray-500">Account email: {request.userEmail}</p>
                         </div>
                       </div>
-
-                      <div className="flex justify-between mt-6 space-x-2">
-                        <button
-                          onClick={() => approveWithdrawal(request.id)}
-                          className="w-full bg-green-500 hover:bg-green-600 text-white text-sm py-2 rounded-xl transition-colors cursor-pointer"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => rejectWithdrawal(request.id)}
-                          className="w-full bg-red-500 hover:bg-red-600 text-white text-sm py-2 rounded-xl transition-colors cursor-pointer"
-                        >
-                          Reject
-                        </button>
+                      <div className="flex items-start gap-3">
+                        <FaUniversity className="mt-1 text-lg text-gray-400" />
+                        <div>
+                          <p className="font-semibold">Account no: {request.bankAccount}</p>
+                          <p className="text-sm text-gray-500">IFSC: {request.ifscCode}</p>
+                        </div>
                       </div>
                     </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </div>
-        )
-      }
+
+                    <p className="text-xs text-gray-400 text-right pt-2 border-t border-gray-100">
+                      Requested on{" "}
+                      {new Date(request.requestDate).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  {/* Approve and Reject Buttons with Icons */}
+                  <div className="flex justify-between mt-6 space-x-3">
+                    <button
+                      onClick={() => approveWithdrawal(request.id)}
+                      className="flex items-center justify-center w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition-colors cursor-pointer"
+                    >
+                      <FaCheck className="mr-2" /> Approve
+                    </button>
+                    <button
+                      onClick={() => rejectWithdrawal(request.id)}
+                      className="flex items-center justify-center w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg transition-colors cursor-pointer"
+                    >
+                      <FaTimes className="mr-2" /> Reject
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </div>
+      )}
+
       {/* Fullscreen Image Modal */}
       <AnimatePresence>
         {fullscreenImage && (
