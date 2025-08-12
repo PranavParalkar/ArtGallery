@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState, useMemo } from "react";
 import axiosInstance from "../axiosInstance";
 import { Navigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import logo from "../utils/logo.png";
 import ArtLover from "../utils/ArtLover.jpg";
 import {
@@ -119,7 +120,7 @@ const ProfilePage = () => {
       setTimeout(() => setIsVisible(false), 3000);
     } catch (err) {
       console.error("Update failed", err);
-      alert("Failed to update profile.");
+      toast.error("Failed to update profile.");
     }
   };
 
@@ -144,7 +145,7 @@ const ProfilePage = () => {
   const tabButton = (label) => (
     <button
       onClick={() => setActiveTab(label)}
-      className={`px-6 py-2 rounded-full font-semibold transition-all ${activeTab === label
+      className={`px-6 py-2 rounded-full font-semibold transition-all cursor-pointer ${activeTab === label
         ? "bg-[#3e2e1e] text-white"
         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
         }`}
@@ -255,7 +256,7 @@ const ProfilePage = () => {
                     <h1 className="text-3xl font-bold">My Profile</h1>
                     <button
                       onClick={handleEditToggle}
-                      className="ml-auto px-4 py-1 bg-[#94520f] text-white rounded-full"
+                      className="ml-auto px-4 py-1 bg-[#94520f] text-white rounded-full cursor-pointer"
                     >
                       {editMode ? "Cancel" : "Edit"}
                     </button>
@@ -407,7 +408,7 @@ const ProfilePage = () => {
                   {/* 👇 New Toggle Buttons */}
                   <div className="flex w-full bg-[#f0e2d2] p-1 rounded-lg mb-8 shadow-inner">
                     <button
-                      className={`w-1/2 py-2 text-center rounded-md font-semibold transition-all duration-300 ${viewType === "sold"
+                      className={`w-1/2 py-2 text-center rounded-md font-semibold transition-all duration-300 cursor-pointer ${viewType === "sold"
                         ? "bg-white text-[#6b4c35] shadow"
                         : "text-gray-500 hover:bg-white/50"
                         }`}
@@ -416,7 +417,7 @@ const ProfilePage = () => {
                       Sold Paintings
                     </button>
                     <button
-                      className={`w-1/2 py-2 text-center rounded-md font-semibold transition-all duration-300 ${viewType === "bought"
+                      className={`w-1/2 py-2 text-center rounded-md font-semibold transition-all duration-300 cursor-pointer ${viewType === "bought"
                         ? "bg-white text-[#6b4c35] shadow"
                         : "text-gray-500 hover:bg-white/50"
                         }`}
@@ -483,7 +484,7 @@ const ProfilePage = () => {
                   />
                   <button
                     onClick={() => setFullscreenImage(null)}
-                    className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black"
+                    className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black cursor-pointer"
                   >
                     ✕ Close
                   </button>

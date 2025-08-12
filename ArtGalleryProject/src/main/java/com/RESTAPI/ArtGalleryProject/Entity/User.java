@@ -32,45 +32,49 @@ import lombok.ToString;
 @ToString
 @Entity
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long userId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long userId;
 
-    @Embedded
-    private Address address;
-    private String name;
-    private String phoneNumber;
+	@Embedded
+	private Address address;
+	private String name;
+	private String phoneNumber;
 
-    private boolean authorizedSeller;
-    private LocalDate createdAt;
+	private boolean authorizedSeller;
+	private LocalDate createdAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<WithdrawalRequest> withdrawalRequest;
-    
-    @Column(name = "ROLE_User", length = 20)
-    @Enumerated(EnumType.STRING)
-    private Role role;
-    // relational
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<WithdrawalRequest> withdrawalRequest;
 
-    // Wallet
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "wallet_id")
-    private Wallet wallet;
+	@Column(name = "ROLE_User", length = 20)
+	@Enumerated(EnumType.STRING)
+	private Role role;
+	// relational
 
-    // paintings uploaded as seller
-    @OneToMany(mappedBy = "seller")
-    @JsonManagedReference(value = "user-seller")
-    private List<Painting> paintingsSold;
+	// Wallet
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "wallet_id")
+	private Wallet wallet;
 
-    // paintings bought as buyer
-    @OneToMany(mappedBy = "buyer")
-    @JsonManagedReference(value = "user-buyer")
-    private List<Painting> paintingsBought;
+	// Unverfied paintings
+	@OneToMany(mappedBy = "seller")
+	@JsonManagedReference(value = "user-unverified-seller")
+	private List<UnverifiedPainting> unverifiedPaintingsSold;
 
-    // bidding of user (many to many)
-    @OneToMany(mappedBy = "buyer")
-    @JsonManagedReference(value = "user-bids")
-    private List<Bid> bids;
+	// paintings uploaded as seller
+	@OneToMany(mappedBy = "seller")
+	@JsonManagedReference(value = "user-seller")
+	private List<Painting> paintingsSold;
+
+	// paintings bought as buyer
+	@OneToMany(mappedBy = "buyer")
+	@JsonManagedReference(value = "user-buyer")
+	private List<Painting> paintingsBought;
+
+	// bidding of user (many to many)
+	@OneToMany(mappedBy = "buyer")
+	@JsonManagedReference(value = "user-bids")
+	private List<Bid> bids;
 }
-

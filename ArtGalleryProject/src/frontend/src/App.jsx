@@ -1,4 +1,5 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 import AppLayout from "./layouts/app-layout";
 
@@ -91,7 +92,12 @@ if (token && isTokenExpired(token)) {
 }
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <ToastContainer position="top-right" autoClose={5000} />
+    </>
+  );
 }
 
 export default App;

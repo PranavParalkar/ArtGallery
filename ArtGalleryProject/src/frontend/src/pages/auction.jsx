@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+
 import Timer from "../utils/Timer";
 import {
   FaImage,
@@ -56,7 +56,7 @@ const Auction = () => {
 
   return (
     <div className="  px-20 py-10 font-serif relative">
-      <ToastContainer position="top-right" autoClose={5000} />
+
       <h1 className="text-4xl font-bold text-center text-[#3e2e1e] mb-3">
         Auction Paintings
       </h1>

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { motion, AnimatePresence } from "framer-motion";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+
 import {
   FaSignOutAlt,
   FaUserCircle,
@@ -107,7 +107,7 @@ const Shop = () => {
       }
 
       console.log("Error message to display:", errorMessage);
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -145,7 +145,7 @@ const Shop = () => {
   // Main Component UI
   return (
     <div className="px-20 py-10 font-serif relative">
-      <ToastContainer position="top-right" autoClose={5000} />
+
       <h1 className="text-4xl font-bold text-center text-[#3e2e1e] mb-12">
         Art Store
       </h1>
@@ -442,7 +442,7 @@ const Shop = () => {
               </div>
               <button
                 onClick={() => setShowOrderModal(false)}
-                className="mt-6 text-sm text-gray-500 hover:text-blackcursor-pointer cursor-pointer"
+                className="mt-6 text-sm text-gray-500 hover:text-black cursor-pointer"
               >
                 Cancel
               </button>

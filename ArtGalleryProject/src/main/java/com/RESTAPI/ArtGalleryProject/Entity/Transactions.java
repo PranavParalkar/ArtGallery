@@ -41,7 +41,7 @@ public class Transactions {
 
     private String reference;
 
-    private LocalDateTime timestamp;
+    private LocalDateTime timeStamp;
 
     private String description;
 }

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../axiosInstance";
 import { motion, AnimatePresence } from "framer-motion";
 import { getUserRole } from "../utils/auth";
+import { toast } from "react-toastify";
 import {
   FaImage,
   FaInfoCircle,
@@ -27,7 +28,7 @@ const Admin = () => {
   useEffect(() => {
     if (role !== "ROLE_ADMIN") {
       if (!sessionStorage.getItem("adminAccessDenied")) {
-        alert("Access Denied!");
+        toast.error("Access Denied!");
         sessionStorage.setItem("adminAccessDenied", "true");
       }
       navigate("/", { replace: true });
@@ -225,7 +226,7 @@ const Admin = () => {
                       <p className="text-md mt-2 font-bold flex gap-2 text-[#6b4c35]">
                         <FaUserCircle className="mt-1" /> Seller:{" "}
                         <span className="font-medium text-[#6b4c35]">
-                          {painting.seller || "Unknown"}
+                          {painting.sellerName || "Unknown"}
                         </span>
                       </p>
                     </div>
@@ -355,7 +356,7 @@ const Admin = () => {
               />
               <button
                 onClick={() => setFullscreenImage(null)}
-                className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black"
+                className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black cursor-pointer"
               >
                 ✕ Close
               </button>

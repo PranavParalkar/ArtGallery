@@ -1,17 +1,20 @@
 package com.RESTAPI.ArtGalleryProject.controller.AdminPanel;
 
-import com.RESTAPI.ArtGalleryProject.Entity.UnverifiedPainting;
-import com.RESTAPI.ArtGalleryProject.Entity.WithdrawalRequest;
-import com.RESTAPI.ArtGalleryProject.service.AdminService.AdminService;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.UnverifiedPaintingResponse;
+import com.RESTAPI.ArtGalleryProject.Entity.WithdrawalRequest;
+import com.RESTAPI.ArtGalleryProject.service.AdminService.AdminService;
 
 @RestController
 @RequestMapping("/admin")
@@ -24,7 +27,7 @@ public class AdminController {
 
     // 1. View all unverified paintings submitted by sellers
     @GetMapping("/paintings/unverified")
-    public List<UnverifiedPainting> getUnverifiedPaintings() {
+    public List<UnverifiedPaintingResponse> getUnverifiedPaintings() {
         logger.info("getUnverifiedPaintings calleds.");
         return adminService.getPendingPaintings();
     }

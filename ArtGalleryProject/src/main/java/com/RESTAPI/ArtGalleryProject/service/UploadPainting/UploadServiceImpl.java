@@ -15,7 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.UploadPaintingRequest;
 import com.RESTAPI.ArtGalleryProject.Entity.UnverifiedPainting;
+import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.repository.UnverifiedPaintingRepo;
+import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UploadServiceImpl implements UploadService {
@@ -24,6 +28,8 @@ public class UploadServiceImpl implements UploadService {
 
     @Autowired
     private UnverifiedPaintingRepo unverifiedRepo;
+    @Autowired
+    private UserRepo userRepo;
 
 	@Override
 	public String uploadPainting(long userId, String path, UploadPaintingRequest request) throws IOException {
@@ -45,14 +51,17 @@ public class UploadServiceImpl implements UploadService {
         if (!f.exists()) f.mkdir();
 
         Files.copy(file.getInputStream(), Paths.get(filepath));
-
+        
+        User seller = userRepo.findById(userId)
+				.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        
         UnverifiedPainting painting = new UnverifiedPainting();
         painting.setTitle(request.title());
         painting.setDescription(request.description());
         painting.setLength(request.length());
         painting.setBreadth(request.breadth());
         painting.setStartingPrice(request.price());
-        painting.setSellerId(userId);
+        painting.setSeller(seller);
         painting.setForAuction(request.isForAuction());
         painting.setImageUrl("/image/" + name);
 

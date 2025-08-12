@@ -1,6 +1,7 @@
 package com.RESTAPI.ArtGalleryProject.Entity;
 
 import com.RESTAPI.ArtGalleryProject.Enum.PaintingStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +25,10 @@ public class UnverifiedPainting {
     private double startingPrice;
     private boolean forAuction;
     
-    private Long sellerId;
+    @ManyToOne
+	@JoinColumn(name = "seller_id", nullable = false)
+    @JsonBackReference(value = "user-unverified-seller")
+	private User seller;
     
     @Enumerated(EnumType.STRING)
     private PaintingStatus status = PaintingStatus.PENDING;

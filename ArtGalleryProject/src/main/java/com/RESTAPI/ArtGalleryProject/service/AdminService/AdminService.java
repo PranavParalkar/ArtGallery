@@ -1,12 +1,12 @@
 package com.RESTAPI.ArtGalleryProject.service.AdminService;
 
-import com.RESTAPI.ArtGalleryProject.Entity.UnverifiedPainting;
-import com.RESTAPI.ArtGalleryProject.Entity.WithdrawalRequest;
-
 import java.util.List;
 
+import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.UnverifiedPaintingResponse;
+import com.RESTAPI.ArtGalleryProject.Entity.WithdrawalRequest;
+
 public interface AdminService {
-    List<UnverifiedPainting> getPendingPaintings();
+    List<UnverifiedPaintingResponse> getPendingPaintings();
     String approvePainting(Long id);
     String rejectPainting(Long id);
     
