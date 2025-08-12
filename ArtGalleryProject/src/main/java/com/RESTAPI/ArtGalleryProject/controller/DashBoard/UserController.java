@@ -67,7 +67,12 @@ public class UserController {
 		long userId = authHelper.getCurrentUserId();
 		Object response = service.getTransaction(userId);
 		if(response instanceof String) {
-			
+			switch ((String)response) {
+			case "Unexpected Exception occured":
+				return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			case "User not found":
+				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+			}
 		}
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
