@@ -5,4 +5,5 @@ import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.UserDetailRequest;
 public interface UserService {
 	public Object getUserDetials(long userId, String email);
 	public String updateUserDetails(UserDetailRequest request, long userId);
+	public Object getTransaction(long userId);
 }

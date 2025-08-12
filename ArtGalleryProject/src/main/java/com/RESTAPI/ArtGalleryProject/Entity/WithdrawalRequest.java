@@ -18,21 +18,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WithdrawalRequest {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne
-    @JsonBackReference
-    private User user;
-    
-    private String userEmail;
-    private Double amount;
-    private String bankAccount;
-    private String ifscCode;
-    private String accountHolderName;
-    private String status = "PENDING"; // PENDING, APPROVED, REJECTED
-    private LocalDateTime requestDate = LocalDateTime.now();
-    private LocalDateTime processedDate;
-    private String adminNotes;
-} 
+	@ManyToOne
+	@JsonBackReference
+	private User user;
+
+	private String userEmail;
+	private Double amount;
+	private String bankAccount;
+	private String ifscCode;
+	private String accountHolderName;
+	private String status = "PENDING"; // PENDING, APPROVED, REJECTED
+	private LocalDateTime requestDate = LocalDateTime.now();
+	private LocalDateTime processedDate;
+	private String adminNotes;
+}
