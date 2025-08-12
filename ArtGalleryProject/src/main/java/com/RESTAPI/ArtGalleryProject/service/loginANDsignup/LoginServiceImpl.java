@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.RESTAPI.ArtGalleryProject.DTO.JwtResponse;
+import com.RESTAPI.ArtGalleryProject.DTO.Jwt.JwtResponse;
 import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.LoginRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.SignupRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.UserDetailRequest;

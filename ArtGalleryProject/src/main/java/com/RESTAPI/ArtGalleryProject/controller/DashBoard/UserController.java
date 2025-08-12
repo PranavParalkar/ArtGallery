@@ -60,4 +60,15 @@ public class UserController {
 			throw new IllegalArgumentException("Unexpected value: " + response);
 		}
 	}
+	
+	@GetMapping("/transaction")
+	public ResponseEntity<?> getAllTransactions(){
+		logger.info("updateUserProfile started.");
+		long userId = authHelper.getCurrentUserId();
+		Object response = service.getTransaction(userId);
+		if(response instanceof String) {
+			
+		}
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 }

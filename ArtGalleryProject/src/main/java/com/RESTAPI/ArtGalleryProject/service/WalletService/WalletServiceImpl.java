@@ -102,10 +102,10 @@ public class WalletServiceImpl implements WalletService {
 
 		logger.debug("Parsed details - amount: {}, account: {}, IFSC: {}, holder: {}", amount, "******", ifscCode,
 				accountHolderName);
-		
+
 		User user = userRepo.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-		
+
 		WithdrawalRequest withdrawalRequest = new WithdrawalRequest();
 		withdrawalRequest.setUser(user);
 		withdrawalRequest.setUserEmail(email);
