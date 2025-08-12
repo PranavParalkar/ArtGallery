@@ -13,6 +13,7 @@ import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.UserDetailRequest;
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
+import com.RESTAPI.ArtGalleryProject.repository.TransactionRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 
 @Service
@@ -22,6 +23,8 @@ public class UserServiceImpl implements UserService{
 	
 	@Autowired
     private UserRepo userRepo;
+	@Autowired
+	private TransactionRepo transactionRepo;
 
 	@Override
 	public Object getUserDetials(long userId, String email) {
@@ -91,6 +94,21 @@ public class UserServiceImpl implements UserService{
 		}
 		logger.info("updateUserDetails finished.");
 		return "User info updated";
+	}
+
+	@Override
+	public Object getTransaction(long userId) {
+		try {
+			Optional<User> userOpt = userRepo.findById(userId);
+			if(userOpt.isEmpty()) {
+				return "User not found";
+			}
+			User user = userOpt.get();
+			var transactions = transactionRepo.findByUserOrderByTimeStampDesc(user);
+			return transactions;
+		} catch (Exception e) {
+			return "";
+		}
 	}
 	
 	
