@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getUserRole, getUsernameSync, getUsername } from "../utils/auth";
+import { toast } from "react-toastify";
 // import WalletModal from "./WalletModal";
 
 const Header = ({ setIsWalletOpen }) => {
@@ -85,7 +86,7 @@ const Header = ({ setIsWalletOpen }) => {
         <div className="md:hidden">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 shadow hover:bg-gray-200 transition duration-200"
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 shadow hover:bg-gray-200 transition duration-200 cursor-pointer"
             aria-label="Toggle Menu"
           >
             <svg
@@ -183,7 +184,7 @@ const Header = ({ setIsWalletOpen }) => {
             </div>
           ) : (
             <Link to="/login">
-              <button className="hover:shadow-lg hover:shadow-gray-300 border-1 h-8 w-16 rounded-2xl px-2 text-sm text-gray-800 hover:cursor-pointer">
+              <button className="hover:shadow-lg hover:shadow-gray-300 border-1 h-8 w-16 rounded-2xl px-2 text-sm text-gray-800 cursor-pointer">
                 Login
               </button>
             </Link>

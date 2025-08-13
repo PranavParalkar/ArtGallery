@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService{
 			var transactions = transactionRepo.findByUserOrderByTimeStampDesc(user);
 			return transactions;
 		} catch (Exception e) {
-			return "";
+			return "Unexpected Exception occured";
 		}
 	}
 	

@@ -2,8 +2,8 @@ import { useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -105,7 +105,7 @@ const Login = () => {
     e.preventDefault();
 
     if (!isLogin && formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -145,7 +145,7 @@ const Login = () => {
           }
         }
       } else {
-        alert("Token missing in response");
+        toast.error("Token missing in response");
         return;
       }
 
@@ -160,7 +160,7 @@ const Login = () => {
         }, 1200);
       }
     } catch (err) {
-      alert(
+      toast.error(
         err.response?.data?.message ||
         err.response?.data ||
         "Something went wrong"
@@ -260,7 +260,6 @@ const Login = () => {
 
   return (
     <div className="h-[790px] w-screen bg-gradient-to-tr from-[#f9f9f8] via-[#f9f4ed] to-[#f5ebde] flex items-center justify-center px-4">
-      <ToastContainer position="top-right" autoClose={5000} />
 
       <div>
         <img

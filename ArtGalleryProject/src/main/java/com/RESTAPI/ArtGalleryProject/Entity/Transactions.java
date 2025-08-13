@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,9 +40,9 @@ public class Transactions {
 
     private Double amount;
 
-    private String reference;
+    @OneToOne
+    @JoinColumn(name = "painting_id")
+    private Painting painting;
 
-    private LocalDateTime timestamp;
-
-    private String description;
+    private LocalDateTime timeStamp;
 }

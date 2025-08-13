@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 import {
   FaPalette,
   FaGlobe,
@@ -33,7 +34,7 @@ const FAQItem = ({ question, answer, isOpen, onToggle }) => (
   >
     <button
       onClick={onToggle}
-      className="w-full px-4 py-3 text-left flex items-center justify-between hover:bg-[#674d33]/10 transition"
+      className="w-full px-4 py-3 text-left flex items-center justify-between hover:bg-[#674d33]/10 transition cursor-pointer"
     >
       <span className="font-medium text-[#674d33] text-base sm:text-lg">
         {question}

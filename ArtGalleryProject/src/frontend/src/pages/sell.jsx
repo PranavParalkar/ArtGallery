@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import axiosInstance from "../axiosInstance";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+
 
 const Sell = () => {
   const [step, setStep] = useState(1);
@@ -29,7 +29,7 @@ const Sell = () => {
       const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
 
       if (file.size > maxSizeInBytes) {
-        alert("File size exceeds 5MB. Please choose a smaller file.");
+        toast.error("File size exceeds 5MB. Please choose a smaller file.");
 
         e.target.value = null;
 
@@ -71,17 +71,17 @@ const Sell = () => {
       await axiosInstance.post(url, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert("Painting uploaded successfully");
+      toast.success("Painting uploaded successfully");
       setStep(4);
     } catch (err) {
-      alert("Failed to upload painting");
+      toast.error("Failed to upload painting");
       console.error(err);
     }
   };
 
   return (
     <div className="w-full min-h-screen mt-5 px-4 py-12 font-serif">
-      <ToastContainer position="top-right" autoClose={5000} />
+
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -235,7 +235,7 @@ const Sell = () => {
                   required
                   accept="image/*"
                   onChange={handleChange}
-                  className="w-full border border-gray-300 p-2 sm:p-3 rounded-md"
+                  className="w-full border border-gray-300 p-2 sm:p-3 rounded-md cursor-pointer"
                 />
               </div>
               <div>
@@ -325,7 +325,7 @@ const Sell = () => {
               )}
               <button
                 type="submit"
-                className="bg-[#5a3c28] text-white px-6 py-3 rounded-lg text-base hover:bg-[#3d281a] transition duration-300 w-full sm:w-auto"
+                className="bg-[#5a3c28] text-white px-6 py-3 rounded-lg text-base hover:bg-[#3d281a] transition duration-300 w-full sm:w-auto cursor-pointer"
               >
                 Submit Application
               </button>

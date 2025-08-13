@@ -3,6 +3,7 @@ import Footer from "../components/footer";
 import { Outlet } from "react-router-dom";
 import WalletModal from "../components/WalletModal";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 const AppLayout = () => {
   const [isWalletOpen, setIsWalletOpen] = useState(false);

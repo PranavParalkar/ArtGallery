@@ -23,6 +23,7 @@ import com.RESTAPI.ArtGalleryProject.Entity.LoginCredentials;
 import com.RESTAPI.ArtGalleryProject.Entity.Orders;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
+import com.RESTAPI.ArtGalleryProject.Enum.TransactionType;
 import com.RESTAPI.ArtGalleryProject.repository.LoginCredRepo;
 import com.RESTAPI.ArtGalleryProject.repository.OrdersRepo;
 import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
@@ -46,17 +47,19 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	private OrdersRepo ordersRepository;
 	@Autowired
-	private EmailService emailService;
-	@Autowired
 	private PaintingRepo paintingRepo;
 	@Autowired
 	private UserRepo userRepo;
 	@Autowired
 	private LoginCredRepo loginCredRepo;
 	@Autowired
+	private EmailService emailService;
+	@Autowired
 	private PdfService pdfService;
 	@Autowired
 	private WalletService walletService;
+	@Autowired
+	private TransactionService transactionService;
 
 	@Value("${razorpay.key.id}")
 	private String razorpayId;
@@ -98,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional
-	public Orders updateStatusPayment(Map<String, String> map) {
+	public Orders updateStatusPayment(Map<String, String> map, long userId) {
 		String razorpayId = map.get("razorpay_order_id");
 
 		if (razorpayId == null) {
@@ -126,9 +129,13 @@ public class OrderServiceImpl implements OrderService {
 			}
 		}
 
+		User user = userRepo.findById(userId)
+				.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
 		// Send email confirmation
 		if (order.getEmail() != null) {
 			try {
+				transactionService.createTransaction(user, TransactionType.ADD_FUNDS, order.getAmount());
 				String htmlContent = """
 						   <html>
 						   <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 30px;">
@@ -189,9 +196,10 @@ public class OrderServiceImpl implements OrderService {
 			return "Painting is already sold";
 		}
 
+		User seller = painting.getSeller();
 		User buyer = userRepo.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-		LoginCredentials sellerLogin = loginCredRepo.findByUser(painting.getSeller())
+		LoginCredentials sellerLogin = loginCredRepo.findByUser(seller)
 				.orElseThrow(() -> new EntityNotFoundException("Seller for painting not found id: " + paintingId));
 		Orders savedOrder;
 
@@ -209,6 +217,9 @@ public class OrderServiceImpl implements OrderService {
 			walletService.decrementBalanceByEmail(email, paintingPrice);
 			// Increment wallet balance of seller
 			walletService.incrementBalanceByEmail(sellerLogin.getEmail(), amount);
+
+			transactionService.createTransaction(buyer, TransactionType.PURCHASE, amount);
+			transactionService.createTransaction(seller, TransactionType.SOLD, amount);
 
 			// Create order record
 			Orders order = new Orders();
@@ -422,38 +433,36 @@ public class OrderServiceImpl implements OrderService {
 						painting.getTitle(), amount, paymentMethod, address, Year.now().getValue());
 
 		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-		    @Override
-		    public void afterCommit() {
-		        logger.info("Transaction committed. Generating PDF and sending email for Order ID: {}",
-		                savedOrder.getOrderId());
+			@Override
+			public void afterCommit() {
+				logger.info("Transaction committed. Generating PDF and sending email for Order ID: {}",
+						savedOrder.getOrderId());
 
-		        String pdfFilename = "FusionArt-Receipt-" + savedOrder.getOrderId() + ".pdf";
+				String pdfFilename = "FusionArt-Receipt-" + savedOrder.getOrderId() + ".pdf";
 
-		        try {
-		            CompletableFuture<byte[]> futureReceipt =
-		                    pdfService.generateReceiptPdf(savedOrder, buyer, painting, imageDirectory,
-		                            paymentMethod, name, mobileNumber, address);
+				try {
+					CompletableFuture<byte[]> futureReceipt = pdfService.generateReceiptPdf(savedOrder, buyer, painting,
+							imageDirectory, paymentMethod, name, mobileNumber, address);
 
-		            futureReceipt.thenAccept(pdfReceipt -> {
-		                logger.info("Sending confirmation email with PDF attachment to: {}", email);
-		                try {
-		                    emailService.sendOrderConfirmationEmailCOD(
-		                            email, subject, htmlContent, imageAbsolutePath,
-		                            pdfReceipt, pdfFilename);
-		                    logger.info("Order confirmation email sent successfully for Order ID: {}",
-		                            savedOrder.getOrderId());
-		                } catch (MessagingException e) {
-		                    logger.error("Email sending failed for Order ID: {}", savedOrder.getOrderId(), e);
-		                }
-		            }).exceptionally(ex -> {
-		                logger.error("Async PDF generation failed for Order ID: {}", savedOrder.getOrderId(), ex);
-		                return null;
-		            });
+					futureReceipt.thenAccept(pdfReceipt -> {
+						logger.info("Sending confirmation email with PDF attachment to: {}", email);
+						try {
+							emailService.sendOrderConfirmationEmailCOD(email, subject, htmlContent, imageAbsolutePath,
+									pdfReceipt, pdfFilename);
+							logger.info("Order confirmation email sent successfully for Order ID: {}",
+									savedOrder.getOrderId());
+						} catch (MessagingException e) {
+							logger.error("Email sending failed for Order ID: {}", savedOrder.getOrderId(), e);
+						}
+					}).exceptionally(ex -> {
+						logger.error("Async PDF generation failed for Order ID: {}", savedOrder.getOrderId(), ex);
+						return null;
+					});
 
-		        } catch (DocumentException | java.io.IOException e) {
-		            logger.error("Failed to start async PDF generation for Order ID: {}", savedOrder.getOrderId(), e);
-		        }
-		    }
+				} catch (DocumentException | java.io.IOException e) {
+					logger.error("Failed to start async PDF generation for Order ID: {}", savedOrder.getOrderId(), e);
+				}
+			}
 		});
 
 		return "Order placed successfully — confirmation email will be sent shortly.";

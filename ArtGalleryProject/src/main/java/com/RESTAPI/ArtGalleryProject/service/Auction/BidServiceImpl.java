@@ -27,6 +27,7 @@ import com.RESTAPI.ArtGalleryProject.Entity.Orders;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
 import com.RESTAPI.ArtGalleryProject.Entity.Wallet;
+import com.RESTAPI.ArtGalleryProject.Enum.TransactionType;
 import com.RESTAPI.ArtGalleryProject.repository.BidRepo;
 import com.RESTAPI.ArtGalleryProject.repository.LoginCredRepo;
 import com.RESTAPI.ArtGalleryProject.repository.OrdersRepo;
@@ -35,6 +36,7 @@ import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WalletRepo;
 import com.RESTAPI.ArtGalleryProject.service.OrderService.EmailService;
 import com.RESTAPI.ArtGalleryProject.service.OrderService.PdfService;
+import com.RESTAPI.ArtGalleryProject.service.OrderService.TransactionService;
 import com.RESTAPI.ArtGalleryProject.service.WalletService.WalletService;
 import com.lowagie.text.DocumentException;
 
@@ -64,6 +66,8 @@ public class BidServiceImpl implements BidService {
 	private EmailService emailService;
 	@Autowired
 	private WalletService walletService;
+	@Autowired
+	private TransactionService transactionService;
 	private String imageDirectory = "C:/Users/varad/OneDrive/Desktop/projects/Super30SpringProject/ArtGalleryProject";
 
 	@Override
@@ -182,6 +186,7 @@ public class BidServiceImpl implements BidService {
 			List<Bid> allBids = bidRepo.findByPainting(painting);
 
 			for (Bid bid : allBids) {
+				User seller = painting.getSeller();
 				User user = bid.getBuyer();
 				LoginCredentials userCredentials = loginCredRepo.findByUser(user)
 						.orElseThrow(() -> new EntityNotFoundException(
@@ -202,6 +207,9 @@ public class BidServiceImpl implements BidService {
 
 					walletService.incrementBalanceByEmail(sellerLogin.getEmail(), bid.getBidAmount());
 
+					transactionService.createTransaction(seller, TransactionType.SOLD, bid.getBidAmount(), painting);
+					transactionService.createTransaction(user, TransactionType.PURCHASE, bid.getBidAmount(), painting);
+					
 					String subject = "🎨 Your Fusion Art Auction Confirmation (#" + order.getOrderId() + ")";
 					String imageAbsolutePath = Paths.get(imageDirectory, painting.getImageUrl()).toString();
 					String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));

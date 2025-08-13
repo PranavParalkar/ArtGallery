@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.UnverifiedPaintingResponse;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.UnverifiedPainting;
 import com.RESTAPI.ArtGalleryProject.Entity.WithdrawalRequest;
@@ -37,11 +38,28 @@ public class AdminServiceImpl implements AdminService {
     private EmailService emailService;
 
     @Override
-    public List<UnverifiedPainting> getPendingPaintings() {
-        logger.info("getPendingPaintings started.");
+    public List<UnverifiedPaintingResponse> getPendingPaintings() {
+    	logger.info("getPendingPaintings started.");
+        
         List<UnverifiedPainting> pendingList = unverifiedRepo.findByStatus(PaintingStatus.PENDING);
-        logger.info("getPendingPaintings finished. {} paintings found.", pendingList.size());
-        return pendingList;
+
+        List<UnverifiedPaintingResponse> dtoList = pendingList.stream()
+        	    .map(p -> new UnverifiedPaintingResponse(
+        	        p.getId(),
+        	        p.getImageUrl(),
+        	        p.getTitle(),
+        	        p.getDescription(),
+        	        p.getLength(),
+        	        p.getBreadth(),
+        	        p.getStartingPrice(),
+        	        p.isForAuction(),
+        	        p.getSeller() != null ? p.getSeller().getName() : null
+        	    ))
+        	    .toList();
+        
+        
+        logger.info("getPendingPaintings finished. {} paintings found.", dtoList.size());
+        return dtoList;
     }
 
     @Override
@@ -55,9 +73,9 @@ public class AdminServiceImpl implements AdminService {
         }
 
         var unverified = optional.get();
-        var seller = userRepo.findById(unverified.getSellerId()).orElse(null);
+        var seller = userRepo.findById(unverified.getSeller().getUserId()).orElse(null);
         if (seller == null) {
-            logger.warn("Seller with ID {} not found for painting ID {}.", unverified.getSellerId(), id);
+            logger.warn("Seller with ID {} not found for painting ID {}.", unverified.getSeller().getUserId(), id);
             return "Seller not found";
         }
 
@@ -67,7 +85,7 @@ public class AdminServiceImpl implements AdminService {
         painting.setLength(unverified.getLength());
         painting.setBreadth(unverified.getBreadth());
         painting.setStartingPrice(unverified.getStartingPrice());
-        painting.setFinalPrice(0.0); // Set default final price
+        painting.setFinalPrice(0.0); 
         painting.setImageUrl(unverified.getImageUrl());
         painting.setForAuction(unverified.isForAuction());
         painting.setSeller(seller);
