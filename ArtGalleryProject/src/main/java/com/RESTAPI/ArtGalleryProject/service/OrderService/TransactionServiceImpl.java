@@ -1,5 +1,7 @@
 package com.RESTAPI.ArtGalleryProject.service.OrderService;
 
+import java.time.LocalDateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,19 +28,14 @@ public class TransactionServiceImpl implements TransactionService{
 		transaction.setType(type);
 		transaction.setAmount(amount);
 		transaction.setPainting(painting);
+		transaction.setTimeStamp(LocalDateTime.now());
 		transactionRepo.save(transaction);
 		logger.info("Transaction saved for user {}", user.getName());
 	}
 
 	@Override
 	public void createTransaction(User user, TransactionType type, double amount) {
-		Transactions transaction = new Transactions();
-		logger.info("New transaction created for user {}", user.getName());
-		transaction.setUser(user);
-		transaction.setType(type);
-		transaction.setAmount(amount);
-		transactionRepo.save(transaction);
-		logger.info("Transaction saved for user {}", user.getName());
+	    createTransaction(user, type, amount, null);
 	}
 	
 }

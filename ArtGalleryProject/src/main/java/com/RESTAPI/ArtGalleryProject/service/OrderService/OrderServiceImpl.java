@@ -1,6 +1,5 @@
 package com.RESTAPI.ArtGalleryProject.service.OrderService;
 
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
@@ -65,7 +64,8 @@ public class OrderServiceImpl implements OrderService {
 	private String razorpayId;
 	@Value("${razorpay.key.secret}")
 	private String razorpaySecret;
-	private String imageDirectory = "C:/Users/varad/OneDrive/Desktop/projects/Super30SpringProject/ArtGalleryProject";
+	@Value("${image.path}")
+	private String imageDirectory;
 
 	private RazorpayClient razorpayCLient;
 
@@ -218,8 +218,8 @@ public class OrderServiceImpl implements OrderService {
 			// Increment wallet balance of seller
 			walletService.incrementBalanceByEmail(sellerLogin.getEmail(), amount);
 
-			transactionService.createTransaction(buyer, TransactionType.PURCHASE, amount);
-			transactionService.createTransaction(seller, TransactionType.SOLD, amount);
+			transactionService.createTransaction(buyer, TransactionType.PURCHASE, amount, painting);
+			transactionService.createTransaction(seller, TransactionType.SOLD, amount, painting);
 
 			// Create order record
 			Orders order = new Orders();
@@ -244,7 +244,7 @@ public class OrderServiceImpl implements OrderService {
 		paintingRepo.save(painting);
 
 		String subject = "🎨 Your Fusion Art Order Confirmation (#" + savedOrder.getOrderId() + ")";
-		String imageAbsolutePath = Paths.get(imageDirectory, painting.getImageUrl()).toString();
+		String imageAbsolutePath = imageDirectory + painting.getImageUrl();
 		String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
 
 		String htmlContent = """

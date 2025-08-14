@@ -12,11 +12,13 @@ import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.UnverifiedPainting;
 import com.RESTAPI.ArtGalleryProject.Entity.WithdrawalRequest;
 import com.RESTAPI.ArtGalleryProject.Enum.PaintingStatus;
+import com.RESTAPI.ArtGalleryProject.Enum.TransactionType;
 import com.RESTAPI.ArtGalleryProject.repository.PaintingRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UnverifiedPaintingRepo;
 import com.RESTAPI.ArtGalleryProject.repository.UserRepo;
 import com.RESTAPI.ArtGalleryProject.repository.WithdrawalRequestRepo;
 import com.RESTAPI.ArtGalleryProject.service.OrderService.EmailService;
+import com.RESTAPI.ArtGalleryProject.service.OrderService.TransactionService;
 import com.RESTAPI.ArtGalleryProject.service.WalletService.WalletService;
 
 @Service
@@ -36,6 +38,8 @@ public class AdminServiceImpl implements AdminService {
     private WalletService walletService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private TransactionService transactionService;
 
     @Override
     public List<UnverifiedPaintingResponse> getPendingPaintings() {
@@ -160,6 +164,8 @@ public class AdminServiceImpl implements AdminService {
 
             request.setStatus("APPROVED");
             withdrawalRequestRepo.save(request);
+            
+            transactionService.createTransaction(user, TransactionType.WITHDRAW_FUNDS, request.getAmount());
 
             // Prepare HTML email content
             String htmlContent = """
