@@ -62,7 +62,7 @@ public class Painting {
 	@OneToMany(mappedBy = "painting")
 	@JsonManagedReference(value = "painting-bids")
 	private List<Bid> bids;
-	
+
 	@OneToMany(mappedBy = "painting")
 	@JsonManagedReference(value = "painting-transactions")
 	private List<Transactions> transactions;

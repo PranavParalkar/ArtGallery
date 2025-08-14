@@ -245,6 +245,7 @@ public class OrderServiceImpl implements OrderService {
 
 		String subject = "🎨 Your Fusion Art Order Confirmation (#" + savedOrder.getOrderId() + ")";
 		String imageAbsolutePath = imageDirectory + painting.getImageUrl();
+		logger.info(imageAbsolutePath);
 		String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
 
 		String htmlContent = """

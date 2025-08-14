@@ -34,13 +34,14 @@ public class Transactions {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference(value = "user-transactions")
     private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private TransactionType type;
 
-    private Double amount;
+    private double amount;
 
     @ManyToOne
     @JoinColumn(name = "painting_id")
