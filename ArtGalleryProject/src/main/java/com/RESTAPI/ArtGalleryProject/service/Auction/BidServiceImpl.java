@@ -1,7 +1,6 @@
 package com.RESTAPI.ArtGalleryProject.service.Auction;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Year;
@@ -14,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,7 +68,8 @@ public class BidServiceImpl implements BidService {
 	private WalletService walletService;
 	@Autowired
 	private TransactionService transactionService;
-	private String imageDirectory = "C:/Users/varad/OneDrive/Desktop/projects/Super30SpringProject/ArtGalleryProject";
+	@Value("${image.path}")
+	private String imageDirectory;
 
 	@Override
 	@Transactional
@@ -211,7 +212,7 @@ public class BidServiceImpl implements BidService {
 					transactionService.createTransaction(user, TransactionType.PURCHASE, bid.getBidAmount(), painting);
 
 					String subject = "🎨 Your Fusion Art Auction Confirmation (#" + order.getOrderId() + ")";
-					String imageAbsolutePath = Paths.get(imageDirectory, painting.getImageUrl()).toString();
+					String imageAbsolutePath = imageDirectory + painting.getImageUrl();
 					String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
 					String htmlContent = """
 							    <!DOCTYPE html>
