@@ -209,7 +209,7 @@ public class BidServiceImpl implements BidService {
 
 					transactionService.createTransaction(seller, TransactionType.SOLD, bid.getBidAmount(), painting);
 					transactionService.createTransaction(user, TransactionType.PURCHASE, bid.getBidAmount(), painting);
-					
+
 					String subject = "🎨 Your Fusion Art Auction Confirmation (#" + order.getOrderId() + ")";
 					String imageAbsolutePath = Paths.get(imageDirectory, painting.getImageUrl()).toString();
 					String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
@@ -484,7 +484,7 @@ public class BidServiceImpl implements BidService {
 
 			// get all paintings to start auction.
 			List<Painting> livePaintings = paintingRepo.findActiveAuctionsWithLock();
-			
+
 			for (Painting painting : livePaintings) {
 				painting.setAuctionLive(true);
 				paintingRepo.save(painting);
@@ -494,8 +494,7 @@ public class BidServiceImpl implements BidService {
 			logger.error("Some error occured");
 			throw new RuntimeException("Some error occured");
 		}
-		
-		
+
 	}
 
 }

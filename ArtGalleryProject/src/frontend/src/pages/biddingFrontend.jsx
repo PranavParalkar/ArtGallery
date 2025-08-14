@@ -287,7 +287,7 @@ const BiddingFrontend = () => {
                   className="flex-1 md:w-[750px] w-full px-5 py-3 border border-[#e7d5c0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6b4c35] transition-all bg-[#fefaf6] text-[#3e2e1e] font-medium text-lg shadow"
                   required
                 />
-
+{/* 
                 {showTooltip && (
                   <div className="absolute top-full left-0 mt-2 w-full bg-[#fffaf4] border border-[#e7d5c0] text-[#3e2e1e] text-sm rounded-lg shadow-md p-3 z-10 opacity-100 scale-100 transition-all duration-200 ease-out">
                     <div className="flex items-center gap-2">
@@ -297,7 +297,7 @@ const BiddingFrontend = () => {
                       </span>
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
               <motion.button
                 type="submit"

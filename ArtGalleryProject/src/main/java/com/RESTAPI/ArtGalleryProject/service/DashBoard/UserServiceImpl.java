@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.RESTAPI.ArtGalleryProject.DTO.DashBoard.UserDetailsResponse;
 import com.RESTAPI.ArtGalleryProject.DTO.LoginANDsignup.UserDetailRequest;
+import com.RESTAPI.ArtGalleryProject.DTO.Order.TransactionResponse;
 import com.RESTAPI.ArtGalleryProject.DTO.UploadPainting.PaintingResponse;
 import com.RESTAPI.ArtGalleryProject.Entity.Painting;
 import com.RESTAPI.ArtGalleryProject.Entity.User;
@@ -105,7 +106,15 @@ public class UserServiceImpl implements UserService{
 			}
 			User user = userOpt.get();
 			var transactions = transactionRepo.findByUserOrderByTimeStampDesc(user);
-			return transactions;
+			List<TransactionResponse> soldResponses = transactions.stream().map(t -> new TransactionResponse(
+			        t.getUser().getName(),
+			        t.getType(),
+			        t.getAmount(),
+			        t.getPainting() == null ? null : t.getPainting().getImageUrl(),
+			        t.getPainting() == null ? null : t.getPainting().getSeller().getName(),
+			        t.getTimeStamp()
+			)).toList();
+			return soldResponses;
 		} catch (Exception e) {
 			return "Unexpected Exception occured";
 		}

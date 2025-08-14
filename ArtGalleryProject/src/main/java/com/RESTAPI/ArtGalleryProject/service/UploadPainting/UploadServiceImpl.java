@@ -24,49 +24,53 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class UploadServiceImpl implements UploadService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UploadServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(UploadServiceImpl.class);
 
-    @Autowired
-    private UnverifiedPaintingRepo unverifiedRepo;
-    @Autowired
-    private UserRepo userRepo;
+	@Autowired
+	private UnverifiedPaintingRepo unverifiedRepo;
+	@Autowired
+	private UserRepo userRepo;
 
 	@Override
 	public String uploadPainting(long userId, String path, UploadPaintingRequest request) throws IOException {
 		logger.info("uploadPainting started.");
 		MultipartFile file = request.file();
 
-        if (file.getSize() > 5 * 1024 * 1024) {
-            logger.info("uploadPainting finished.");
-            throw new MaxUploadSizeExceededException(5);
-        }
+		if (file.getSize() > 5 * 1024 * 1024) {
+			logger.info("uploadPainting finished.");
+			throw new MaxUploadSizeExceededException(5);
+		}
 
-        String name = file.getOriginalFilename();
-        String randomUID = UUID.randomUUID().toString();
-        name = randomUID.concat(name.substring(name.lastIndexOf(".")));
+		String name = file.getOriginalFilename();
+		String randomUID = UUID.randomUUID().toString();
+		name = randomUID.concat(name.substring(name.lastIndexOf(".")));
 
-        String filepath = path + "/" + name;
+		logger.info(path);
+		logger.info(name);
 
-        File f = new File(path);
-        if (!f.exists()) f.mkdir();
+		String filepath = path + "/image/" + name;
 
-        Files.copy(file.getInputStream(), Paths.get(filepath));
-        
-        User seller = userRepo.findById(userId)
+		File f = new File(path);
+		if (!f.exists())
+			f.mkdir();
+
+		Files.copy(file.getInputStream(), Paths.get(filepath));
+
+		User seller = userRepo.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-        
-        UnverifiedPainting painting = new UnverifiedPainting();
-        painting.setTitle(request.title());
-        painting.setDescription(request.description());
-        painting.setLength(request.length());
-        painting.setBreadth(request.breadth());
-        painting.setStartingPrice(request.price());
-        painting.setSeller(seller);
-        painting.setForAuction(request.isForAuction());
-        painting.setImageUrl("/image/" + name);
 
-        unverifiedRepo.save(painting);
-        logger.info("uploadPainting finished.");
-        return "Painting submitted. Awaiting admin approval.";
-    }
+		UnverifiedPainting painting = new UnverifiedPainting();
+		painting.setTitle(request.title());
+		painting.setDescription(request.description());
+		painting.setLength(request.length());
+		painting.setBreadth(request.breadth());
+		painting.setStartingPrice(request.price());
+		painting.setSeller(seller);
+		painting.setForAuction(request.isForAuction());
+		painting.setImageUrl("/image/" + name);
+
+		unverifiedRepo.save(painting);
+		logger.info("uploadPainting finished.");
+		return "Painting submitted. Awaiting admin approval.";
+	}
 }
