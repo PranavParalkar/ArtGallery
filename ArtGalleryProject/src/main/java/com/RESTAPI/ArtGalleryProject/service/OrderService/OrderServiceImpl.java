@@ -101,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	@Transactional
-	public Orders updateStatusPayment(Map<String, String> map, long userId) {
+	public Orders updateStatusPayment(Map<String, String> map) {
 		String razorpayId = map.get("razorpay_order_id");
 
 		if (razorpayId == null) {
@@ -129,8 +129,9 @@ public class OrderServiceImpl implements OrderService {
 			}
 		}
 
-		User user = userRepo.findById(userId)
-				.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+		User user = loginCredRepo.findById(order.getEmail())
+					.orElseThrow(() -> new RuntimeException("No Account found with email."))
+					.getUser();
 
 		// Send email confirmation
 		if (order.getEmail() != null) {

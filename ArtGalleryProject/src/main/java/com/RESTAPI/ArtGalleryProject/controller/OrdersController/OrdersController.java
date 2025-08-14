@@ -50,8 +50,7 @@ public class OrdersController {
 
 	@PostMapping("/paymentCallback")
 	public String paymentCallback(@RequestParam Map<String, String> response) {
-		long userId = authHelper.getCurrentUserId();
-		orderService.updateStatusPayment(response, userId);
+		orderService.updateStatusPayment(response);
 		logger.info("paymentCallback finished.");
 		return "success";
 	}
