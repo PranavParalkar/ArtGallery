@@ -25,6 +25,9 @@ const ProfilePage = () => {
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [isFlipped, setIsFlipped] = useState(false);
   const [viewType, setViewType] = useState("sold");
+  const [transactions, setTransactions] = useState([]);
+  const [error, setError] = useState(null);
+
 
   // 🎨 Adjusted Painting Card with more details
   const renderPaintingCard = (painting, type) => (
@@ -94,6 +97,27 @@ const ProfilePage = () => {
         setProfile(null);
       });
   }, [axiosInstance, token]);
+
+  useEffect(() => {
+    axiosInstance
+      .get("/user/transaction")
+      .then((res) => {
+        console.dir(res.data, { depth: null });
+        setTransactions(res.data); // assuming res.data is an array
+      })
+      .catch((err) => {
+        console.error("Failed to load transactions:", err);
+        setError("Could not load transactions");
+      });
+  }, [axiosInstance, token]);
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  if (!transactions.length) {
+    return <p>No transactions found.</p>;
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -385,6 +409,7 @@ const ProfilePage = () => {
                       <span className="font-semibold">Logout</span>
                     </div>
 
+
                     {/* Sliding In New Text */}
                     <div className="absolute inset-0 flex items-center justify-center text-md font-semibold text-white transition-transform duration-700 -translate-x-full group-hover:translate-x-0">
                       Nice to meet you
@@ -426,6 +451,47 @@ const ProfilePage = () => {
                       Bought Paintings
                     </button>
                   </div>
+                  <div className="p-6">
+                    <h2 className="text-2xl font-bold mb-4">Transaction History</h2>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+                        <thead className="bg-gray-100">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border-b">Date</th>
+                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border-b">Type</th>
+                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border-b">Painting</th>
+                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border-b">Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {transactions.map((txn) => (
+                            <tr key={txn.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 text-sm text-gray-600 border-b">
+                                {new Date(txn.timeStamp).toLocaleString()}
+                              </td>
+                              <td
+                                className={`px-6 py-4 text-sm font-semibold border-b ${txn.type === "PURCHASE"
+                                    ? "text-green-600"
+                                    : txn.type === "SALE"
+                                      ? "text-blue-600"
+                                      : "text-gray-600"
+                                  }`}
+                              >
+                                {txn.type}
+                              </td>
+                              <td className="px-6 py-4 text-sm text-gray-600 border-b">
+                                {txn.painting?.title || "—"}
+                              </td>
+                              <td className="px-6 py-4 text-sm text-gray-600 border-b">
+                                ₹{txn.amount.toLocaleString("en-IN")}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
 
                   <AnimatePresence mode="wait">
                     <motion.div
@@ -491,37 +557,37 @@ const ProfilePage = () => {
                 </motion.div>
               )}
             </AnimatePresence>
-              {/* Fullscreen Image Modal */}
-                  <AnimatePresence>
-                    {fullscreenImage && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
-                        onClick={() => setFullscreenImage(null)}
-                      >
-                        <motion.div
-                          initial={{ scale: 0.8 }}
-                          animate={{ scale: 1 }}
-                          exit={{ scale: 0.8 }}
-                          className="relative max-w-4xl w-full"
-                        >
-                          <img
-                            src={fullscreenImage}
-                            alt="Fullscreen Preview"
-                            className="w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-                          />
-                          <button
-                            onClick={() => setFullscreenImage(null)}
-                            className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black cursor-pointer"
-                          >
-                            ✕ Close
-                          </button>
-                        </motion.div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+            {/* Fullscreen Image Modal */}
+            <AnimatePresence>
+              {fullscreenImage && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+                  onClick={() => setFullscreenImage(null)}
+                >
+                  <motion.div
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0.8 }}
+                    className="relative max-w-4xl w-full"
+                  >
+                    <img
+                      src={fullscreenImage}
+                      alt="Fullscreen Preview"
+                      className="w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+                    />
+                    <button
+                      onClick={() => setFullscreenImage(null)}
+                      className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black cursor-pointer"
+                    >
+                      ✕ Close
+                    </button>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
       </motion.div>
