@@ -503,7 +503,7 @@ const Shop = () => {
                     <span>{selectedPainting?.title}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-semibold">Base Price:</span>
+                    <span className="font-semibold">Price:</span>
                     <span>₹{selectedPainting?.startingPrice}</span>
                   </div>
                 </div>

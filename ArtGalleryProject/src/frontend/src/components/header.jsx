@@ -22,14 +22,11 @@ const Header = ({ setIsWalletOpen }) => {
     navLinks.admin = "/admin";
   }
 
-  const isLoggedIn = !!token; // Use token for login check
-  // Example usage: you can use userRole to conditionally render UI
-  // e.g. const isAdmin = userRole === "ADMIN";
+  const isLoggedIn = !!token;
 
-  // Fetch username when component mounts and user is logged in
   useEffect(() => {
     const fetchUsername = async () => {
-      if (isLoggedIn && !username) {
+      if (isLoggedIn) {
         try {
           const fetchedUsername = await getUsername();
           if (fetchedUsername) {
@@ -42,7 +39,8 @@ const Header = ({ setIsWalletOpen }) => {
     };
 
     fetchUsername();
-  }, [isLoggedIn, username]);
+  }, [isLoggedIn, token]);
+
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-xl shadow-lg border-b  text-sm">

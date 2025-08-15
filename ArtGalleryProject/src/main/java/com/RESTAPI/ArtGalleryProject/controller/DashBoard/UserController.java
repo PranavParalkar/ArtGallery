@@ -61,7 +61,7 @@ public class UserController {
 		}
 	}
 	
-	@GetMapping("/transaction")
+	@GetMapping("/transactions")
 	public ResponseEntity<?> getAllTransactions(){
 		logger.info("updateUserProfile started.");
 		long userId = authHelper.getCurrentUserId();

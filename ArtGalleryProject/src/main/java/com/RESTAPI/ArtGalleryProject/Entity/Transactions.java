@@ -3,7 +3,9 @@ package com.RESTAPI.ArtGalleryProject.Entity;
 import java.time.LocalDateTime;
 
 import com.RESTAPI.ArtGalleryProject.Enum.TransactionType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -12,7 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,15 +34,18 @@ public class Transactions {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference(value = "user-transactions")
     private User user;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private TransactionType type;
 
-    private Double amount;
+    private double amount;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "painting_id")
+    @JsonBackReference(value = "painting-transactions")
     private Painting painting;
 
     private LocalDateTime timeStamp;
