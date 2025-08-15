@@ -26,7 +26,7 @@ const ProfilePage = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [viewType, setViewType] = useState("sold");
   const [transactions, setTransactions] = useState([]);
-  const [error, setError] = useState(null);
+
 
 
   // 🎨 Adjusted Painting Card with more details
@@ -100,25 +100,15 @@ const ProfilePage = () => {
 
   useEffect(() => {
     axiosInstance
-      .get("/user/transaction")
+      .get("/user/transactions")
       .then((res) => {
-        console.dir(res.data, { depth: null });
-        setTransactions(res.data); // assuming res.data is an array
+        setTransactions(res.data);
       })
       .catch((err) => {
         console.error("Failed to load transactions:", err);
-        setError("Could not load transactions");
+        setTransactions([]);
       });
-  }, [axiosInstance, token]);
-
-  if (error) {
-    return <p>{error}</p>;
-  }
-
-  if (!transactions.length) {
-    return <p>No transactions found.</p>;
-  }
-
+  }, [token]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name.startsWith("address.")) {
@@ -174,7 +164,7 @@ const ProfilePage = () => {
         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
         }`}
     >
-      {label === "profile" ? "Profile" : "My Paintings"}
+      {label === "profile" ? "Profile" : "My Activity"}
     </button>
   );
   return (
@@ -430,10 +420,43 @@ const ProfilePage = () => {
                     <h2 className="text-3xl font-bold">My Collection</h2>
                   </div>
 
+                  {/* transaction */}
+                  {/* <div>
+                    <h2>Transaction History</h2>
+                    {transactions.length === 0 ? (
+                      <p>No transactions found.</p>
+                    ) : (
+                      <table border="1" cellPadding="8">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Painting</th>
+                            <th>Timestamp</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {transactions.map((txn) => (
+                            <tr key={txn.id}>
+                              <td>{txn.id}</td>
+                              <td>{txn.type}</td>
+                              <td>{txn.amount}</td>
+                              <td>{txn.painting ? txn.painting.title : "N/A"}</td>
+                              <td>{new Date(txn.timeStamp).toLocaleString()}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div> */}
+
+
+                  {/* 👇 New Toggle Buttons */}
                   {/* 👇 New Toggle Buttons */}
                   <div className="flex w-full bg-[#f0e2d2] p-1 rounded-lg mb-8 shadow-inner">
                     <button
-                      className={`w-1/2 py-2 text-center rounded-md font-semibold transition-all duration-300 cursor-pointer ${viewType === "sold"
+                      className={`w-1/3 py-2 text-center rounded-md font-semibold transition-all duration-300 cursor-pointer ${viewType === "sold"
                         ? "bg-white text-[#6b4c35] shadow"
                         : "text-gray-500 hover:bg-white/50"
                         }`}
@@ -441,8 +464,9 @@ const ProfilePage = () => {
                     >
                       Sold Paintings
                     </button>
+
                     <button
-                      className={`w-1/2 py-2 text-center rounded-md font-semibold transition-all duration-300 cursor-pointer ${viewType === "bought"
+                      className={`w-1/3 py-2 text-center rounded-md font-semibold transition-all duration-300 cursor-pointer ${viewType === "bought"
                         ? "bg-white text-[#6b4c35] shadow"
                         : "text-gray-500 hover:bg-white/50"
                         }`}
@@ -450,46 +474,16 @@ const ProfilePage = () => {
                     >
                       Bought Paintings
                     </button>
-                  </div>
-                  <div className="p-6">
-                    <h2 className="text-2xl font-bold mb-4">Transaction History</h2>
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-                        <thead className="bg-gray-100">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border-b">Date</th>
-                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border-b">Type</th>
-                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border-b">Painting</th>
-                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 border-b">Amount</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {transactions.map((txn) => (
-                            <tr key={txn.id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4 text-sm text-gray-600 border-b">
-                                {new Date(txn.timeStamp).toLocaleString()}
-                              </td>
-                              <td
-                                className={`px-6 py-4 text-sm font-semibold border-b ${txn.type === "PURCHASE"
-                                    ? "text-green-600"
-                                    : txn.type === "SALE"
-                                      ? "text-blue-600"
-                                      : "text-gray-600"
-                                  }`}
-                              >
-                                {txn.type}
-                              </td>
-                              <td className="px-6 py-4 text-sm text-gray-600 border-b">
-                                {txn.painting?.title || "—"}
-                              </td>
-                              <td className="px-6 py-4 text-sm text-gray-600 border-b">
-                                ₹{txn.amount.toLocaleString("en-IN")}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+
+                    <button
+                      className={`w-1/3 py-2 text-center rounded-md font-semibold transition-all duration-300 cursor-pointer ${viewType === "transactions"
+                        ? "bg-white text-[#6b4c35] shadow"
+                        : "text-gray-500 hover:bg-white/50"
+                        }`}
+                      onClick={() => setViewType("transactions")}
+                    >
+                      Transaction History
+                    </button>
                   </div>
 
 
@@ -502,6 +496,7 @@ const ProfilePage = () => {
                       transition={{ duration: 0.3 }}
                     >
                       {viewType === "sold" ? (
+                        // SOLD PAINTINGS
                         <div>
                           {profile.paintingsSold?.length === 0 ? (
                             <p className="text-center text-gray-500 py-8">
@@ -509,12 +504,14 @@ const ProfilePage = () => {
                             </p>
                           ) : (
                             <div className="grid sm:grid-cols-2 xl:grid-cols-3 md:gap-3 gap-3">
-                              {/* 👇 Updated function call */}
-                              {profile.paintingsSold.map((p) => renderPaintingCard(p, "sold"))}
+                              {profile.paintingsSold.map((p) =>
+                                renderPaintingCard(p, "sold")
+                              )}
                             </div>
                           )}
                         </div>
-                      ) : (
+                      ) : viewType === "bought" ? (
+                        // BOUGHT PAINTINGS
                         <div>
                           {profile.paintingsBought?.length === 0 ? (
                             <p className="text-center text-gray-500 py-8">
@@ -522,14 +519,53 @@ const ProfilePage = () => {
                             </p>
                           ) : (
                             <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                              {/* 👇 Updated function call */}
-                              {profile.paintingsBought.map((p) => renderPaintingCard(p, "bought"))}
+                              {profile.paintingsBought.map((p) =>
+                                renderPaintingCard(p, "bought")
+                              )}
                             </div>
                           )}
                         </div>
+                      ) : (
+                        // TRANSACTION HISTORY
+                        <div>
+                          {transactions.length === 0 ? (
+                            <p className="text-center text-gray-500 py-8">
+                              No transactions found.
+                            </p>
+                          ) : (
+                            <div className="overflow-x-auto">
+                              <table className="w-full border-collapse bg-white shadow rounded-lg overflow-hidden">
+                                <thead className="bg-[#f0e2d2] text-[#6b4c35]">
+                                  <tr>
+                                    <th className="py-3 px-4 text-left">Type</th>
+                                    <th className="py-3 px-4 text-left">Amount</th>
+                                    <th className="py-3 px-4 text-left">Timestamp</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {transactions.map((txn) => (
+                                    <tr
+                                      key={txn.id}
+                                      className="border-b hover:bg-[#f9f4ef] transition-colors"
+                                    >
+                                      <td className="py-3 px-4 capitalize">{txn.type}</td>
+                                      <td className="py-3 px-4">₹{txn.amount}</td>
+                                      
+                                      <td className="py-3 px-4">
+                                        {new Date(txn.timeStamp).toLocaleString()}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                        </div>
+
                       )}
                     </motion.div>
                   </AnimatePresence>
+
                 </motion.div>
               )}
             </AnimatePresence>
