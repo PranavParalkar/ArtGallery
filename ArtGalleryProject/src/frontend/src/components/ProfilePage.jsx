@@ -37,20 +37,18 @@ const ProfilePage = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="bg-[#fdfaf6] rounded-xl shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 border border-gray-200 md:h-48"
+      className="bg-[#fdfaf6] rounded-xl shadow-lg mt-5 cursor-default overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 border border-gray-200 md:h-48"
     >
       <div className="relative h-1/2 overflow-hidden">
         <img
           src={`http://localhost:8085${painting.imageUrl}`}
           alt={painting.title}
-          className="w-full h-full object-cover cursor-pointer transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-500 "
           onClick={() =>
             setFullscreenImage(`http://localhost:8085${painting.imageUrl}`)
           }
         />
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <p className="text-white text-sm font-semibold">View Image</p>
-        </div>
+     
       </div>
       <div className="p-4">
         <h3 className="text-sm font-bold text-[#5a3c28] truncate">
@@ -168,7 +166,7 @@ const ProfilePage = () => {
     </button>
   );
   return (
-    <div className="font-serif p-6 sm:p-10 text-[#3e2e1e]">
+    <div className="font-serif p-6  sm:p-10 text-[#3e2e1e]">
       <AnimatePresence>
         {isVisible && (
           <motion.div
@@ -188,7 +186,7 @@ const ProfilePage = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-12 px-4"
+        className="flex flex-col lg:flex-row justify-center items-center  lg:items-start gap-12 px-4"
       >
         {/* Profile Section */}
         <div className="flex flex-col items-center justify-center w-full ">
@@ -413,12 +411,8 @@ const ProfilePage = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5 }}
-                  className="bg-white/50 backdrop-blur-sm rounded-2xl shadow-lg p-6 lg:p-8"
+                  className="bg-white/50 backdrop-blur-sm rounded-2xl h-[600px]   shadow-lg p-6 lg:p-8"
                 >
-                  <div className="flex items-center gap-4 mb-8">
-                    <FaPalette className="text-3xl text-[#6b4c35]" />
-                    <h2 className="text-3xl font-bold">My Collection</h2>
-                  </div>
 
                   {/* transaction */}
                   {/* <div>
@@ -494,6 +488,7 @@ const ProfilePage = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.3 }}
+                      
                     >
                       {viewType === "sold" ? (
                         // SOLD PAINTINGS
@@ -503,7 +498,7 @@ const ProfilePage = () => {
                               You haven't sold any paintings yet.
                             </p>
                           ) : (
-                            <div className="grid sm:grid-cols-2 xl:grid-cols-3 md:gap-3 gap-3">
+                            <div className="grid sm:grid-cols-2 xl:grid-cols-3 h-[350px] overflow-y-scroll pb-6 md:gap-3 gap-3">
                               {profile.paintingsSold.map((p) =>
                                 renderPaintingCard(p, "sold")
                               )}
@@ -518,7 +513,7 @@ const ProfilePage = () => {
                               You haven't bought any paintings yet.
                             </p>
                           ) : (
-                            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                            <div className="grid sm:grid-cols-2 xl:grid-cols-3  h-[350px] overflow-y-scroll pb-6 gap-6">
                               {profile.paintingsBought.map((p) =>
                                 renderPaintingCard(p, "bought")
                               )}
@@ -533,7 +528,7 @@ const ProfilePage = () => {
                               No transactions found.
                             </p>
                           ) : (
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto  h-[350px] overflow-y-scroll pb-6">
                               <table className="w-full border-collapse bg-white shadow rounded-lg overflow-hidden">
                                 <thead className="bg-[#f0e2d2] text-[#6b4c35]">
                                   <tr>
@@ -549,7 +544,13 @@ const ProfilePage = () => {
                                       className="border-b hover:bg-[#f9f4ef] transition-colors"
                                     >
                                       <td className="py-3 px-4 capitalize">{txn.type}</td>
-                                      <td className="py-3 px-4">₹{txn.amount}</td>
+                                      <td className={`py-3 px-4 font-semibold ${
+                                        txn.type === 'ADD_FUNDS' || txn.type === 'SOLD' 
+                                          ? 'text-green-600' 
+                                          : 'text-red-600'
+                                      }`}>
+                                        ₹{txn.amount}
+                                      </td>
                                       
                                       <td className="py-3 px-4">
                                         {new Date(txn.timeStamp).toLocaleString()}
@@ -569,30 +570,7 @@ const ProfilePage = () => {
                 </motion.div>
               )}
             </AnimatePresence>
-            {/* Fullscreen Image Modal */}
-            <AnimatePresence>
-              {fullscreenImage && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
-                  onClick={() => setFullscreenImage(null)}
-                >
-                  <img
-                    src={fullscreenImage}
-                    alt="Fullscreen Preview"
-                    className="w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-                  />
-                  <button
-                    onClick={() => setFullscreenImage(null)}
-                    className="absolute top-3 right-3 text-white bg-black/70 rounded-full px-3 py-1 text-sm hover:bg-black cursor-pointer"
-                  >
-                    ✕ Close
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            
             {/* Fullscreen Image Modal */}
             <AnimatePresence>
               {fullscreenImage && (
