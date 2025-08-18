@@ -112,6 +112,7 @@ public class UserServiceImpl implements UserService{
 			        t.getAmount(),
 			        t.getPainting() == null ? null : t.getPainting().getImageUrl(),
 			        t.getPainting() == null ? null : t.getPainting().getSeller().getName(),
+			        t.getPainting() == null ? null : t.getPainting().getBuyer().getName(),
 			        t.getTimeStamp()
 			)).toList();
 			return soldResponses;
