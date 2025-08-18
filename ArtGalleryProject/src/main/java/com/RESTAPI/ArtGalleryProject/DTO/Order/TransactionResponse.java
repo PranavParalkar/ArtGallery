@@ -19,5 +19,6 @@ public class TransactionResponse{
 	private double amount;
 	private String PaintingImageUrl;
 	private String PaintingSellerName;
+	private String paintingBuyerName;
 	private LocalDateTime timeStamp;
 }

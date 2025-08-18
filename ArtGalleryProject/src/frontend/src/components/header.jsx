@@ -43,7 +43,7 @@ const Header = ({ setIsWalletOpen }) => {
 
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-xl shadow-lg border-b  text-sm">
+    <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-3xl shadow-lg border-b  text-sm">
       <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-5">
         <div className="flex items-center justify-between w-full md:w-auto gap-4 md:gap-8">
           <Link to="/" className="group inline-block relative w-fit">
