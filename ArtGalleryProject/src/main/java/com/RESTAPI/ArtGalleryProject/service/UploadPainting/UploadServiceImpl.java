@@ -50,7 +50,7 @@ public class UploadServiceImpl implements UploadService {
 
 		String filepath = path + "/image/" + name;
 
-		File f = new File(path);
+		File f = new File(path + "/image/");
 		if (!f.exists())
 			f.mkdir();
 
